@@ -12,8 +12,8 @@ const steps = [
     badges: [{ label: "AI builds your profile", type: "ai" }, { label: "AI coaches speed", type: "ai" }, { label: "You practice", type: "you" }],
   },
   {
-    dot: "3", when: "Minutes before the window", title: "Everything is set up for you",
-    desc: "AI checks you're logged in, opens all your target pages in tabs, loads your saved details, and counts down to the exact second booking opens. You see a dashboard showing every target and its status. All you do is wait.",
+    dot: "3", when: "10–15 minutes before", title: "Everything is set up for you",
+    desc: "AI gets you logged in early — an active session looks human to the booking site and won't get dropped when traffic spikes. It opens your target pages, loads your saved details, and counts down to the exact second. You see a dashboard showing every target and its status. All you do is wait.",
     badges: [{ label: "AI stages tabs", type: "ai" }, { label: "AI checks login", type: "ai" }, { label: "AI syncs clock", type: "ai" }],
   },
   {
