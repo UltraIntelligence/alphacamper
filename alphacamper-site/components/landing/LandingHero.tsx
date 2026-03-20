@@ -14,10 +14,6 @@ export function LandingHero() {
         <p className="park-search-free">
           Your first watch is free. No card required.
         </p>
-        <div className="hero-trust">
-          <span className="hero-stars">★★★★★</span>
-          <span>Trusted by campers across Canada</span>
-        </div>
         <div className="hero-stats">
           <div>
             <span className="hero-stat-value">1,000s of campsites</span>
@@ -32,6 +28,12 @@ export function LandingHero() {
             <span className="hero-stat-label">No card required</span>
           </div>
         </div>
+      </div>
+
+      {/* Trust strip pinned to bottom of hero image */}
+      <div className="hero-trust">
+        <span className="hero-stars">★★★★★</span>
+        <span>Trusted by campers across Canada</span>
       </div>
     </section>
   )
