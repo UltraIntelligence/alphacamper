@@ -40,15 +40,15 @@ export const CAMPGROUNDS: Campground[] = [
 ]
 
 export function searchCampgrounds(query: string): Campground[] {
-  if (!query.trim()) return CAMPGROUNDS
+  if (!query.trim()) return []
   const q = query.toLowerCase().trim()
   return CAMPGROUNDS.filter(
     (c) =>
       c.name.toLowerCase().includes(q) ||
       c.province.toLowerCase().includes(q) ||
       (c.park && c.park.toLowerCase().includes(q)) ||
-      (c.platform === 'bc_parks' && 'british columbia'.includes(q)) ||
-      (c.platform === 'ontario_parks' && 'ontario'.includes(q))
+      (q.length >= 3 && c.platform === 'bc_parks' && 'british columbia'.includes(q)) ||
+      (q.length >= 3 && c.platform === 'ontario_parks' && 'ontario'.includes(q))
   )
 }
 

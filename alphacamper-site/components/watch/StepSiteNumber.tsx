@@ -22,6 +22,8 @@ export function StepSiteNumber({ data, onUpdate, onComplete }: StepSiteNumberPro
           id="site-number"
           className="field-input"
           type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
           placeholder="e.g. 42"
           value={data.siteNumber}
           onChange={(e) => onUpdate({ siteNumber: e.target.value })}

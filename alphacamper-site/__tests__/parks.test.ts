@@ -18,9 +18,13 @@ describe('searchCampgrounds', () => {
     expect(results).toEqual([])
   })
 
-  it('returns all campgrounds when query is empty', () => {
+  it('returns empty array when query is empty', () => {
     const results = searchCampgrounds('')
-    expect(results.length).toBe(CAMPGROUNDS.length)
+    expect(results).toEqual([])
+  })
+
+  it('CAMPGROUNDS array has all entries', () => {
+    expect(CAMPGROUNDS.length).toBe(22)
   })
 
   it('matches by park name', () => {

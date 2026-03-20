@@ -76,6 +76,7 @@ export function WatchWizard() {
   }, [])
 
   const handleCreateWatch = async () => {
+    if (isSubmitting) return
     setIsSubmitting(true)
     setSubmitError(null)
 
@@ -104,7 +105,7 @@ export function WatchWizard() {
       if (!watchRes.ok) throw new Error('Failed to create watch')
 
       import('@/lib/auth').then(({ sendMagicLink }) => {
-        sendMagicLink(data.email).catch(() => {})
+        sendMagicLink(data.email, window.location.origin).catch(() => {})
       })
 
       setIsComplete(true)
@@ -143,6 +144,8 @@ export function WatchWizard() {
               }}
               role="button"
               tabIndex={0}
+              aria-expanded={isActive}
+              aria-controls={`step-content-${key}`}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
@@ -159,7 +162,7 @@ export function WatchWizard() {
               </div>
             </div>
             {isActive && (
-              <div className="step-content">
+              <div className="step-content" id={`step-content-${key}`} role="region">
                 {key === 'search' && (
                   <StepSearch
                     data={data}

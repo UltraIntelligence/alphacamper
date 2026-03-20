@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { getSupabase } from '@/lib/supabase'
 
 function AuthConfirmContent() {
@@ -13,7 +14,8 @@ function AuthConfirmContent() {
     const tokenHash = searchParams.get('token_hash')
     const type = searchParams.get('type')
 
-    if (!tokenHash || !type) {
+    const validTypes = ['email', 'magiclink', 'signup', 'recovery']
+    if (!tokenHash || !type || !validTypes.includes(type)) {
       queueMicrotask(() => setStatus('error'))
       return
     }
@@ -51,9 +53,9 @@ function AuthConfirmContent() {
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>
             This magic link has expired or was already used.
           </p>
-          <a href="/watch/new" className="btn-bold btn-bold-primary" style={{ textDecoration: 'none' }}>
+          <Link href="/watch/new" className="btn-bold btn-bold-primary" style={{ textDecoration: 'none' }}>
             Create a new watch
-          </a>
+          </Link>
         </>
       )}
     </main>

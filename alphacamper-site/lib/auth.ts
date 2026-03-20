@@ -12,9 +12,9 @@ export function getRedirectUrl(origin: string): string {
  * Send magic link email for account activation.
  * Fire-and-forget in Phase 1 — watch creation doesn't depend on auth.
  */
-export async function sendMagicLink(email: string): Promise<{ error: string | null }> {
+export async function sendMagicLink(email: string, origin: string): Promise<{ error: string | null }> {
   const supabase = getSupabase()
-  const redirectTo = getRedirectUrl(window.location.origin)
+  const redirectTo = getRedirectUrl(origin)
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: redirectTo },

@@ -9,13 +9,21 @@ interface StepDatesProps {
 }
 
 function addDays(dateStr: string, days: number): string {
-  const d = new Date(dateStr + 'T00:00:00')
-  d.setDate(d.getDate() + days)
-  return d.toISOString().split('T')[0]
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  date.setDate(date.getDate() + days)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 function todayStr(): string {
-  return new Date().toISOString().split('T')[0]
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
@@ -60,6 +68,7 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
             style={{ padding: '8px 16px', fontSize: '1.2rem' }}
             onClick={() => handleNightsChange(data.nights - 1)}
             disabled={data.nights <= 1}
+            aria-label="Decrease nights"
           >
             −
           </button>
@@ -70,6 +79,7 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
             style={{ padding: '8px 16px', fontSize: '1.2rem' }}
             onClick={() => handleNightsChange(data.nights + 1)}
             disabled={data.nights >= 14}
+            aria-label="Increase nights"
           >
             +
           </button>

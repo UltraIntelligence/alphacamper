@@ -2,7 +2,7 @@ import { WatchWizard } from '@/components/watch/WatchWizard'
 
 export const metadata = {
   title: 'Create a Watch — Alphacamper',
-  description: 'Tell Alpha where you want to camp. We&apos;ll watch 24/7 and alert you when a site opens up.',
+  description: "Tell Alpha where you want to camp. We'll watch 24/7 and alert you when a site opens up.",
 }
 
 export default function WatchNewPage() {
