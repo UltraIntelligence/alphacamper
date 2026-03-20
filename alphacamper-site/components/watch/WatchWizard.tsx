@@ -5,6 +5,8 @@ import { StepSummary } from './StepSummary'
 import { StepSearch } from './StepSearch'
 import { StepDates } from './StepDates'
 import { StepSiteNumber } from './StepSiteNumber'
+import { StepEmail } from './StepEmail'
+import { WatchConfirmation } from './WatchConfirmation'
 
 export type WizardStep = 'search' | 'dates' | 'site' | 'email'
 
@@ -115,12 +117,13 @@ export function WatchWizard() {
 
   if (isComplete) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px 24px' }}>
-        <h2 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.75rem', marginBottom: '12px' }}>
-          Alpha's on it!
-        </h2>
-        <p style={{ color: 'var(--color-text-muted)' }}>Watch created — confirmation component coming in Task 9.</p>
-      </div>
+      <WatchConfirmation
+        campgroundName={data.campgroundName}
+        platform={data.platform}
+        arrivalDate={data.arrivalDate}
+        departureDate={data.departureDate}
+        email={data.email}
+      />
     )
   }
 
@@ -170,7 +173,15 @@ export function WatchWizard() {
                 {key === 'site' && (
                   <StepSiteNumber data={data} onUpdate={updateData} onComplete={() => completeStep('site', 'email')} />
                 )}
-                {key === 'email' && <p style={{ color: 'var(--color-text-muted)' }}>Step 4 — coming next</p>}
+                {key === 'email' && (
+                  <StepEmail
+                    data={data}
+                    onUpdate={updateData}
+                    onSubmit={handleCreateWatch}
+                    isSubmitting={isSubmitting}
+                    error={submitError}
+                  />
+                )}
               </div>
             )}
           </div>
