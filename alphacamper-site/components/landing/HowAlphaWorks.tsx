@@ -1,12 +1,12 @@
 const steps = [
   {
     number: 1,
-    title: 'Tell Alpha where.',
-    body: 'Pick your park, dates, and preferred sites. Alpha starts watching immediately.',
+    title: 'Tell us where.',
+    body: 'Pick your park, dates, and preferred sites. Alphacamper starts watching immediately.',
   },
   {
     number: 2,
-    title: 'Alpha watches.',
+    title: 'We watch.',
     body: 'We check every few minutes, 24/7. When someone cancels, you\'ll know first.',
   },
   {
@@ -19,7 +19,7 @@ const steps = [
 export function HowAlphaWorks() {
   return (
     <section id="how-it-works" className="how-section">
-      <h2>How Alpha Works</h2>
+      <h2>How Alphacamper Works</h2>
       <div className="how-grid">
         {steps.map((step) => (
           <div key={step.number} className="how-card">

@@ -18,7 +18,7 @@ export default function Home() {
       <section className="tagline-section">
         <p>
           Campsites at popular parks sell out in seconds. Cancellations happen
-          all season long. Alpha makes sure you hear about them first.
+          all season long. Alphacamper makes sure you hear about them first.
         </p>
       </section>
 

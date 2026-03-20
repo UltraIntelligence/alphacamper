@@ -7,7 +7,7 @@ export function LandingHero() {
       <div className="hero-content">
         <h1>Never lose a campsite again.</h1>
         <p>
-          Alpha watches sold-out campgrounds 24/7 for cancellations.
+          Alphacamper watches sold-out campgrounds 24/7 for cancellations.
           When a spot opens up, you hear about it first.
         </p>
         <ParkSearch />

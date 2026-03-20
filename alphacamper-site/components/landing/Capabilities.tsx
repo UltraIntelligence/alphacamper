@@ -2,7 +2,7 @@ const caps = [
   { value: 'Every 2\u20135 min', label: 'Scan frequency' },
   { value: '3 platforms', label: 'BC Parks \u00b7 Ontario Parks \u00b7 Recreation.gov' },
   { value: 'Booking Assist\u2122', label: 'Auto-fill forms in seconds' },
-  { value: '24/7/365', label: 'Alpha never sleeps' },
+  { value: '24/7/365', label: 'Alphacamper never sleeps' },
 ]
 
 export function Capabilities() {
@@ -10,7 +10,7 @@ export function Capabilities() {
     <section className="cap-section">
       <div className="cap-big-number">24/7</div>
       <p className="cap-big-label">
-        Alpha watches campgrounds around the clock so you don&apos;t have to.
+        Alphacamper watches campgrounds around the clock so you don&apos;t have to.
       </p>
       <div className="cap-grid">
         {caps.map((cap) => (

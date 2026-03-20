@@ -10,7 +10,7 @@ export function LandingCTA() {
         </h2>
         <ParkSearch />
         <p className="cta-sub">
-          Your first watch is free. Alpha&apos;s already awake.
+          Your first watch is free. Alphacamper&apos;s already awake.
         </p>
         <div style={{ marginTop: 40, maxWidth: 280, marginLeft: 'auto', marginRight: 'auto' }}>
           <IllustrationPlaceholder
