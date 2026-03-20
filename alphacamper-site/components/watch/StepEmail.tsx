@@ -23,7 +23,7 @@ export function StepEmail({ data, onUpdate, onSubmit, isSubmitting, error }: Ste
           Where should we send alerts?
         </label>
         <span className="field-hint">
-          We'll email you when a site opens up. We'll also create your free account.
+          We&apos;ll email you when a site opens up. We&apos;ll also create your free account.
         </span>
         <input
           id="email"

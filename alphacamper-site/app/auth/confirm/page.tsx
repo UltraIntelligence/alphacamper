@@ -14,7 +14,7 @@ function AuthConfirmContent() {
     const type = searchParams.get('type')
 
     if (!tokenHash || !type) {
-      setStatus('error')
+      queueMicrotask(() => setStatus('error'))
       return
     }
 
@@ -36,12 +36,12 @@ function AuthConfirmContent() {
       {status === 'verifying' && (
         <>
           <h1 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '2rem', marginBottom: '16px' }}>Verifying your email...</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Hang tight, Alpha's checking your credentials.</p>
+          <p style={{ color: 'var(--color-text-muted)' }}>Hang tight, Alpha&apos;s checking your credentials.</p>
         </>
       )}
       {status === 'success' && (
         <>
-          <h1 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '2rem', marginBottom: '16px' }}>You're in!</h1>
+          <h1 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '2rem', marginBottom: '16px' }}>You&apos;re in!</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>Redirecting to your dashboard...</p>
         </>
       )}

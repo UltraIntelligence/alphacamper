@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export function WatchConfirmation({
   campgroundName,
   platform,
@@ -23,7 +25,7 @@ export function WatchConfirmation({
       </div>
 
       <h2 style={{ fontFamily: 'var(--font-fraunces, var(--font-display))', fontSize: '1.75rem', fontWeight: 600, marginBottom: '12px' }}>
-        Alpha's on it!
+        Alpha&apos;s on it!
       </h2>
 
       <p style={{ color: 'var(--color-text-muted)', fontSize: '1.05rem', marginBottom: '24px' }}>
@@ -38,9 +40,9 @@ export function WatchConfirmation({
         </p>
       </div>
 
-      <a href="/" className="btn-bold btn-bold-outline" style={{ textDecoration: 'none' }}>
+      <Link href="/" className="btn-bold btn-bold-outline" style={{ textDecoration: 'none' }}>
         Back to home
-      </a>
+      </Link>
     </div>
   )
 }

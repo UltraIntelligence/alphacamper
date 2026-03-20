@@ -10,7 +10,7 @@ export default function DashboardPage() {
     <main className="wizard-container">
       <div className="wizard-header">
         <h1>Your Dashboard</h1>
-        <p>Alpha's watching your campsites. We'll email you when something opens up.</p>
+        <p>Alpha&apos;s watching your campsites. We&apos;ll email you when something opens up.</p>
       </div>
 
       <div className="illustration-placeholder" style={{ marginBottom: '32px', maxWidth: '280px', marginInline: 'auto' }}>

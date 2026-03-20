@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Alphacamper",
   "version": "0.2.0",
+  "default_locale": "en",
   "description": "Your AI-powered campsite launch system. Three clicks. We handle everything else.",
   "permissions": [
     "sidePanel",
