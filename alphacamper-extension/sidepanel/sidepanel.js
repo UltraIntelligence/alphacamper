@@ -663,7 +663,18 @@ async function refreshAlerts() {
         const platform = target?.platform || 'recreation_gov';
         const cgId = target?.campground_id || '';
         const link = Missions.generateDeepLink(platform, cgId);
-        if (link) chrome.tabs.create({ url: link });
+        if (link) {
+          chrome.tabs.create({ url: link, active: true }).then((tab) => {
+            chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+              if (tabId === tab.id && info.status === 'complete') {
+                chrome.tabs.onUpdated.removeListener(listener);
+                setTimeout(() => {
+                  chrome.tabs.sendMessage(tabId, { action: 'fill_forms' });
+                }, 2000);
+              }
+            });
+          });
+        }
         const base2 = API_BASE || 'http://localhost:3000';
         await fetch(base2 + '/api/alerts', {
           method: 'PATCH',
