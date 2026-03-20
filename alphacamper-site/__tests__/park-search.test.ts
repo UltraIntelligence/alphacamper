@@ -2,14 +2,14 @@ import { describe, it, expect } from 'vitest'
 import { getCampground } from '@/lib/parks'
 
 const LANDING_PAGE_PARK_IDS = [
-  '-2430',     // Alice Lake
-  '-2504',     // Rathtrevor Beach
-  '-2493',     // Golden Ears
-  '-2499',     // Joffre Lakes
-  '-2740399',  // Algonquin - Canisbay Lake
-  '-2740523',  // Killarney - George Lake
-  '-2740285',  // Sandbanks - Outlet River
-  '-2740575',  // Pinery - Burley
+  '-2430',     // Alice Lake (BC)
+  '-2504',     // Rathtrevor Beach (BC)
+  '-2493',     // Golden Ears (BC)
+  '-2740399',  // Algonquin (ON)
+  '232447',    // Upper Pines, Yosemite (CA)
+  '232493',    // Glacier Basin, Mt Rainier (WA)
+  '251869',    // Apgar, Glacier NP (MT)
+  '272299',    // Jumbo Rocks, Joshua Tree (CA)
 ]
 
 describe('landing page park integration', () => {
