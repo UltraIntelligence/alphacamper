@@ -20,16 +20,16 @@ export function LandingHero() {
         </div>
         <div className="hero-stats">
           <div>
-            <span className="hero-stat-value">2.4M+</span>
-            <span className="hero-stat-label">Checks this month</span>
+            <span className="hero-stat-value">22 campgrounds</span>
+            <span className="hero-stat-label">Across Canada &amp; the US</span>
           </div>
           <div>
-            <span className="hero-stat-value">Every 2-5 min</span>
-            <span className="hero-stat-label">Scan frequency</span>
+            <span className="hero-stat-value">360 checks/day</span>
+            <span className="hero-stat-label">Per campground, every day</span>
           </div>
           <div>
-            <span className="hero-stat-value">3 platforms</span>
-            <span className="hero-stat-label">BC · Ontario · Rec.gov</span>
+            <span className="hero-stat-value">Free to start</span>
+            <span className="hero-stat-label">No card required</span>
           </div>
         </div>
       </div>
