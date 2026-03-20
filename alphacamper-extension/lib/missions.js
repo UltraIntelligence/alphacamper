@@ -98,13 +98,11 @@ const Missions = {
 
   generateDeepLink(platform, campgroundId) {
     const p = PLATFORMS[platform];
-    if (!p) return '';
-    if (platform === 'recreation_gov') {
-      return p.deepLinkTemplate.replace('{campgroundId}', campgroundId);
-    }
-    if (platform === 'bc_parks') {
-      return p.deepLinkTemplate.replace('{locationId}', campgroundId);
-    }
-    return '';
+    if (!p || !p.deepLinkTemplate) return '';
+    return p.deepLinkTemplate
+      .replace('{campgroundId}', campgroundId)
+      .replace('{locationId}', campgroundId)
+      .replace('{parkSlug}', campgroundId.split('/')[0] || campgroundId)
+      .replace('{campgroundSlug}', campgroundId.split('/')[1] || campgroundId);
   }
 };
