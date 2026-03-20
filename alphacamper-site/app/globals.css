@@ -93,10 +93,11 @@ a { color: inherit; text-decoration: none; }
 /* ── Nav ── */
 
 .landing-nav {
-  position: relative;
+  position: absolute;
+  top: 0; left: 0; right: 0;
   z-index: 100;
   background: transparent;
-  padding: 20px 0 0;
+  padding: 24px 0;
 }
 
 .landing-nav .container {
@@ -139,7 +140,7 @@ a { color: inherit; text-decoration: none; }
 
 .hero-section {
   margin-top: 0;
-  padding: 40px 32px 80px;
+  padding: 100px 32px 80px;
   text-align: center;
   background: url('/hero-bg.png') center center / cover no-repeat;
   position: relative;
@@ -154,7 +155,7 @@ a { color: inherit; text-decoration: none; }
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   z-index: 1;
 }
 
