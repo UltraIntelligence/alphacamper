@@ -140,6 +140,22 @@ export async function fetchUserEmail(userId: string): Promise<string | null> {
   return data?.email ?? null;
 }
 
+export async function fetchUserContact(userId: string): Promise<{ email: string | null; phone: string | null }> {
+  const { data, error } = await getClient()
+    .from("users")
+    .select("email, phone")
+    .eq("id", userId)
+    .limit(1)
+    .single();
+
+  if (error) {
+    log.error("fetchUserContact failed", { userId, error: error.message });
+    return { email: null, phone: null };
+  }
+
+  return { email: data?.email ?? null, phone: data?.phone ?? null };
+}
+
 export async function updateLastChecked(watchIds: string[]): Promise<void> {
   if (watchIds.length === 0) return;
 

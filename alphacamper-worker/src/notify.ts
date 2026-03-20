@@ -111,6 +111,68 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
   }
 }
 
+// ─── SMS via Telnyx ──────────────────────────────────────────────────────────
+
+interface AlertSMSParams {
+  phone: string;
+  campgroundName: string;
+  platform: string;
+  sites: AvailableSite[];
+}
+
+export async function sendAlertSMS(params: AlertSMSParams): Promise<boolean> {
+  const apiKey = process.env.TELNYX_API_KEY;
+  const fromNumber = process.env.TELNYX_FROM_NUMBER;
+
+  if (!apiKey || !fromNumber) {
+    log.warn("TELNYX_API_KEY or TELNYX_FROM_NUMBER not set — SMS disabled");
+    return false;
+  }
+
+  const siteCount = params.sites.length;
+  const bookingUrl = getBookingUrl(params.platform, params.campgroundName);
+  const text = `🏕️ ${siteCount} spot${siteCount > 1 ? "s" : ""} open at ${params.campgroundName}! ${bookingUrl || "Check Alphacamper for details."}`;
+
+  try {
+    const res = await fetch("https://api.telnyx.com/v2/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: fromNumber,
+        to: params.phone,
+        text,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      log.error("Telnyx API error", {
+        phone: params.phone,
+        campground: params.campgroundName,
+        status: res.status,
+        body,
+      });
+      return false;
+    }
+
+    log.info("Alert SMS sent", {
+      phone: params.phone,
+      campground: params.campgroundName,
+    });
+    return true;
+  } catch (err) {
+    log.error("sendAlertSMS failed", {
+      phone: params.phone,
+      campground: params.campgroundName,
+      error: String(err),
+    });
+    return false;
+  }
+}
+
 /** Reset singleton — for testing only */
 export function _resetResend(): void {
   _resend = null;

@@ -53,6 +53,8 @@ RLS: MVP placeholder (all `true`) — real auth TBD
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`
 - `SLACK_WEBHOOK_URL` — operator alerts
 - `RESEND_API_KEY` — Resend email service (alert notifications)
+- `TELNYX_API_KEY` — Telnyx SMS service (alert notifications)
+- `TELNYX_FROM_NUMBER` — Telnyx phone number to send SMS from
 - `DISABLED_PLATFORMS` — kill switch (comma-separated)
 - `POLL_INTERVAL_MS` / `SLOW_POLL_INTERVAL_MS` / `CYCLE_TIMEOUT_MS`
 
