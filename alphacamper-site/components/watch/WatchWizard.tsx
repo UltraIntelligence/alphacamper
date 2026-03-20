@@ -3,6 +3,8 @@
 import { useState, useCallback } from 'react'
 import { StepSummary } from './StepSummary'
 import { StepSearch } from './StepSearch'
+import { StepDates } from './StepDates'
+import { StepSiteNumber } from './StepSiteNumber'
 
 export type WizardStep = 'search' | 'dates' | 'site' | 'email'
 
@@ -162,8 +164,12 @@ export function WatchWizard() {
                     onComplete={() => completeStep('search', 'dates')}
                   />
                 )}
-                {key === 'dates' && <p style={{ color: 'var(--color-text-muted)' }}>Step 2 — coming next</p>}
-                {key === 'site' && <p style={{ color: 'var(--color-text-muted)' }}>Step 3 — coming next</p>}
+                {key === 'dates' && (
+                  <StepDates data={data} onUpdate={updateData} onComplete={() => completeStep('dates', 'site')} />
+                )}
+                {key === 'site' && (
+                  <StepSiteNumber data={data} onUpdate={updateData} onComplete={() => completeStep('site', 'email')} />
+                )}
                 {key === 'email' && <p style={{ color: 'var(--color-text-muted)' }}>Step 4 — coming next</p>}
               </div>
             )}
