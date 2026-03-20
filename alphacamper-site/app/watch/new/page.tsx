@@ -5,7 +5,12 @@ export const metadata = {
   description: "Tell Alpha where you want to camp. We'll watch 24/7 and alert you when a site opens up.",
 }
 
-export default function WatchNewPage() {
+export default async function WatchNewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ park?: string; q?: string }>
+}) {
+  const params = await searchParams
   return (
     <main className="wizard-container">
       <div className="wizard-header">
@@ -15,7 +20,7 @@ export default function WatchNewPage() {
       <div className="illustration-placeholder" style={{ marginBottom: '32px', maxWidth: '240px', marginInline: 'auto', minHeight: '120px' }}>
         Alpha with binoculars — eager to help
       </div>
-      <WatchWizard />
+      <WatchWizard initialParkId={params.park} initialQuery={params.q} />
     </main>
   )
 }

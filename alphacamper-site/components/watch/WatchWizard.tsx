@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { getCampground } from '@/lib/parks'
 import { StepSummary } from './StepSummary'
 import { StepSearch } from './StepSearch'
 import { StepDates } from './StepDates'
@@ -58,13 +59,35 @@ function getStepSummary(step: WizardStep, data: WatchData): string | null {
   }
 }
 
-export function WatchWizard() {
+interface WatchWizardProps {
+  initialParkId?: string
+  initialQuery?: string
+}
+
+export function WatchWizard({ initialParkId }: WatchWizardProps) {
   const [activeStep, setActiveStep] = useState<WizardStep>('search')
   const [data, setData] = useState<WatchData>(INITIAL_DATA)
   const [completedSteps, setCompletedSteps] = useState<Set<WizardStep>>(new Set())
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isComplete, setIsComplete] = useState(false)
+
+  useEffect(() => {
+    if (initialParkId) {
+      const park = getCampground(initialParkId)
+      if (park) {
+        setData((prev) => ({
+          ...prev,
+          campgroundId: park.id,
+          campgroundName: park.name,
+          platform: park.platform,
+          province: park.province,
+        }))
+        setCompletedSteps((prev) => new Set([...prev, 'search']))
+        setActiveStep('dates')
+      }
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateData = useCallback((partial: Partial<WatchData>) => {
     setData((prev) => ({ ...prev, ...partial }))
