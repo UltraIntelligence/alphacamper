@@ -1,14 +1,14 @@
 import { ParkSearch } from './ParkSearch'
-import { IllustrationPlaceholder } from './IllustrationPlaceholder'
 
 export function LandingHero() {
   return (
     <section className="hero-section">
+      {/* Illustration will wrap around this center content */}
       <div className="hero-content">
         <h1>Never lose a campsite again.</h1>
         <p>
-          Alpha watches sold-out campgrounds 24/7. When someone cancels,
-          we alert you instantly — and help you book it before anyone else.
+          Alpha watches sold-out campgrounds 24/7 for cancellations.
+          When a spot opens up, you hear about it first.
         </p>
         <ParkSearch />
         <p className="park-search-free">
@@ -16,16 +16,22 @@ export function LandingHero() {
         </p>
         <div className="hero-trust">
           <span className="hero-stars">★★★★★</span>
-          <span>Trusted by frustrated parents &amp; last-minute planners</span>
+          <span>Trusted by campers across Canada</span>
         </div>
-      </div>
-
-      <div className="hero-illust-side">
-        <IllustrationPlaceholder
-          description="Alpha sitting in a camping chair with binoculars, staring at laptop. Tent + campfire behind. Night sky with stars."
-          dark
-          hero
-        />
+        <div className="hero-stats">
+          <div>
+            <span className="hero-stat-value">2.4M+</span>
+            <span className="hero-stat-label">Checks this month</span>
+          </div>
+          <div>
+            <span className="hero-stat-value">Every 2-5 min</span>
+            <span className="hero-stat-label">Scan frequency</span>
+          </div>
+          <div>
+            <span className="hero-stat-value">3 platforms</span>
+            <span className="hero-stat-label">BC · Ontario · Rec.gov</span>
+          </div>
+        </div>
       </div>
     </section>
   )
