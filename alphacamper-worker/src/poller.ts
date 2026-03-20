@@ -1,4 +1,4 @@
-import { USER_AGENT, REQUEST_DELAY_MS } from "./config.js";
+import { USER_AGENT, REQUEST_DELAY_MS, CAMIS_APP_VERSION } from "./config.js";
 import { log } from "./logger.js";
 import type { WatchedTarget, AvailableSite } from "./supabase.js";
 
@@ -30,7 +30,7 @@ export async function getCart(domain: string, cookieHeader: string): Promise<Car
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
         "app-language": "en-CA",
-        "app-version": "5.106.226",
+        "app-version": CAMIS_APP_VERSION,
         Cookie: cookieHeader,
       },
     });
@@ -38,6 +38,10 @@ export async function getCart(domain: string, cookieHeader: string): Promise<Car
     if (!res.ok) return null;
 
     const data = await res.json();
+    if (!data?.cartUid || !data?.createTransactionUid) {
+      log.warn(`Invalid cart response from ${domain}`, { keys: Object.keys(data || {}) });
+      return null;
+    }
     const info: CartInfo = {
       cartUid: data.cartUid,
       cartTransactionUid: data.createTransactionUid,
@@ -58,7 +62,20 @@ export async function checkCampground(
   mapId: number,
   watches: WatchedTarget[],
   cookieHeader: string,
+  depth: number = 0,
+  visited: Set<number> = new Set(),
 ): Promise<PollOutcome> {
+  const MAX_DEPTH = 3;
+  if (depth >= MAX_DEPTH) {
+    log.warn(`Max depth reached for mapId ${mapId}`, { depth });
+    return { results: [], httpStatus: 200 };
+  }
+  if (visited.has(mapId)) {
+    log.warn(`Circular reference detected for mapId ${mapId}`);
+    return { results: [], httpStatus: 200 };
+  }
+  visited.add(mapId);
+
   // Get cart
   const cart = await getCart(domain, cookieHeader);
   if (!cart) {
@@ -108,7 +125,7 @@ export async function checkCampground(
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
         "app-language": "en-CA",
-        "app-version": "5.106.226",
+        "app-version": CAMIS_APP_VERSION,
         "User-Agent": USER_AGENT,
         Cookie: cookieHeader,
       },
@@ -149,6 +166,8 @@ export async function checkCampground(
         Number(subMapId),
         watches,
         cookieHeader,
+        depth + 1,
+        visited,
       );
       allResults.push(...subOutcome.results);
     }

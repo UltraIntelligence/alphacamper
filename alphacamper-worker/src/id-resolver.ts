@@ -1,4 +1,5 @@
 import { log } from "./logger.js";
+import { CAMIS_APP_VERSION } from "./config.js";
 
 interface CamisCampground {
   resourceLocationId: number;
@@ -22,7 +23,7 @@ export async function fetchCampgroundMap(
       Accept: "application/json, text/plain, */*",
       "Content-Type": "application/json",
       "app-language": "en-CA",
-      "app-version": "5.106.226",
+      "app-version": CAMIS_APP_VERSION,
       Cookie: cookieHeader,
     },
   });

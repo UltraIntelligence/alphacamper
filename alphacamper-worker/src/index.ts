@@ -19,7 +19,6 @@ import {
   DOMAINS,
   CYCLE_TIMEOUT_MS,
   POLL_INTERVAL_FAST_MS,
-  POLL_INTERVAL_SLOW_MS,
   REQUEST_DELAY_MS,
   MAX_CAMPGROUNDS_PER_CYCLE,
   getDisabledPlatforms,
@@ -122,6 +121,7 @@ async function runCycle(): Promise<void> {
         log.warn("Cookie refresh failed — skipping group", { domain, campgroundId });
         continue;
       }
+      consecutive403[domain] = 0;
       // Clear cart cache after cookie refresh since carts are tied to cookies
       clearCartCache();
     }
