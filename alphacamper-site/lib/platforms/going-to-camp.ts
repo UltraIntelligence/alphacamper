@@ -60,10 +60,16 @@ export class GoingToCampPoller implements PlatformPoller {
 
     const apiUrl = `https://${domain}/api/maps/mapdatabyid`;
 
-    // Use the arrival/departure of the first watch for the API request;
-    // each watch is evaluated individually against the returned data.
-    const arrivalDate = new Date(watches[0].arrival_date);
-    const departureDate = new Date(watches[0].departure_date);
+    // Compute envelope across all watches for the API request
+    let earliest = watches[0].arrival_date;
+    let latest = watches[0].departure_date;
+    for (const w of watches) {
+      if (w.arrival_date < earliest) earliest = w.arrival_date;
+      if (w.departure_date > latest) latest = w.departure_date;
+    }
+
+    const arrivalDate = new Date(earliest);
+    const departureDate = new Date(latest);
 
     let resources: GtcResource[] = [];
 

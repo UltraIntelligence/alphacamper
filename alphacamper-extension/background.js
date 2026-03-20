@@ -222,8 +222,11 @@ chrome.notifications.onClicked.addListener(async (notificationId) => {
   chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
     if (tabId === tab.id && info.status === 'complete') {
       chrome.tabs.onUpdated.removeListener(listener);
-      setTimeout(() => {
-        chrome.tabs.sendMessage(tabId, { action: 'fill_forms' });
+      setTimeout(async () => {
+        const { profile } = await chrome.storage.local.get('profile');
+        if (profile) {
+          chrome.tabs.sendMessage(tabId, { action: 'fill_forms', profile });
+        }
       }, 2000);
     }
   });

@@ -19,33 +19,57 @@ export class RecreationGovPoller implements PlatformPoller {
     // All watches in this group share the same campground_id
     const campgroundId = watches[0].campground_id;
 
-    // Use the arrival date of the first watch to determine the month to fetch
-    const startDate = new Date(watches[0].arrival_date);
-    const monthStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-    const monthStartStr = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}-01T00:00:00.000Z`;
+    const REC_GOV_BASE = `https://www.recreation.gov/api/camps/availability/campground/${campgroundId}`;
 
-    const apiUrl = `https://www.recreation.gov/api/camps/availability/campground/${campgroundId}/month?start_date=${monthStartStr}`;
-
-    let campsites: Record<string, RecreationGovSite> = {};
-
-    try {
-      const res = await fetch(apiUrl, {
-        signal,
-        headers: {
-          "User-Agent": "Alphacamper/0.2.0",
-          Accept: "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        return [];
+    // Collect all distinct months needed across all watches
+    const monthsNeeded = new Set<string>();
+    for (const watch of watches) {
+      const arrival = new Date(watch.arrival_date);
+      const departure = new Date(watch.departure_date);
+      const d = new Date(arrival);
+      while (d < departure) {
+        const monthKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+        monthsNeeded.add(monthKey);
+        d.setUTCMonth(d.getUTCMonth() + 1);
+        d.setUTCDate(1);
       }
+    }
 
-      const data: RecreationGovResponse = await res.json();
-      campsites = data?.campsites || {};
-    } catch {
-      // Fetch failure or abort — return empty results, do not throw
-      return [];
+    // Fetch each month and merge campsites
+    const allCampsites: Record<string, { site: string; availabilities: Record<string, string> }> = {};
+
+    for (const monthKey of monthsNeeded) {
+      const [year, month] = monthKey.split('-').map(Number);
+      const monthStart = new Date(Date.UTC(year, month - 1, 1));
+      const monthStr = monthStart.toISOString().split("T")[0] + "T00:00:00.000Z";
+
+      try {
+        const res = await fetch(
+          `${REC_GOV_BASE}/month?start_date=${monthStr}`,
+          {
+            headers: {
+              "User-Agent": "Alphacamper/0.2.0",
+              Accept: "application/json",
+            },
+            signal,
+          },
+        );
+
+        if (!res.ok) continue;
+
+        const data = await res.json();
+        const campsites = data?.campsites || {};
+
+        // Merge: for each site, merge availabilities
+        for (const [siteId, siteData] of Object.entries(campsites) as [string, any][]) {
+          if (!allCampsites[siteId]) {
+            allCampsites[siteId] = { site: siteData.site, availabilities: {} };
+          }
+          Object.assign(allCampsites[siteId].availabilities, siteData.availabilities || {});
+        }
+      } catch {
+        continue;
+      }
     }
 
     const results: AvailabilityResult[] = [];
@@ -55,7 +79,7 @@ export class RecreationGovPoller implements PlatformPoller {
       const departure = new Date(watch.departure_date);
       const availableSites: AvailableSite[] = [];
 
-      for (const [siteId, siteData] of Object.entries(campsites)) {
+      for (const [siteId, siteData] of Object.entries(allCampsites)) {
         // Filter by specific site number if the watch specifies one
         if (watch.site_number && siteData.site !== watch.site_number) continue;
 
@@ -68,7 +92,7 @@ export class RecreationGovPoller implements PlatformPoller {
             allAvailable = false;
             break;
           }
-          d.setDate(d.getDate() + 1);
+          d.setUTCDate(d.getUTCDate() + 1);
         }
 
         if (allAvailable) {
