@@ -261,7 +261,7 @@ a { color: inherit; text-decoration: none; }
 /* ── Tagline section (centered big text) ── */
 
 .tagline-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   text-align: center;
   background: #ffffff;
 }
@@ -279,7 +279,7 @@ a { color: inherit; text-decoration: none; }
 /* ── How Alpha Works — horizontal track ── */
 
 .how-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   background: var(--cloud);
 }
 
@@ -362,7 +362,7 @@ a { color: inherit; text-decoration: none; }
 /* ── Capabilities — massive stat ── */
 
 .cap-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   text-align: center;
   background: var(--paradiso);
   color: #ffffff;
@@ -398,68 +398,117 @@ a { color: inherit; text-decoration: none; }
 
 .cap-label { font-size: 0.82rem; opacity: 0.65; line-height: 1.4; }
 
-/* ── Products — split color panels ── */
+/* ── Pricing cards ── */
 
-.products-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.pricing-section {
+  padding: 140px 32px;
+  background: var(--cloud);
+  text-align: center;
 }
 
-.product-panel {
-  padding: 80px 60px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.product-panel-free { background: #ffffff; color: var(--dark); }
-.product-panel-paid { background: var(--dark); color: #ffffff; }
-
-.product-badge {
-  display: inline-block; width: fit-content;
-  font-size: 0.72rem; font-weight: 700; padding: 4px 14px;
-  border-radius: 100px; background: var(--bright-green); color: #fff;
-  margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;
-}
-
-.product-name {
+.pricing-section h2 {
   font-family: var(--font-momo, var(--font-display));
-  font-size: clamp(2rem, 3vw, 2.6rem); font-weight: 800; margin-bottom: 8px;
+  font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 800;
+  margin-bottom: 16px; color: var(--dark);
 }
 
-.product-tagline { font-size: 1.05rem; opacity: 0.8; margin-bottom: 24px; line-height: 1.6; }
+.pricing-sub {
+  font-size: 1.05rem; color: #888; margin-bottom: 64px;
+}
 
-.product-price {
+.pricing-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 32px; max-width: 780px; margin: 0 auto;
+}
+
+.pricing-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  padding: 48px 40px;
+  text-align: left;
+  position: relative;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.pricing-card-popular {
+  border: 2px solid var(--dark);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.pricing-popular-badge {
+  position: absolute;
+  top: -14px; left: 50%; transform: translateX(-50%);
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+  padding: 6px 20px; background: var(--dark); color: #fff;
+  border-radius: 100px;
+}
+
+.pricing-card-name {
+  font-family: var(--font-inter, var(--font-body));
+  font-size: 1.15rem; font-weight: 700; color: var(--dark);
+  margin-bottom: 6px;
+}
+
+.pricing-card-desc {
+  font-size: 0.88rem; color: #888; margin-bottom: 28px;
+}
+
+.pricing-card-price {
   font-family: var(--font-momo, var(--font-display));
-  font-size: 3.5rem; font-weight: 900; margin-bottom: 4px;
-}
-.product-price-note { font-size: 0.9rem; opacity: 0.6; margin-bottom: 32px; }
-
-.product-features { list-style: none; padding: 0; margin: 0 0 32px 0; }
-.product-features li {
-  padding: 6px 0; font-size: 0.95rem;
-  display: flex; align-items: center; gap: 8px;
-}
-.product-features li::before { content: '→'; opacity: 0.5; }
-
-.product-cta {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 16px 32px; font-family: var(--font-inter, var(--font-body));
-  font-size: 1rem; font-weight: 700; border-radius: 12px;
-  cursor: pointer; transition: all 0.15s; text-decoration: none;
-  width: fit-content; border: 3px solid currentColor;
+  font-size: 3.5rem; font-weight: 900; color: var(--dark);
+  line-height: 1; margin-bottom: 4px;
 }
 
-.product-cta-primary { background: var(--paradiso); color: #ffffff; border-color: var(--paradiso); }
-.product-cta-primary:hover { background: var(--pale-teal); color: var(--dark); border-color: var(--pale-teal); }
+.pricing-card-period {
+  font-size: 1rem; font-weight: 400; color: #888;
+}
 
-.product-cta-outline { background: transparent; color: var(--dark); border-color: var(--dark); }
-.product-cta-outline:hover { background: var(--dark); color: #ffffff; }
+.pricing-card-note {
+  font-size: 0.82rem; color: #888; margin-bottom: 32px;
+}
+
+.pricing-card-features {
+  list-style: none; padding: 0; margin: 0 0 36px 0;
+}
+
+.pricing-card-features li {
+  padding: 8px 0; font-size: 0.92rem; color: var(--dark);
+  display: flex; align-items: center; gap: 12px;
+}
+
+.pricing-card-features .check {
+  color: var(--paradiso); font-size: 0.85rem; flex-shrink: 0;
+}
+
+.pricing-card-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 14px 0;
+  font-family: var(--font-inter, var(--font-body));
+  font-size: 0.95rem; font-weight: 600;
+  border-radius: 12px; cursor: pointer;
+  transition: all 0.15s; text-decoration: none;
+  border: 2px solid var(--dark);
+}
+
+.pricing-card-btn-outline {
+  background: transparent; color: var(--dark);
+}
+.pricing-card-btn-outline:hover { background: var(--cloud); }
+
+.pricing-card-btn-primary {
+  background: var(--dark); color: #ffffff; border-color: var(--dark);
+}
+.pricing-card-btn-primary:hover { background: var(--paradiso); border-color: var(--paradiso); }
+
+.pricing-fine {
+  font-size: 0.82rem; color: #aaa; margin-top: 40px;
+}
 
 /* ── Popular parks ── */
 
 .parks-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   background: var(--horizon);
   color: #ffffff;
 }
@@ -488,7 +537,7 @@ a { color: inherit; text-decoration: none; }
 /* ── FAQ ── */
 
 .faq-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   background: #ffffff;
 }
 
@@ -524,7 +573,7 @@ a { color: inherit; text-decoration: none; }
 .cta-section {
   background: var(--sea-green);
   color: var(--dark);
-  padding: 120px 32px;
+  padding: 140px 32px;
   text-align: center;
 }
 
@@ -584,7 +633,7 @@ a { color: inherit; text-decoration: none; }
 /* ── Reviews ── */
 
 .reviews-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   background: var(--cloud);
 }
 
@@ -644,7 +693,7 @@ a { color: inherit; text-decoration: none; }
 /* ── Why Alphacamper ── */
 
 .why-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   background: #ffffff;
 }
 
@@ -671,7 +720,7 @@ a { color: inherit; text-decoration: none; }
 /* ── Park directory ── */
 
 .directory-section {
-  padding: 120px 32px;
+  padding: 140px 32px;
   background: var(--cloud);
 }
 
@@ -744,8 +793,7 @@ a { color: inherit; text-decoration: none; }
 
   .cap-grid { grid-template-columns: 1fr 1fr; }
 
-  .products-section { grid-template-columns: 1fr; }
-  .product-panel { padding: 60px 32px; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
 
   .parks-grid { grid-template-columns: 1fr 1fr; }
   .reviews-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }

@@ -2,7 +2,6 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingHero } from '@/components/landing/LandingHero'
 import { HowAlphaWorks } from '@/components/landing/HowAlphaWorks'
 import { Reviews } from '@/components/landing/Reviews'
-import { PressLogos } from '@/components/landing/PressLogos'
 import { Capabilities } from '@/components/landing/Capabilities'
 import { TwoProducts } from '@/components/landing/TwoProducts'
 import { WhyAlphacamper } from '@/components/landing/WhyAlphacamper'
@@ -28,7 +27,6 @@ export default function Home() {
 
       <HowAlphaWorks />
       <Reviews />
-      <PressLogos />
       <Capabilities />
       <TwoProducts />
       <WhyAlphacamper />
