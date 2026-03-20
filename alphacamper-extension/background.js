@@ -1,3 +1,5 @@
+importScripts('lib/platforms.js');
+
 // Alphacamper Background Service Worker
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
@@ -104,6 +106,134 @@ chrome.commands.onCommand.addListener((command) => {
         chrome.tabs.update(launchedTabs[nextIndex].tabId, { active: true });
       }
     });
+  }
+});
+
+// ═══ CANCELLATION ALERT POLLING ═══
+// Uses chrome.alarms (works in MV3 service workers, unlike Web Push)
+
+const ALERT_ALARM = 'check-alerts';
+const DEFAULT_API = 'https://alphacamper.com';
+
+// Start polling when user has registered for watching
+chrome.storage.local.get(['watchUserId'], (result) => {
+  if (result.watchUserId) {
+    chrome.alarms.create(ALERT_ALARM, { periodInMinutes: 1 });
+  }
+});
+
+// Also start polling when watchUserId is set (e.g., after registration)
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.watchUserId?.newValue) {
+    chrome.alarms.create(ALERT_ALARM, { periodInMinutes: 1 });
+  }
+  if (changes.watchUserId && !changes.watchUserId.newValue) {
+    chrome.alarms.clear(ALERT_ALARM);
+  }
+});
+
+// Persist notified alert IDs in chrome.storage.local so they survive
+// service worker restarts (MV3 workers are ephemeral — shut down after ~30s idle)
+async function getNotifiedIds() {
+  const { notifiedAlertIds = [] } = await chrome.storage.local.get('notifiedAlertIds');
+  return new Set(notifiedAlertIds);
+}
+
+async function addNotifiedId(id) {
+  const ids = await getNotifiedIds();
+  ids.add(id);
+  // Keep only last 200 IDs to avoid unbounded growth
+  const arr = [...ids].slice(-200);
+  await chrome.storage.local.set({ notifiedAlertIds: arr });
+}
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name !== ALERT_ALARM) return;
+
+  const { watchUserId: userId } = await chrome.storage.local.get('watchUserId');
+  if (!userId) return;
+
+  const notifiedIds = await getNotifiedIds();
+
+  try {
+    const res = await fetch(`${DEFAULT_API}/api/alerts?userId=${userId}`);
+    if (!res.ok) return;
+
+    const { alerts } = await res.json();
+    if (!alerts?.length) return;
+
+    for (const alert of alerts) {
+      if (alert.claimed || notifiedIds.has(alert.id)) continue;
+      await addNotifiedId(alert.id);
+
+      const siteCount = alert.site_details?.sites?.length || 0;
+      const campgroundName = alert.watched_targets?.campground_name || 'A campground';
+      const platform = alert.watched_targets?.platform || '';
+      const campgroundId = alert.watched_targets?.campground_id || '';
+
+      const notifId = JSON.stringify({
+        alertId: alert.id,
+        platform,
+        campgroundId,
+        watchId: alert.watched_target_id,
+      });
+
+      chrome.notifications.create(notifId, {
+        type: 'basic',
+        iconUrl: 'assets/icon-128.png',
+        title: 'Campsite Available!',
+        message: `${campgroundName} has ${siteCount} site${siteCount !== 1 ? 's' : ''} open`,
+        priority: 2,
+        requireInteraction: true,
+      });
+    }
+  } catch (err) {
+    console.warn('[alerts] Polling failed:', err);
+  }
+});
+
+// Handle notification click → open booking page + trigger autofill
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  chrome.notifications.clear(notificationId);
+
+  let data;
+  try {
+    data = JSON.parse(notificationId);
+  } catch {
+    return;
+  }
+
+  if (!data.platform || !data.campgroundId) return;
+
+  const p = PLATFORMS[data.platform];
+  let deepLink = '';
+  if (p?.deepLinkTemplate) {
+    deepLink = p.deepLinkTemplate
+      .replace('{campgroundId}', data.campgroundId)
+      .replace('{locationId}', data.campgroundId)
+      .replace('{parkSlug}', data.campgroundId.split('/')[0] || data.campgroundId)
+      .replace('{campgroundSlug}', data.campgroundId.split('/')[1] || data.campgroundId);
+  }
+
+  if (!deepLink) return;
+
+  const tab = await chrome.tabs.create({ url: deepLink, active: true });
+
+  chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+    if (tabId === tab.id && info.status === 'complete') {
+      chrome.tabs.onUpdated.removeListener(listener);
+      setTimeout(() => {
+        chrome.tabs.sendMessage(tabId, { action: 'fill_forms' });
+      }, 2000);
+    }
+  });
+
+  if (data.alertId) {
+    fetch(`${DEFAULT_API}/api/alerts`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: data.alertId }),
+    }).catch(() => {});
   }
 });
 
