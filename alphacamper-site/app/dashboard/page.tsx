@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { DashboardShell } from '@/components/dashboard/DashboardShell'
 
 export const metadata = {
   title: 'Dashboard — Alphacamper',
@@ -7,23 +7,9 @@ export const metadata = {
 
 export default function DashboardPage() {
   return (
-    <main className="wizard-container">
-      <div className="wizard-header">
-        <h1>Your Dashboard</h1>
-        <p>Alpha&apos;s watching your campsites. We&apos;ll email you when something opens up.</p>
-      </div>
-
-      <div className="illustration-placeholder" style={{ marginBottom: '32px', maxWidth: '280px', marginInline: 'auto' }}>
-        Alpha sleeping with one eye open — watching your campsites
-      </div>
-
-      <div className="confirm-card" style={{ textAlign: 'center', padding: '32px' }}>
-        <p style={{ color: 'var(--color-text-muted)', marginBottom: '20px' }}>
-          Your active watches will appear here. Full dashboard coming soon.
-        </p>
-        <Link href="/watch/new" className="btn-bold btn-bold-primary" style={{ textDecoration: 'none' }}>
-          Create a watch
-        </Link>
+    <main className="wizard-container" style={{ background: 'var(--gray-bg)', minHeight: '100vh', maxWidth: '100%', padding: 0 }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '32px 24px' }}>
+        <DashboardShell />
       </div>
     </main>
   )
