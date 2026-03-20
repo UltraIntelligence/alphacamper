@@ -1,115 +1,66 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { getPoller, SUPPORTED_PLATFORMS } from "@/lib/platforms";
+import type { WatchedTarget, AvailabilityResult } from "@/lib/platforms";
 
-// POST — Check availability for all active watches (called by cron or manual trigger)
-// Rate limited: max 30 requests per invocation
-export async function POST(request: Request) {
+async function checkAvailability(request: Request) {
   try {
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
 
-    // Simple auth: either cron secret or skip for dev
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const supabase = getSupabase();
 
-    // Get all active watches
     const { data: watches, error: watchError } = await supabase
       .from("watched_targets")
       .select("*")
       .eq("active", true)
-      .limit(30);
+      .in("platform", SUPPORTED_PLATFORMS)
+      .limit(50);
 
     if (watchError || !watches) {
-      return NextResponse.json({ error: "Failed to fetch watches" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch watches" },
+        { status: 500 },
+      );
     }
 
-    // Group by campground to minimize API calls
-    const byCampground = new Map<string, typeof watches>();
-    for (const watch of watches) {
+    const groups = new Map<string, WatchedTarget[]>();
+    for (const watch of watches as WatchedTarget[]) {
       const key = `${watch.platform}:${watch.campground_id}`;
-      if (!byCampground.has(key)) byCampground.set(key, []);
-      byCampground.get(key)!.push(watch);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(watch);
     }
 
-    const alerts: Array<{ watchId: string; userId: string; sites: unknown[] }> = [];
+    const allAlerts: AvailabilityResult[] = [];
     let requestCount = 0;
 
-    for (const [, group] of byCampground) {
+    for (const [, group] of groups) {
       if (requestCount >= 30) break;
 
-      const watch = group[0];
-      if (watch.platform !== "recreation_gov") continue; // BC Parks API TBD
+      const poller = getPoller(group[0].platform);
+      if (!poller) continue;
 
-      // Recreation.gov public availability API
-      const startDate = new Date(watch.arrival_date);
-      const monthStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-      const apiUrl = `https://www.recreation.gov/api/camps/availability/campground/${watch.campground_id}/month?start_date=${monthStart.toISOString().split("T")[0]}T00:00:00.000Z`;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30_000);
 
       try {
-        const res = await fetch(apiUrl, {
-          headers: {
-            "User-Agent": "Alphacamper/0.2.0",
-            Accept: "application/json",
-          },
-        });
+        const results = await poller.checkCampground(group, controller.signal);
+        allAlerts.push(...results);
         requestCount++;
-
-        if (!res.ok) continue;
-
-        const data = await res.json();
-        const campsites = data?.campsites || {};
-
-        // Check each watch in this group
-        for (const w of group) {
-          const arrival = new Date(w.arrival_date);
-          const departure = new Date(w.departure_date);
-          const availableSites: Array<{ siteId: string; siteName: string }> = [];
-
-          for (const [siteId, siteData] of Object.entries(campsites)) {
-            const site = siteData as { availabilities: Record<string, string>; site: string };
-
-            // If watching a specific site, skip others
-            if (w.site_number && site.site !== w.site_number) continue;
-
-            // Check if all dates in range are available
-            let allAvailable = true;
-            const d = new Date(arrival);
-            while (d < departure) {
-              const dateKey = d.toISOString().split("T")[0] + "T00:00:00Z";
-              if (site.availabilities?.[dateKey] !== "Available") {
-                allAvailable = false;
-                break;
-              }
-              d.setDate(d.getDate() + 1);
-            }
-
-            if (allAvailable) {
-              availableSites.push({ siteId, siteName: site.site || siteId });
-            }
-          }
-
-          if (availableSites.length > 0) {
-            alerts.push({
-              watchId: w.id,
-              userId: w.user_id,
-              sites: availableSites,
-            });
-          }
-        }
-
-        // Rate limit delay between campground requests
-        await new Promise((r) => setTimeout(r, 200));
       } catch {
-        // Skip failed requests silently
-        continue;
+        // Skip failed campground
+      } finally {
+        clearTimeout(timeout);
       }
+
+      await new Promise((r) => setTimeout(r, 200));
     }
 
-    // Insert alerts
-    for (const alert of alerts) {
+    for (const alert of allAlerts) {
       await supabase.from("availability_alerts").insert({
         watched_target_id: alert.watchId,
         user_id: alert.userId,
@@ -119,11 +70,22 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       checked: requestCount,
-      alertsCreated: alerts.length,
+      alertsCreated: allAlerts.length,
       totalWatches: watches.length,
     });
   } catch (error) {
     console.error("[check-availability] Error:", error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 },
+    );
   }
+}
+
+export async function GET(request: Request) {
+  return checkAvailability(request);
+}
+
+export async function POST(request: Request) {
+  return checkAvailability(request);
 }
