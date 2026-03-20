@@ -48,7 +48,9 @@ export function LoginPrompt() {
       </p>
 
       <div className="field-group">
+        <label className="field-label" htmlFor="login-email">Email address</label>
         <input
+          id="login-email"
           className={`field-input ${touched && !isValid && email ? 'field-input-error' : ''}`}
           type="email"
           placeholder="you@example.com"

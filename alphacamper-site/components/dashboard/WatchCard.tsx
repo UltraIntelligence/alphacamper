@@ -61,14 +61,15 @@ export function WatchCard({ watch, isPast, onDelete }: WatchCardProps) {
       </div>
       <div className="watch-card-footer">
         <div className="watch-card-status">
-          <span className="status-dot" data-inactive={isPast ? 'true' : 'false'} />
+          <span className="status-dot" data-inactive={isPast ? 'true' : 'false'} aria-hidden="true" />
+          <span className="sr-only">{isPast ? 'Status: Expired' : 'Status: Watching'}</span>
           {isPast ? 'Expired' : 'Watching'}
           {!isPast && watch.last_checked_at && (
             <span> · Last checked {timeAgo(watch.last_checked_at)}</span>
           )}
         </div>
         {!isPast && (
-          <button type="button" className="btn-text-danger" onClick={handleDelete}>
+          <button type="button" className="btn-text-danger" onClick={handleDelete} aria-label={`Delete watch for ${watch.campground_name}`}>
             Delete
           </button>
         )}

@@ -97,6 +97,7 @@ export function WatchList({ userId }: WatchListProps) {
             type="button"
             className="btn-text-muted"
             onClick={() => setShowPast(!showPast)}
+            aria-expanded={showPast}
             style={{ marginTop: '8px', display: 'block' }}
           >
             {showPast ? 'Hide' : 'Show'} past watches ({past.length})

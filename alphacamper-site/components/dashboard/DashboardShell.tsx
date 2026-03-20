@@ -8,7 +8,7 @@ import { AlertList } from './AlertList'
 import { UpgradeCTA } from './UpgradeCTA'
 import Link from 'next/link'
 
-type AuthState = 'loading' | 'authenticated' | 'unauthenticated'
+type AuthState = 'loading' | 'authenticated' | 'unauthenticated' | 'error'
 
 export function DashboardShell() {
   const [authState, setAuthState] = useState<AuthState>('loading')
@@ -36,10 +36,10 @@ export function DashboardShell() {
           setUserId(dbUser.id)
           setAuthState('authenticated')
         } else {
-          setAuthState('unauthenticated')
+          setAuthState('error')
         }
       } catch {
-        setAuthState('unauthenticated')
+        setAuthState('error')
       }
     }
 
@@ -60,6 +60,22 @@ export function DashboardShell() {
 
   if (authState === 'unauthenticated') {
     return <LoginPrompt />
+  }
+
+  if (authState === 'error') {
+    return (
+      <div className="step-card" style={{ padding: '32px 24px', textAlign: 'center' }}>
+        <h2 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.3rem', marginBottom: '12px' }}>
+          Something went wrong
+        </h2>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: '20px' }}>
+          We couldn&apos;t load your dashboard. Please try again.
+        </p>
+        <button type="button" className="btn-bold btn-bold-primary" onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    )
   }
 
   return (

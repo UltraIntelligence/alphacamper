@@ -34,13 +34,16 @@ export function AlertList({ userId }: AlertListProps) {
   }, [fetchAlerts])
 
   const handleDismiss = useCallback(async (id: string) => {
-    const res = await fetch('/api/alerts', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    if (res.ok) {
+    try {
+      const res = await fetch('/api/alerts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      if (!res.ok) throw new Error('Failed to dismiss alert')
       setAlerts((prev) => prev.filter((a) => a.id !== id))
+    } catch {
+      setError('Failed to dismiss alert. Please try again.')
     }
   }, [])
 
