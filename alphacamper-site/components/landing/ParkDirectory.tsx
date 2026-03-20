@@ -3,10 +3,10 @@ import Link from 'next/link'
 const provinces = [
   { name: 'British Columbia', slug: 'bc', count: '120+ campgrounds' },
   { name: 'Ontario', slug: 'on', count: '300+ campgrounds' },
-  { name: 'Alberta', slug: 'ab', count: 'Coming soon' },
+  { name: 'Alberta (Parks Canada)', slug: 'ab', count: 'Banff, Jasper, Waterton' },
+  { name: 'New Brunswick (Parks Canada)', slug: 'nb', count: 'Fundy' },
+  { name: 'Prince Edward Island (Parks Canada)', slug: 'pe', count: 'Cavendish' },
   { name: 'Quebec', slug: 'qc', count: 'Coming soon' },
-  { name: 'Manitoba', slug: 'mb', count: 'Coming soon' },
-  { name: 'Saskatchewan', slug: 'sk', count: 'Coming soon' },
 ]
 
 const usStates = [

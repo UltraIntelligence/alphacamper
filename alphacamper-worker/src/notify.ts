@@ -67,6 +67,10 @@ function getBookingUrl(platform: string, _campgroundName: string): string | null
       return "https://camping.bcparks.ca";
     case "ontario_parks":
       return "https://reservations.ontarioparks.ca";
+    case "parks_canada":
+      return "https://reservation.pc.gc.ca";
+    case "recreation_gov":
+      return "https://www.recreation.gov";
     default:
       return null;
   }

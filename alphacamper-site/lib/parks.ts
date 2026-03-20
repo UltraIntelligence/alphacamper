@@ -1,7 +1,7 @@
 export interface Campground {
   id: string
   name: string
-  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov'
+  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
   province: string
   park?: string
 }
@@ -10,6 +10,7 @@ const PLATFORM_DOMAINS: Record<string, string> = {
   bc_parks: 'camping.bcparks.ca',
   ontario_parks: 'reservations.ontarioparks.ca',
   recreation_gov: 'www.recreation.gov',
+  parks_canada: 'reservation.pc.gc.ca',
 }
 
 export const CAMPGROUNDS: Campground[] = [
@@ -250,6 +251,42 @@ export const CAMPGROUNDS: Campground[] = [
 
   // ── Big Sur, CA (Los Padres National Forest) ──
   { id: '233116', name: 'Kirk Creek', platform: 'recreation_gov', province: 'CA', park: 'Big Sur' },
+
+  // ═══ Parks Canada ═══
+
+  // ── Banff National Park, AB ──
+  { id: '-2147483643', name: 'Two Jack Lakeside', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+  { id: '-2147483645', name: 'Two Jack Main', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+  { id: '-2147483642', name: 'Lake Louise', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+  { id: '-2147483644', name: 'Tunnel Mountain Village I', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+  { id: '-2147483646', name: 'Tunnel Mountain Village II', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+  { id: '-2147483647', name: 'Tunnel Mountain Trailer Court', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+  { id: '-2147483641', name: 'Johnston Canyon', platform: 'parks_canada', province: 'AB', park: 'Banff' },
+
+  // ── Jasper National Park, AB ──
+  { id: '-2147483593', name: 'Wapiti', platform: 'parks_canada', province: 'AB', park: 'Jasper' },
+  { id: '-2147483594', name: 'Whistlers', platform: 'parks_canada', province: 'AB', park: 'Jasper' },
+
+  // ── Pacific Rim National Park Reserve, BC ──
+  { id: '-2147483600', name: 'Green Point', platform: 'parks_canada', province: 'BC', park: 'Pacific Rim' }, // verify ID
+
+  // ── Yoho National Park, BC ──
+  { id: '-2147483610', name: 'Kicking Horse', platform: 'parks_canada', province: 'BC', park: 'Yoho' }, // verify ID
+
+  // ── Kootenay National Park, BC ──
+  { id: '-2147483612', name: 'Redstreak', platform: 'parks_canada', province: 'BC', park: 'Kootenay' }, // verify ID
+
+  // ── Bruce Peninsula National Park, ON ──
+  { id: '-2147483620', name: 'Cyprus Lake', platform: 'parks_canada', province: 'ON', park: 'Bruce Peninsula' }, // verify ID
+
+  // ── Fundy National Park, NB ──
+  { id: '-2147483625', name: 'Headquarters', platform: 'parks_canada', province: 'NB', park: 'Fundy' }, // verify ID
+
+  // ── PEI National Park, PE ──
+  { id: '-2147483630', name: 'Cavendish', platform: 'parks_canada', province: 'PE', park: 'PEI' }, // verify ID
+
+  // ── Waterton Lakes National Park, AB ──
+  { id: '-2147483635', name: 'Townsite', platform: 'parks_canada', province: 'AB', park: 'Waterton Lakes' }, // verify ID
 ]
 
 export function searchCampgrounds(query: string): Campground[] {
@@ -262,7 +299,8 @@ export function searchCampgrounds(query: string): Campground[] {
       (c.park && c.park.toLowerCase().includes(q)) ||
       (q.length >= 3 && c.platform === 'bc_parks' && 'british columbia'.includes(q)) ||
       (q.length >= 3 && c.platform === 'ontario_parks' && 'ontario'.includes(q)) ||
-      (q.length >= 3 && c.platform === 'recreation_gov' && 'united states'.includes(q))
+      (q.length >= 3 && c.platform === 'recreation_gov' && 'united states'.includes(q)) ||
+      (q.length >= 3 && c.platform === 'parks_canada' && ('parks canada'.includes(q) || 'national park'.includes(q)))
   )
 }
 

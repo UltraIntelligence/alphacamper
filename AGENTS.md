@@ -64,7 +64,8 @@ RLS: MVP placeholder (all `true`) — real auth TBD
 |----------|--------|-----------|
 | BC Parks | `camping.bcparks.ca` | Camis recursive map API |
 | Ontario Parks | `reservations.ontarioparks.ca` | Camis API |
-| Recreation.gov | `recreation.gov` | Stub only |
+| Parks Canada | `reservation.pc.gc.ca` | Camis API (same as BC/Ontario) |
+| Recreation.gov | `recreation.gov` | REST API |
 
 ## Worker Gotchas
 

@@ -18,7 +18,7 @@ export function StepSearch({ data, onUpdate, onComplete }: StepSearchProps) {
     return searchCampgrounds(query)
   }, [query])
 
-  const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov'; province: string }) => {
+  const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string }) => {
     setQuery(cg.name)
     onUpdate({
       campgroundId: cg.id,
@@ -42,7 +42,7 @@ export function StepSearch({ data, onUpdate, onComplete }: StepSearchProps) {
           Search for a park or campground
         </label>
         <span className="field-hint">
-          Start typing — we&apos;ll search BC Parks, Ontario Parks, and US national parks
+          Start typing — we search BC Parks, Ontario Parks, Parks Canada, and Recreation.gov
         </span>
         <input
           id="campground-search"
@@ -76,7 +76,7 @@ export function StepSearch({ data, onUpdate, onComplete }: StepSearchProps) {
               >
                 <strong>{cg.name}</strong>
                 <span className="selectable-item-label">
-                  {cg.platform === 'bc_parks' ? 'BC Parks' : cg.platform === 'ontario_parks' ? 'Ontario Parks' : 'Recreation.gov'}
+                  {cg.platform === 'bc_parks' ? 'BC Parks' : cg.platform === 'ontario_parks' ? 'Ontario Parks' : cg.platform === 'parks_canada' ? 'Parks Canada' : 'Recreation.gov'}
                 </span>
               </button>
             ))
@@ -89,7 +89,7 @@ export function StepSearch({ data, onUpdate, onComplete }: StepSearchProps) {
           <div className="selectable-item" data-selected="true" style={{ cursor: 'default' }}>
             <strong>{data.campgroundName}</strong>
             <span className="selectable-item-label">
-              {data.platform === 'bc_parks' ? 'BC Parks' : data.platform === 'ontario_parks' ? 'Ontario Parks' : 'Recreation.gov'}
+              {data.platform === 'bc_parks' ? 'BC Parks' : data.platform === 'ontario_parks' ? 'Ontario Parks' : data.platform === 'parks_canada' ? 'Parks Canada' : 'Recreation.gov'}
             </span>
           </div>
           <button

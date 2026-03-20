@@ -14,7 +14,7 @@ export type WizardStep = 'search' | 'dates' | 'site' | 'email'
 export interface WatchData {
   campgroundId: string
   campgroundName: string
-  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | ''
+  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada' | ''
   province: string
   arrivalDate: string
   departureDate: string
