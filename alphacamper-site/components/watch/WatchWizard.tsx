@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { StepSummary } from './StepSummary'
+import { StepSearch } from './StepSearch'
 
 export type WizardStep = 'search' | 'dates' | 'site' | 'email'
 
@@ -154,9 +155,16 @@ export function WatchWizard() {
             </div>
             {isActive && (
               <div className="step-content">
-                <p style={{ color: 'var(--color-text-muted)' }}>
-                  Step {number} content — coming in next task
-                </p>
+                {key === 'search' && (
+                  <StepSearch
+                    data={data}
+                    onUpdate={updateData}
+                    onComplete={() => completeStep('search', 'dates')}
+                  />
+                )}
+                {key === 'dates' && <p style={{ color: 'var(--color-text-muted)' }}>Step 2 — coming next</p>}
+                {key === 'site' && <p style={{ color: 'var(--color-text-muted)' }}>Step 3 — coming next</p>}
+                {key === 'email' && <p style={{ color: 'var(--color-text-muted)' }}>Step 4 — coming next</p>}
               </div>
             )}
           </div>
