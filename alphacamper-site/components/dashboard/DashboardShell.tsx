@@ -65,7 +65,7 @@ export function DashboardShell() {
   if (authState === 'error') {
     return (
       <div className="step-card" style={{ padding: '32px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.3rem', marginBottom: '12px' }}>
+        <h2 style={{ fontFamily: 'var(--font-inter)', fontSize: '1.3rem', marginBottom: '12px' }}>
           Something went wrong
         </h2>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '20px' }}>

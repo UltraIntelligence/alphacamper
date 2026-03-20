@@ -24,7 +24,7 @@ export function WatchConfirmation({
         Alpha celebrating — thumbs up!
       </div>
 
-      <h2 style={{ fontFamily: 'var(--font-fraunces, var(--font-display))', fontSize: '1.75rem', fontWeight: 600, marginBottom: '12px' }}>
+      <h2 style={{ fontFamily: 'var(--font-inter, var(--font-display))', fontSize: '1.75rem', fontWeight: 600, marginBottom: '12px' }}>
         Alpha&apos;s on it!
       </h2>
 

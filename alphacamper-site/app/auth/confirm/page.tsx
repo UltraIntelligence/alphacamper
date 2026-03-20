@@ -37,19 +37,19 @@ function AuthConfirmContent() {
     <main className="wizard-container" style={{ textAlign: 'center', paddingTop: '80px' }}>
       {status === 'verifying' && (
         <>
-          <h1 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '2rem', marginBottom: '16px' }}>Verifying your email...</h1>
+          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>Verifying your email...</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>Hang tight, Alpha&apos;s checking your credentials.</p>
         </>
       )}
       {status === 'success' && (
         <>
-          <h1 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '2rem', marginBottom: '16px' }}>You&apos;re in!</h1>
+          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>You&apos;re in!</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>Redirecting to your dashboard...</p>
         </>
       )}
       {status === 'error' && (
         <>
-          <h1 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '2rem', marginBottom: '16px' }}>Link expired</h1>
+          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>Link expired</h1>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>
             This magic link has expired or was already used.
           </p>

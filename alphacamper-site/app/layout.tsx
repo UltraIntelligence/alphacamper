@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import { Fraunces, DM_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -17,7 +11,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Alphacamper — Get the campsite everyone else missed",
   description:
-    "When the booking window opens, Alphacamper fills your forms, stages your backup options, and guides you through checkout. You just click three times.",
+    "Alpha watches sold-out campgrounds 24/7. When someone cancels, we alert you instantly — and help you book it before anyone else.",
 };
 
 export default function RootLayout({
@@ -26,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${dmSans.variable}`}>
+    <html lang="en" className={inter.variable}>
       <body>{children}</body>
     </html>
   );

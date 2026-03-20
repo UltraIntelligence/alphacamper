@@ -27,7 +27,7 @@ export function LoginPrompt() {
   if (status === 'sent') {
     return (
       <div className="step-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.5rem', marginBottom: '12px' }}>
+        <h2 style={{ fontFamily: 'var(--font-inter)', fontSize: '1.5rem', marginBottom: '12px' }}>
           Check your email
         </h2>
         <p style={{ color: 'var(--color-text-muted)' }}>
@@ -40,7 +40,7 @@ export function LoginPrompt() {
 
   return (
     <div className="step-card" style={{ padding: '32px 24px' }}>
-      <h2 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.3rem', marginBottom: '8px' }}>
+      <h2 style={{ fontFamily: 'var(--font-inter)', fontSize: '1.3rem', marginBottom: '8px' }}>
         Sign in to see your watches
       </h2>
       <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>
