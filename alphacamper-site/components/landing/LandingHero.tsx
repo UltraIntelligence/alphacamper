@@ -20,7 +20,7 @@ export function LandingHero() {
         </div>
         <div className="hero-stats">
           <div>
-            <span className="hero-stat-value">22 campgrounds</span>
+            <span className="hero-stat-value">1,000s of campsites</span>
             <span className="hero-stat-label">Across Canada &amp; the US</span>
           </div>
           <div>
