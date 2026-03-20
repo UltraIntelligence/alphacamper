@@ -5,3 +5,8 @@ node_modules/
 .vercel
 *.tsbuildinfo
 alphacamper-site/supabase/.temp/
+
+# screenshots and browser automation
+*.png
+!alphacamper-site/public/**/*.png
+.playwright-mcp/

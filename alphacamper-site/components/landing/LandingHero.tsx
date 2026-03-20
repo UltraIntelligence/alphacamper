@@ -6,7 +6,7 @@ export function LandingHero() {
     <section className="hero-section">
       <LandingNav />
       <div className="hero-content">
-        <h1>Never lose a campsite again.</h1>
+        <h1>Stop refreshing. Start camping.</h1>
         <p>
           Alphacamper watches sold-out campgrounds 24/7 for cancellations.
           When a spot opens up, you hear about it first.

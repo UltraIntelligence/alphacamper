@@ -16,9 +16,9 @@ const momoTrust = Momo_Trust_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Alphacamper — Get the campsite everyone else missed",
+  title: "Alphacamper — Stop refreshing. Start camping.",
   description:
-    "Alpha watches sold-out campgrounds 24/7. When someone cancels, we alert you instantly — and help you book it before anyone else.",
+    "Alphacamper watches sold-out campgrounds 24/7 for cancellations. When a spot opens up, you hear about it first. Free to start.",
 };
 
 export default function RootLayout({

@@ -1,2 +1,0 @@
-[  298960ms] [WARNING] The resource http://localhost:3002/_next/static/media/83afe278b6a6bb3c-s.p.0q-301v4kxxnr.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3002/:0
-[  359974ms] [ERROR] WebSocket connection to 'ws://localhost:3002/_next/webpack-hmr?id=81w4Q0uZS0lpGBoLrArPy' failed:  @ http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13299

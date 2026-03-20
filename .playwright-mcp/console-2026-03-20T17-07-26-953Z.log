@@ -1,2 +1,0 @@
-[  119376ms] [ERROR] WebSocket connection to 'ws://localhost:3002/_next/webpack-hmr?id=_inzdrDeEIIZ0O3FOt34d' failed:  @ http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13299
-[  130767ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ http://localhost:3002/_next/static/chunks/07zw_next_dist_0ikbk6u._.js:2431
