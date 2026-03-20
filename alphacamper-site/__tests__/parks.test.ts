@@ -23,8 +23,8 @@ describe('searchCampgrounds', () => {
     expect(results).toEqual([])
   })
 
-  it('CAMPGROUNDS array has all entries', () => {
-    expect(CAMPGROUNDS.length).toBe(22)
+  it('CAMPGROUNDS array has 100+ entries', () => {
+    expect(CAMPGROUNDS.length).toBeGreaterThanOrEqual(100)
   })
 
   it('matches by park name', () => {
@@ -59,6 +59,10 @@ describe('getPlatformDomain', () => {
 
   it('returns domain for ontario_parks', () => {
     expect(getPlatformDomain('ontario_parks')).toBe('reservations.ontarioparks.ca')
+  })
+
+  it('returns domain for recreation_gov', () => {
+    expect(getPlatformDomain('recreation_gov')).toBe('www.recreation.gov')
   })
 
   it('returns null for unsupported platform', () => {
