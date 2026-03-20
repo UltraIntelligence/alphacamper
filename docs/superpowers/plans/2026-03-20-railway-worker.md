@@ -208,7 +208,7 @@ const LEVELS = { debug: 0, info: 1, warn: 2, error: 3, critical: 4 } as const;
 type Level = keyof typeof LEVELS;
 
 function shouldLog(level: Level): boolean {
-  return LEVELS[level] >= LEVELS[LOG_LEVEL as Level] ?? LEVELS.info;
+  return LEVELS[level] >= (LEVELS[LOG_LEVEL as Level] ?? LEVELS.info);
 }
 
 function timestamp(): string {
@@ -350,7 +350,7 @@ Test file:
 
 ```typescript
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { buildWatchQuery, groupByCampground, shouldCreateAlert } from "../src/supabase.js";
+import { groupByCampground, shouldCreateAlert } from "../src/supabase.js";
 
 describe("groupByCampground", () => {
   it("groups watches by platform:campground_id", () => {
@@ -466,17 +466,48 @@ export async function createAlert(
 ): Promise<boolean> {
   const supabase = getClient();
 
-  const { error } = await supabase
-    .from("availability_alerts")
-    .upsert(
-      {
+  // Use raw SQL because Supabase JS .upsert() can't target partial unique indexes.
+  // The partial index idx_one_unclaimed_alert_per_watch only applies WHERE claimed = false.
+  const { error } = await supabase.rpc("exec_sql", {
+    query: `
+      INSERT INTO availability_alerts (watched_target_id, user_id, site_details, claimed)
+      VALUES ($1, $2, $3, false)
+      ON CONFLICT (watched_target_id) WHERE claimed = false DO NOTHING
+    `,
+    params: [watchId, userId, JSON.stringify({ sites })],
+  });
+
+  // Fallback: if the exec_sql RPC doesn't exist, use a simple insert with error handling
+  if (error?.message?.includes("exec_sql")) {
+    // Check if unclaimed alert exists first
+    const { data: existing } = await supabase
+      .from("availability_alerts")
+      .select("id")
+      .eq("watched_target_id", watchId)
+      .eq("claimed", false)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      return false; // Already has unclaimed alert
+    }
+
+    const { error: insertError } = await supabase
+      .from("availability_alerts")
+      .insert({
         watched_target_id: watchId,
         user_id: userId,
         site_details: { sites },
         claimed: false,
-      },
-      { onConflict: "watched_target_id", ignoreDuplicates: true }
-    );
+      });
+
+    if (insertError) {
+      // Unique constraint violation = already exists, not an error
+      if (insertError.code === "23505") return false;
+      log.error("Failed to create alert", { watchId, error: insertError.message });
+      return false;
+    }
+    return true;
+  }
 
   if (error) {
     log.error("Failed to create alert", { watchId, error: error.message });
@@ -731,6 +762,21 @@ export class CookieManager {
         return false;
       }
 
+      // Validation: make one test request to confirm cookies actually work
+      const cookieHeader = cookies.map(c => `${c.name}=${c.value}`).join("; ");
+      try {
+        const testRes = await page.context().request.get(`https://${domain}/api/resourcecategory`, {
+          headers: { Cookie: cookieHeader, Accept: "application/json" },
+        });
+        if (testRes.status() === 403) {
+          log.warn(`Cookie validation failed for ${domain} — WAF cookies not sufficient`);
+          return false;
+        }
+      } catch {
+        // Validation request failed — cookies may still work for other endpoints
+        log.warn(`Cookie validation request failed for ${domain} — proceeding anyway`);
+      }
+
       this.setCookies(domain, cookies);
       log.info(`Cached ${cookies.length} cookies for ${domain}`, {
         ttlMs: this.getTtl(domain),
@@ -912,11 +958,11 @@ git commit -m "feat: add API recon script and document GoingToCamp API contracts
 
 ## Task 7: Poller — HTTP availability checks
 
+**HARD GATE: Task 6 must be completed first.** Do not proceed until `API_CONTRACTS.md` exists with verified endpoint URLs, request formats, and response structures. The code below uses placeholder format — **you MUST update all PLACEHOLDER comments to match the real API contract before writing tests or implementation.**
+
 **Files:**
 - Create: `alphacamper-worker/src/poller.ts`
 - Create: `alphacamper-worker/__tests__/poller.test.ts`
-
-**Context:** This task depends on the API contract discovered in Task 6. The test mocks and implementation must match the REAL API format observed during recon. The code below uses placeholder format — **update it to match API_CONTRACTS.md before implementing.**
 
 - [ ] **Step 1: Write tests based on real API contract**
 
@@ -1044,6 +1090,11 @@ export interface PollResult {
   sites: AvailableSite[];
 }
 
+export interface PollOutcome {
+  results: PollResult[];
+  httpStatus: number | null; // null = network error, 200 = ok, 403 = needs cookie refresh, 429 = rate limited
+}
+
 // NOTE: Update this function's URL, method, headers, body, and response parsing
 // to match the REAL API contract documented in API_CONTRACTS.md (from Task 6 recon)
 
@@ -1052,7 +1103,7 @@ export async function checkCampground(
   campgroundId: string,
   watches: WatchedTarget[],
   cookieHeader: string,
-): Promise<PollResult[]> {
+): Promise<PollOutcome> {
   // PLACEHOLDER URL — replace with real endpoint from recon
   const url = `https://${domain}/api/maps/mapdatabyid`;
 
@@ -1087,13 +1138,13 @@ export async function checkCampground(
 
     if (!res.ok) {
       log.warn(`HTTP ${res.status} from ${domain}`, { campgroundId });
-      return [];
+      return { results: [], httpStatus: res.status };
     }
 
     data = await res.json();
   } catch (err) {
     log.error(`Request failed for ${domain}`, { campgroundId, error: String(err) });
-    return [];
+    return { results: [], httpStatus: null };
   }
 
   // PLACEHOLDER parsing — replace with real response structure from recon
@@ -1133,7 +1184,7 @@ export async function checkCampground(
     }
   }
 
-  return results;
+  return { results, httpStatus: 200 };
 }
 
 export function delay(ms: number): Promise<void> {
@@ -1240,23 +1291,39 @@ async function runCycle(): Promise<void> {
     const cookieHeader = cookieManager.getCookieHeader(domain);
     const campgroundId = watchGroup[0].campground_id;
 
-    const results = await checkCampground(domain, campgroundId, watchGroup, cookieHeader);
+    const outcome = await checkCampground(domain, campgroundId, watchGroup, cookieHeader);
     requestCount++;
 
-    // Track 403s
-    if (results.length === 0 && cookieHeader) {
-      // Could be 403 or just no availability — we can't distinguish easily
-      // The poller logs HTTP status, so consecutive403 tracking happens there
-    } else {
+    // Handle HTTP status
+    if (outcome.httpStatus === 403) {
+      consecutive403[domain] = (consecutive403[domain] || 0) + 1;
+      // Force cookie refresh for next request to this domain
+      cookieManager.forceExpire(domain);
+      cookieManager.reduceTtl(domain);
+      log.warn(`403 from ${domain} — forcing cookie refresh`, { consecutive: consecutive403[domain] });
+    } else if (outcome.httpStatus === 429) {
+      log.warn(`429 rate limited from ${domain} — skipping remaining campgrounds for this domain`);
+      // Skip rest of this domain's campgrounds this cycle
+      continue;
+    } else if (outcome.httpStatus === 200) {
       consecutive403[domain] = 0;
       successCount++;
     }
 
-    // Create alerts for matches
-    for (const result of results) {
-      if (shouldCreateAlert(result.sites)) {
-        const created = await createAlert(result.watchId, result.userId, result.sites);
+    // Confirm-before-alert: re-check to reduce stale notifications
+    for (const result of outcome.results) {
+      if (!shouldCreateAlert(result.sites)) continue;
+
+      // Wait 2s and re-check the same campground
+      await delay(2000);
+      const confirm = await checkCampground(domain, campgroundId, watchGroup, cookieManager.getCookieHeader(domain));
+      const confirmedResult = confirm.results.find(r => r.watchId === result.watchId);
+
+      if (confirmedResult && shouldCreateAlert(confirmedResult.sites)) {
+        const created = await createAlert(result.watchId, result.userId, confirmedResult.sites);
         if (created) alertCount++;
+      } else {
+        log.info("Availability gone on re-check — skipped alert", { watchId: result.watchId });
       }
     }
 
@@ -1307,11 +1374,22 @@ async function runCycle(): Promise<void> {
 }
 
 // Health check HTTP server
+let lastCycleAt: string | null = null;
+let platformsHealthy: Record<string, boolean> = {};
+
 const server = http.createServer((req, res) => {
   if (req.url === "/health") {
-    res.writeHead(200, { "Content-Type": "application/json" });
+    const anyUnhealthy = Object.values(consecutive403).some(c => c >= 5);
+    const stale = lastCycleAt
+      ? Date.now() - new Date(lastCycleAt).getTime() > 30 * 60 * 1000
+      : true;
+    const healthy = !anyUnhealthy && !stale;
+
+    res.writeHead(healthy ? 200 : 503, { "Content-Type": "application/json" });
     res.end(JSON.stringify({
-      healthy: true,
+      healthy,
+      last_cycle: lastCycleAt,
+      platforms: platformsHealthy,
       uptime_seconds: Math.floor(process.uptime()),
     }));
   } else {
@@ -1326,8 +1404,9 @@ server.listen(8080, () => {
 
 // Main loop with setTimeout (no overlapping cycles)
 async function loop() {
-  // Determine interval based on whether there are imminent watches
-  const interval = POLL_INTERVAL_FAST_MS; // TODO: adaptive based on watch dates
+  // Adaptive interval: fast (5 min) if any watch arrives within 30 days, slow (15 min) otherwise
+  // Determined after the cycle based on what we found
+  let interval = POLL_INTERVAL_SLOW_MS;
 
   log.info(`Starting cycle (next in ${interval / 1000}s)`);
 
@@ -1344,6 +1423,11 @@ async function loop() {
     await alertOperator(`Cycle crashed: ${String(err)}`, "critical");
   } finally {
     clearTimeout(timeout);
+    // Update health state for /health endpoint
+    lastCycleAt = new Date().toISOString();
+    platformsHealthy = Object.fromEntries(
+      Object.entries(DOMAINS).map(([p, d]) => [p, (consecutive403[d] || 0) < 3])
+    );
     setTimeout(loop, interval);
   }
 }
@@ -1479,14 +1563,10 @@ LOG_LEVEL=info
 4. Verify first cycle runs and logs output
 5. Check Supabase `worker_status` table for `last_cycle_at` update
 
-- [ ] **Step 4: Run the recon script (Task 6) and update poller**
-
-If the API contract from recon differs from the placeholder code in poller.ts, update and redeploy.
-
-- [ ] **Step 5: Commit any final adjustments**
+- [ ] **Step 4: Commit any final adjustments**
 
 ```bash
 cd /Users/ryan/Code/Alphacamper
 git add -A
-git commit -m "fix: update poller to match real GoingToCamp API contract"
+git commit -m "fix: address issues found during Railway deployment"
 ```
