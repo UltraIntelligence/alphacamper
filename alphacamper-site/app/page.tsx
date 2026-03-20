@@ -13,6 +13,15 @@ export default function Home() {
     <>
       <LandingNav />
       <LandingHero />
+
+      {/* Tagline — centered big text like Gumroad's interstitial */}
+      <section className="tagline-section">
+        <p>
+          Campsites at popular parks sell out in seconds. Cancellations happen
+          all season long. Alpha makes sure you hear about them first.
+        </p>
+      </section>
+
       <HowAlphaWorks />
       <Capabilities />
       <TwoProducts />

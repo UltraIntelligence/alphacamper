@@ -1,22 +1,24 @@
 const caps = [
   { value: 'Every 2\u20135 min', label: 'Scan frequency' },
-  { value: '3 platforms', label: 'BC Parks, Ontario Parks, Recreation.gov' },
-  { value: 'Booking Assist\u2122', label: 'Chrome extension autofills in seconds' },
+  { value: '3 platforms', label: 'BC Parks \u00b7 Ontario Parks \u00b7 Recreation.gov' },
+  { value: 'Booking Assist\u2122', label: 'Auto-fill forms in seconds' },
   { value: '24/7/365', label: 'Alpha never sleeps' },
 ]
 
 export function Capabilities() {
   return (
-    <section className="landing-section section-navy">
-      <div className="container">
-        <div className="cap-grid">
-          {caps.map((cap) => (
-            <div key={cap.value}>
-              <div className="cap-value">{cap.value}</div>
-              <div className="cap-label">{cap.label}</div>
-            </div>
-          ))}
-        </div>
+    <section className="cap-section">
+      <div className="cap-big-number">24/7</div>
+      <p className="cap-big-label">
+        Alpha watches campgrounds around the clock so you don&apos;t have to.
+      </p>
+      <div className="cap-grid">
+        {caps.map((cap) => (
+          <div key={cap.value}>
+            <div className="cap-value">{cap.value}</div>
+            <div className="cap-label">{cap.label}</div>
+          </div>
+        ))}
       </div>
     </section>
   )

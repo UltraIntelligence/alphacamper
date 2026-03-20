@@ -16,9 +16,9 @@ export function LandingNav() {
 
   const links = [
     { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Pricing', href: '#pricing' },
     { label: 'Parks', href: '#parks' },
     { label: 'FAQ', href: '#faq' },
-    { label: 'Pricing', href: '#pricing' },
   ]
 
   return (
@@ -36,7 +36,7 @@ export function LandingNav() {
 
         <div className="landing-nav-right">
           <Link href="/dashboard" className="landing-nav-signin">
-            {isLoggedIn ? 'Dashboard' : 'Sign In'}
+            {isLoggedIn ? 'Dashboard' : 'Sign in'}
           </Link>
           <Link href="/watch/new" className="landing-nav-cta">
             Watch a Campsite
@@ -63,7 +63,7 @@ export function LandingNav() {
             </a>
           ))}
           <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
-            {isLoggedIn ? 'Dashboard' : 'Sign In'}
+            {isLoggedIn ? 'Dashboard' : 'Sign in'}
           </Link>
           <Link
             href="/watch/new"

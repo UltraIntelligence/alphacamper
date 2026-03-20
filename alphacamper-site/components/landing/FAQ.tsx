@@ -41,28 +41,24 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <section id="faq" className="landing-section section-white">
-      <div className="container">
-        <h2 className="landing-heading" style={{ fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', marginBottom: 48, textAlign: 'center' }}>
-          Questions? Answers.
-        </h2>
-        <div className="faq-list">
-          {faqs.map((faq, i) => (
-            <div key={i} className="faq-item">
-              <button
-                className="faq-question"
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                aria-expanded={openIndex === i}
-              >
-                {faq.q}
-                <span className="faq-chevron" data-open={openIndex === i}>&#9662;</span>
-              </button>
-              {openIndex === i && (
-                <div className="faq-answer">{faq.a}</div>
-              )}
-            </div>
-          ))}
-        </div>
+    <section id="faq" className="faq-section">
+      <h2>Questions? Answers.</h2>
+      <div className="faq-list">
+        {faqs.map((faq, i) => (
+          <div key={i} className="faq-item">
+            <button
+              className="faq-question"
+              onClick={() => setOpenIndex(openIndex === i ? null : i)}
+              aria-expanded={openIndex === i}
+            >
+              {faq.q}
+              <span className="faq-chevron" data-open={openIndex === i}>&#9662;</span>
+            </button>
+            {openIndex === i && (
+              <div className="faq-answer">{faq.a}</div>
+            )}
+          </div>
+        ))}
       </div>
     </section>
   )
