@@ -94,7 +94,7 @@ Each card has an illustration placeholder.
 
 ### 6. Popular Parks — `[ROYAL BLUE]`
 
-White text on royal blue. Grid of 8-12 park cards for the parks currently monitored (BC Parks, Ontario Parks campgrounds). Each card: park name, province badge, "Watch this park →" link to `/watch/new?park={id}`.
+White text on royal blue. Grid of 8 park cards (4 BC Parks + 4 Ontario Parks, curated for name recognition). Each card: park name, province badge, "Watch this park →" link to `/watch/new?park={id}`.
 
 SEO section — links to future `/parks/[province]` pages (placeholder hrefs for now).
 
