@@ -1,0 +1,15 @@
+[   74217ms] [WARNING] [HMR] Invalid message: {"isTrusted":true}
+TypeError: Cannot convert undefined or null to object
+    at Object.keys (<anonymous>)
+    at extractModulesFromTurbopackMessage (http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13631:39)
+    at TurbopackHmr.onTurbopackMessage (http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13578:32)
+    at processMessage (http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13936:30)
+    at WebSocket.handleMessage (http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13335:52) @ http://localhost:3002/_next/static/chunks/07zw_next_dist_0ikbk6u._.js:2431
+[   74336ms] ReferenceError: LandingNav is not defined
+    at Home (about://React/Server/file:///Users/ryan/Code/Alphacamper/alphacamper-site/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__0krc2px._.js?189:1724:311)
+    at resolveErrorDev (http://localhost:3002/_next/static/chunks/07zw_next_dist_compiled_react-server-dom-turbopack_12~65_2._.js:1919:105)
+    at processFullStringRow (http://localhost:3002/_next/static/chunks/07zw_next_dist_compiled_react-server-dom-turbopack_12~65_2._.js:2434:29)
+    at processFullBinaryRow (http://localhost:3002/_next/static/chunks/07zw_next_dist_compiled_react-server-dom-turbopack_12~65_2._.js:2393:9)
+    at processBinaryChunk (http://localhost:3002/_next/static/chunks/07zw_next_dist_compiled_react-server-dom-turbopack_12~65_2._.js:2502:221)
+    at progress (http://localhost:3002/_next/static/chunks/07zw_next_dist_compiled_react-server-dom-turbopack_12~65_2._.js:2689:13)
+[  146738ms] [ERROR] WebSocket connection to 'ws://localhost:3002/_next/webpack-hmr?id=AfbI2hGaNSVFRrI_9Yrq5' failed:  @ http://localhost:3002/_next/static/chunks/07zw_next_dist_client_0ht~a~f._.js:13299

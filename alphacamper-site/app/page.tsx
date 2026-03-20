@@ -1,4 +1,3 @@
-import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingHero } from '@/components/landing/LandingHero'
 import { HowAlphaWorks } from '@/components/landing/HowAlphaWorks'
 import { Reviews } from '@/components/landing/Reviews'
@@ -14,7 +13,6 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 export default function Home() {
   return (
     <>
-      <LandingNav />
       <LandingHero />
 
       {/* Tagline */}

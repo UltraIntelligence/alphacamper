@@ -93,50 +93,53 @@ a { color: inherit; text-decoration: none; }
 /* ── Nav ── */
 
 .landing-nav {
-  position: fixed; top: 0; left: 0; right: 0;
+  position: relative;
   z-index: 100;
-  background: rgba(242, 243, 244, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: transparent;
+  padding: 20px 0 0;
 }
 
 .landing-nav .container {
   display: flex; justify-content: space-between; align-items: center;
-  height: 60px; max-width: 1200px; margin: 0 auto; padding: 0 32px;
+  max-width: 1200px; margin: 0 auto; padding: 0 32px;
 }
 
 .landing-nav-logo {
   font-family: var(--font-momo, var(--font-display));
-  font-weight: 800; font-size: 1.15rem; color: var(--dark);
+  font-weight: 900; font-size: 1.5rem; color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
 }
 
 .landing-nav-links { display: flex; gap: 28px; align-items: center; }
-.landing-nav-links a { font-size: 0.88rem; font-weight: 500; color: var(--dark); transition: color 0.2s; }
-.landing-nav-links a:hover { color: var(--paradiso); }
+.landing-nav-links a { font-size: 0.9rem; font-weight: 600; color: rgba(255, 255, 255, 0.85); transition: color 0.2s; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2); }
+.landing-nav-links a:hover { color: #ffffff; }
 
 .landing-nav-right { display: flex; align-items: center; gap: 8px; }
 
 .landing-nav-signin {
-  font-size: 0.88rem; font-weight: 500; color: var(--dark);
+  font-size: 0.9rem; font-weight: 600; color: rgba(255, 255, 255, 0.85);
   padding: 8px 16px; transition: color 0.2s;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 }
-.landing-nav-signin:hover { color: var(--paradiso); }
+.landing-nav-signin:hover { color: #ffffff; }
 
 .landing-nav-cta {
   font-family: var(--font-inter, var(--font-body));
-  font-size: 0.85rem; font-weight: 600;
-  padding: 10px 24px; background: var(--paradiso); color: #ffffff;
-  border: none; border-radius: 100px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 700;
+  padding: 10px 24px; background: rgba(255, 255, 255, 0.2); color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 100px; cursor: pointer;
   transition: all 0.2s; text-decoration: none;
   display: inline-flex; align-items: center;
+  backdrop-filter: blur(8px);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
-.landing-nav-cta:hover { background: var(--horizon); }
+.landing-nav-cta:hover { background: rgba(255, 255, 255, 0.35); border-color: rgba(255, 255, 255, 0.6); }
 
 /* ── Hero — centered ── */
 
 .hero-section {
-  margin-top: 60px;
-  padding: 100px 32px 80px;
+  margin-top: 0;
+  padding: 40px 32px 80px;
   text-align: center;
   background: url('/hero-bg.png') center center / cover no-repeat;
   position: relative;
@@ -182,11 +185,14 @@ a { color: inherit; text-decoration: none; }
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.hero-trust {
+.hero-bottom {
   position: absolute; bottom: 32px; left: 0; right: 0;
+  text-align: center; z-index: 2;
+}
+
+.hero-trust {
   display: flex; align-items: center; justify-content: center;
   gap: 8px; font-size: 0.88rem; color: rgba(255, 255, 255, 0.85);
-  z-index: 2;
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .hero-stars { color: #fbbf24; letter-spacing: 2px; }
@@ -204,7 +210,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .park-search-free {
-  font-size: 0.95rem; color: rgba(255, 255, 255, 0.85); margin-top: 20px; margin-bottom: 8px;
+  font-size: 0.95rem; color: rgba(255, 255, 255, 0.85); margin-bottom: 8px;
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
@@ -769,14 +775,15 @@ a { color: inherit; text-decoration: none; }
 
 .landing-mobile-menu {
   display: flex; flex-direction: column;
-  padding: 16px 24px 24px; background: #ffffff;
-  border-bottom: 3px solid #1a1a1a;
+  padding: 16px 24px 24px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
 }
 .landing-mobile-menu a {
-  font-size: 1rem; font-weight: 500; color: #1a1a1a;
-  padding: 12px 0; border-bottom: 1px solid #e0e0e0;
+  font-size: 1rem; font-weight: 600; color: rgba(255, 255, 255, 0.85);
+  padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.landing-mobile-menu a:hover { opacity: 0.6; }
+.landing-mobile-menu a:hover { color: #ffffff; }
 
 @media (max-width: 900px) {
   .landing-nav-links { display: none; }
