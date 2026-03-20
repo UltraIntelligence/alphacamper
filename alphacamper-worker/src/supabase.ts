@@ -124,6 +124,22 @@ export async function createAlert(
   return true;
 }
 
+export async function fetchUserEmail(userId: string): Promise<string | null> {
+  const { data, error } = await getClient()
+    .from("users")
+    .select("email")
+    .eq("id", userId)
+    .limit(1)
+    .single();
+
+  if (error) {
+    log.error("fetchUserEmail failed", { userId, error: error.message });
+    return null;
+  }
+
+  return data?.email ?? null;
+}
+
 export async function updateLastChecked(watchIds: string[]): Promise<void> {
   if (watchIds.length === 0) return;
 

@@ -8,7 +8,9 @@ import {
   updateLastChecked,
   expireStaleAlerts,
   updateWorkerStatus,
+  fetchUserEmail,
 } from "./supabase.js";
+import { sendAlertEmail } from "./notify.js";
 import { checkCampground, delay, clearCartCache } from "./poller.js";
 import {
   fetchCampgroundMap,
@@ -222,6 +224,22 @@ async function runCycle(): Promise<void> {
           userId: result.userId,
           siteCount: confirmResult.sites.length,
         });
+
+        // Step 4i-b: Send email notification (non-blocking, errors logged but don't crash)
+        const watch = groupWatches.find(w => w.id === result.watchId);
+        if (watch) {
+          const email = await fetchUserEmail(result.userId);
+          if (email) {
+            await sendAlertEmail({
+              email,
+              campgroundName: watch.campground_name,
+              platform: watch.platform,
+              arrivalDate: watch.arrival_date,
+              departureDate: watch.departure_date,
+              sites: confirmResult.sites,
+            });
+          }
+        }
       }
     }
 
