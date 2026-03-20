@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="sidepanel.css">
+  <title>Alphacamper</title>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <svg viewBox="0 0 80 72" fill="none" class="header-logo">
+      <path d="M40 4L74 68H6L40 4Z" stroke="currentColor" stroke-width="5" fill="none"/>
+      <path d="M40 28L56 60H32L40 28Z" fill="currentColor" opacity="0.5"/>
+    </svg>
+    <span class="header-title">Alphacamper</span>
+  </header>
+
+  <!-- Main content area -->
+  <main id="main-content">
+    <!-- Dashboard View -->
+    <div id="view-dashboard" class="view active">
+      <div class="time-display" id="current-time">--:--:--</div>
+
+      <div id="next-mission-card" class="card" style="display:none">
+        <p class="card-label">Next Mission</p>
+        <h3 id="next-mission-name" class="card-title"></h3>
+        <div class="countdown-display" id="next-mission-countdown">--:--:--</div>
+      </div>
+
+      <div id="no-missions-msg" class="empty-state">
+        <p>No missions yet</p>
+        <p class="text-muted">Create your first booking mission to get started.</p>
+      </div>
+
+      <div class="status-pills" id="status-pills">
+        <span class="pill" id="profile-status">Profile: Set up →</span>
+        <span class="pill" id="missions-count">Missions: 0</span>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="create-mission-btn">Create Mission</button>
+
+      <div id="mission-list" class="mission-list"></div>
+    </div>
+
+    <!-- Mission Detail View -->
+    <div id="view-mission" class="view">
+      <button class="btn-back" id="back-to-dashboard">← Back</button>
+
+      <div class="mission-header">
+        <input type="text" id="mission-name-input" class="mission-name-input" placeholder="Mission Name">
+        <span id="mission-status-badge" class="status-badge">planning</span>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">Booking Window</h4>
+        <div class="form-row">
+          <input type="date" id="bw-date" class="input">
+          <input type="time" id="bw-time" class="input">
+        </div>
+        <select id="bw-timezone" class="input">
+          <option value="America/New_York">Eastern (ET)</option>
+          <option value="America/Chicago">Central (CT)</option>
+          <option value="America/Denver">Mountain (MT)</option>
+          <option value="America/Los_Angeles" selected>Pacific (PT)</option>
+          <option value="America/Vancouver">Vancouver (PT)</option>
+        </select>
+        <div class="countdown-display" id="mission-countdown">--:--:--</div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">Targets</h4>
+        <div id="target-list" class="target-list"></div>
+        <button class="btn btn-outline btn-full" id="add-target-btn">+ Add Target</button>
+      </div>
+
+      <!-- Add Target Form (hidden by default) -->
+      <div id="target-form" class="section" style="display:none">
+        <h4 class="section-title">New Target</h4>
+        <select id="tf-platform" class="input">
+          <option value="recreation_gov">Recreation.gov</option>
+          <option value="bc_parks">BC Parks</option>
+        </select>
+        <select id="tf-campground" class="input">
+          <option value="">— Select popular campground —</option>
+        </select>
+        <input type="text" id="tf-park" class="input" placeholder="Park name">
+        <input type="text" id="tf-campground-name" class="input" placeholder="Campground name">
+        <input type="text" id="tf-site" class="input" placeholder="Site number (optional)">
+        <div class="form-row">
+          <input type="date" id="tf-arrival" class="input" placeholder="Arrival">
+          <input type="date" id="tf-departure" class="input" placeholder="Departure">
+        </div>
+        <input type="url" id="tf-link" class="input" placeholder="Direct booking URL">
+        <div class="form-row">
+          <button class="btn btn-primary" id="tf-save">Save Target</button>
+          <button class="btn btn-outline" id="tf-cancel">Cancel</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">Rehearsal</h4>
+        <div class="rehearsal-stats" id="rehearsal-stats">
+          <p>Not yet practiced</p>
+        </div>
+        <button class="btn btn-outline btn-full" id="start-rehearsal-btn">Start Rehearsal</button>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-launch" id="launch-btn" disabled>
+        Launch
+      </button>
+      <p class="text-muted text-center" id="launch-hint">Available 30 min before your booking window</p>
+    </div>
+
+    <!-- Launch Active View -->
+    <div id="view-launch" class="view">
+      <div class="launch-active-header">
+        <span class="pulse-dot"></span>
+        LAUNCH ACTIVE
+      </div>
+      <div class="countdown-display countdown-large" id="launch-countdown">--:--:--</div>
+      <p id="launch-status-text" class="text-center">Waiting for booking window...</p>
+
+      <button class="btn btn-primary btn-full" id="fill-forms-btn" style="margin-bottom:8px">Fill Forms</button>
+      <p class="text-muted text-center" style="margin-bottom:12px">or press Ctrl+Shift+F</p>
+      <div id="fill-result" class="text-center" style="display:none"></div>
+
+      <div id="launch-tabs-list" class="launch-tabs"></div>
+
+      <button class="btn btn-outline btn-full" id="next-fallback-btn" style="margin-bottom:8px">Next Fallback →</button>
+      <p class="text-muted text-center">Ctrl+Shift+Space to switch tabs</p>
+
+      <button class="btn btn-outline btn-full" id="end-launch-btn" style="margin-top:12px">End Launch</button>
+    </div>
+
+    <!-- Profile View -->
+    <div id="view-profile" class="view">
+      <h2 class="view-title">Profile</h2>
+      <div class="form-stack">
+        <div class="form-row">
+          <input type="text" id="p-first" class="input" placeholder="First name">
+          <input type="text" id="p-last" class="input" placeholder="Last name">
+        </div>
+        <input type="email" id="p-email" class="input" placeholder="Email">
+        <input type="tel" id="p-phone" class="input" placeholder="Phone">
+        <input type="text" id="p-plate" class="input" placeholder="Vehicle license plate">
+        <input type="text" id="p-length" class="input" placeholder="Vehicle length (ft)">
+        <select id="p-equipment" class="input">
+          <option value="tent">Tent</option>
+          <option value="rv">RV</option>
+          <option value="trailer">Trailer</option>
+          <option value="van">Van</option>
+        </select>
+        <input type="number" id="p-party" class="input" placeholder="Party size" min="1" max="20" value="2">
+        <button class="btn btn-primary btn-full" id="save-profile-btn">Save Profile</button>
+        <div id="profile-toast" class="toast" style="display:none">Profile saved ✓</div>
+      </div>
+      <p class="privacy-note">🔒 This info is stored only on your computer. We never send it anywhere.</p>
+    </div>
+
+    <!-- AI Trip Planner View -->
+    <div id="view-planner" class="view">
+      <h2 class="view-title">Plan a Trip</h2>
+      <p class="text-muted" style="margin-bottom:12px">Describe your ideal camping trip and AI will find the best campgrounds with backup options.</p>
+
+      <div id="planner-results" style="display:none">
+        <div id="planner-advice" class="card" style="display:none;margin-bottom:12px"></div>
+        <div id="planner-targets"></div>
+      </div>
+
+      <div id="planner-loading" class="empty-state" style="display:none">
+        <p>Planning your trip...</p>
+        <p class="text-muted">Finding the best campgrounds and backup options</p>
+      </div>
+
+      <div id="planner-error" class="text-center" style="display:none;color:#dc2626;margin-bottom:12px"></div>
+
+      <div class="planner-input-area">
+        <textarea id="planner-input" class="input" rows="3" placeholder="e.g. 3 night family tent camping near Yosemite in July, lakeside preferred"></textarea>
+        <div class="form-row" style="margin-top:8px">
+          <select id="planner-platform" class="input">
+            <option value="">Any platform</option>
+            <option value="recreation_gov">Recreation.gov</option>
+            <option value="bc_parks">BC Parks</option>
+          </select>
+          <button class="btn btn-primary" id="planner-send-btn">Plan Trip</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watching View -->
+    <div id="view-watching" class="view">
+      <h2 class="view-title">Watching</h2>
+      <p class="text-muted" style="margin-bottom:12px">We check for cancellation openings at your watched campgrounds.</p>
+
+      <div id="watch-alerts"></div>
+
+      <div id="watch-list"></div>
+
+      <div id="no-watches" class="empty-state">
+        <p>No active watches</p>
+        <p class="text-muted">Add a campground to monitor for cancellations.</p>
+      </div>
+
+      <button class="btn btn-outline btn-full" id="add-watch-btn" style="margin-top:12px">+ Add Watch</button>
+
+      <div id="watch-form" class="section" style="display:none;margin-top:12px">
+        <h4 class="section-title">New Watch</h4>
+        <select id="wf-platform" class="input">
+          <option value="recreation_gov">Recreation.gov</option>
+          <option value="bc_parks">BC Parks</option>
+        </select>
+        <select id="wf-campground" class="input">
+          <option value="">— Select campground —</option>
+        </select>
+        <input type="text" id="wf-campground-name" class="input" placeholder="Campground name">
+        <input type="text" id="wf-site" class="input" placeholder="Site number (optional, blank = any)">
+        <div class="form-row">
+          <input type="date" id="wf-arrival" class="input">
+          <input type="date" id="wf-departure" class="input">
+        </div>
+        <div class="form-row">
+          <button class="btn btn-primary" id="wf-save">Start Watching</button>
+          <button class="btn btn-outline" id="wf-cancel">Cancel</button>
+        </div>
+      </div>
+
+      <div id="watch-register" class="section" style="display:none;margin-top:16px">
+        <p class="text-muted" style="margin-bottom:8px">Enter your email to enable cancellation monitoring:</p>
+        <div class="form-row">
+          <input type="email" id="watch-email" class="input" placeholder="your@email.com">
+          <button class="btn btn-primary" id="watch-register-btn">Connect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings View -->
+    <div id="view-settings" class="view">
+      <h2 class="view-title">Settings</h2>
+      <div class="setting-row">
+        <span>Countdown audio</span>
+        <label class="toggle">
+          <input type="checkbox" id="s-audio">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <span>Notify before window</span>
+        <div class="setting-input-group">
+          <input type="number" id="s-notify" class="input input-sm" value="5" min="1" max="60">
+          <span class="text-muted">min</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <button class="btn btn-danger btn-full" id="clear-data-btn">Clear All Data</button>
+      <div id="confirm-clear" class="confirm-dialog" style="display:none">
+        <p>Are you sure? This will delete all your missions and profile data.</p>
+        <div class="form-row">
+          <button class="btn btn-danger" id="confirm-clear-yes">Yes, clear everything</button>
+          <button class="btn btn-outline" id="confirm-clear-no">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar">
+    <button class="tab active" data-view="dashboard">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </button>
+    <button class="tab" data-view="planner">
+      <span class="tab-icon">🧠</span>
+      <span class="tab-label">Plan</span>
+    </button>
+    <button class="tab" data-view="watching">
+      <span class="tab-icon">🔔</span>
+      <span class="tab-label">Watch</span>
+    </button>
+    <button class="tab" data-view="profile">
+      <span class="tab-icon">👤</span>
+      <span class="tab-label">Profile</span>
+    </button>
+    <button class="tab" data-view="settings">
+      <span class="tab-icon">⚙️</span>
+      <span class="tab-label">Settings</span>
+    </button>
+  </nav>
+
+  <script src="../lib/storage.js"></script>
+  <script src="../lib/platforms.js"></script>
+  <script src="../lib/missions.js"></script>
+  <script src="../lib/countdown.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

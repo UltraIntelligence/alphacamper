@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="rehearsal.css">
+  <title>Alphacamper — Practice Mode</title>
+</head>
+<body>
+  <div class="practice-banner">⚡ PRACTICE MODE — This is a simulation. No real reservations will be made.</div>
+
+  <div class="timer-bar">
+    <span>Elapsed: <strong id="timer">0.0s</strong></span>
+  </div>
+
+  <!-- Screen 1: Search Results -->
+  <div id="screen-1" class="screen active">
+    <div class="container">
+      <h1>Available Campsites</h1>
+      <p class="subtitle">Click a site to view details and start your booking.</p>
+      <div class="site-grid" id="site-grid"></div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Site Detail -->
+  <div id="screen-2" class="screen">
+    <div class="container">
+      <h1 id="detail-name">Site Name</h1>
+      <div class="detail-card">
+        <div class="detail-image" id="detail-image"></div>
+        <div class="detail-info">
+          <p id="detail-type"></p>
+          <p id="detail-amenities"></p>
+          <p class="detail-desc">Beautiful campsite nestled among the trees with easy access to trails and water. Perfect for families and groups looking for a memorable outdoor experience.</p>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3>Select Your Dates</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Check-in</label>
+            <input type="date" id="r-checkin" class="input">
+          </div>
+          <div class="form-group">
+            <label>Check-out</label>
+            <input type="date" id="r-checkout" class="input">
+          </div>
+        </div>
+        <button class="btn btn-primary" id="check-avail-btn">Check Availability</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Booking Form -->
+  <div id="screen-3" class="screen">
+    <div class="container">
+      <h1>Complete Your Reservation</h1>
+      <p class="subtitle">Fill in your details to reserve this campsite.</p>
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="r-first" class="input" placeholder="John">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="r-last" class="input" placeholder="Smith">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="r-email" class="input" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="r-phone" class="input" placeholder="(555) 123-4567">
+        </div>
+        <div class="form-group">
+          <label>Vehicle License Plate</label>
+          <input type="text" id="r-plate" class="input" placeholder="ABC 1234">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Equipment Type</label>
+            <select id="r-equipment" class="input">
+              <option value="tent">Tent</option>
+              <option value="rv">RV</option>
+              <option value="trailer">Trailer</option>
+              <option value="van">Van</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Party Size</label>
+            <input type="number" id="r-party" class="input" value="" min="1" max="20" placeholder="4">
+          </div>
+        </div>
+        <button class="btn btn-primary" id="add-cart-btn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 4: Cart Review -->
+  <div id="screen-4" class="screen">
+    <div class="container">
+      <h1>Review Your Reservation</h1>
+      <div class="cart-card">
+        <h3 id="cart-site"></h3>
+        <div class="cart-details" id="cart-details"></div>
+        <div class="cart-total" id="cart-total"></div>
+      </div>
+      <button class="btn btn-primary" id="complete-btn">Complete Reservation</button>
+    </div>
+  </div>
+
+  <!-- Screen 5: Confirmation -->
+  <div id="screen-5" class="screen">
+    <div class="container text-center">
+      <div class="confirm-icon">🎉</div>
+      <h1>Reservation Complete!</h1>
+      <div class="results-card" id="results-card"></div>
+      <p class="profile-saved" id="profile-saved" style="display:none">Your profile has been saved ✓</p>
+      <div class="button-row">
+        <button class="btn btn-primary" id="practice-again-btn">Practice Again</button>
+        <button class="btn btn-outline" id="back-btn">Back to Alphacamper</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/storage.js"></script>
+  <script src="../lib/platforms.js"></script>
+  <script src="../lib/missions.js"></script>
+  <script src="rehearsal.js"></script>
+</body>
+</html>

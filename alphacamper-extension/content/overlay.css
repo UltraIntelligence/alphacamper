@@ -1,0 +1,139 @@
+#alphacamper-overlay {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px;
+  background: white;
+  border: 1px solid #edeae3;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 16px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: #1a1f16;
+  transition: all 0.3s ease;
+}
+
+#alphacamper-overlay.minimized {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  background: #2d6a4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#alphacamper-overlay.minimized .ac-content { display: none; }
+#alphacamper-overlay.minimized .ac-dot { display: block; }
+
+#alphacamper-overlay .ac-dot {
+  display: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+}
+
+#alphacamper-overlay .ac-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #2d6a4f;
+  font-size: 14px;
+}
+
+#alphacamper-overlay .ac-header svg {
+  width: 18px;
+  height: 16px;
+  color: #2d6a4f;
+}
+
+#alphacamper-overlay .ac-step {
+  padding: 8px 12px;
+  background: #edf7ef;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  color: #2d6a4f;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+#alphacamper-overlay .ac-info {
+  font-size: 12px;
+  color: #7a8270;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+#alphacamper-overlay .ac-btn {
+  width: 100%;
+  padding: 10px;
+  background: #2d6a4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#alphacamper-overlay .ac-btn:hover {
+  background: #52b788;
+}
+
+#alphacamper-overlay .ac-btn-secondary {
+  background: transparent;
+  color: #2d6a4f;
+  border: 1px solid #edeae3;
+  margin-top: 6px;
+}
+
+#alphacamper-overlay .ac-btn-secondary:hover {
+  background: #edf7ef;
+}
+
+#alphacamper-overlay .ac-minimize {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #7a8270;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px;
+}
+
+#alphacamper-overlay .ac-minimize:hover {
+  color: #1a1f16;
+}
+
+#alphacamper-overlay .ac-result {
+  padding: 6px 10px;
+  background: #edf7ef;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #2d6a4f;
+  font-weight: 500;
+}
+
+#alphacamper-overlay .ac-result.error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+#alphacamper-overlay .ac-success {
+  text-align: center;
+  padding: 16px 0;
+  font-size: 18px;
+}

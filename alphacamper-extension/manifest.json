@@ -1,0 +1,79 @@
+{
+  "manifest_version": 3,
+  "name": "Alphacamper",
+  "version": "0.2.0",
+  "description": "Your AI-powered campsite launch system. Three clicks. We handle everything else.",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "tabs",
+    "alarms",
+    "notifications",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.recreation.gov/*",
+    "https://camping.bcparks.ca/*",
+    "https://reservation.pc.gc.ca/*",
+    "https://www.reservecalifornia.com/*",
+    "https://reservations.ontarioparks.ca/*",
+    "https://reserve.albertaparks.ca/*",
+    "https://www.reserveamerica.com/*",
+    "https://www.sepaq.com/*",
+    "https://prsp.gov.mb.ca/*",
+    "https://camping.saskparks.com/*"
+  ],
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon-16.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.recreation.gov/*",
+        "https://camping.bcparks.ca/*",
+        "https://reservation.pc.gc.ca/*",
+        "https://www.reservecalifornia.com/*",
+        "https://reservations.ontarioparks.ca/*",
+        "https://reserve.albertaparks.ca/*",
+        "https://www.reserveamerica.com/*",
+        "https://www.sepaq.com/*",
+        "https://prsp.gov.mb.ca/*",
+        "https://camping.saskparks.com/*"
+      ],
+      "js": ["content/autofill.js", "content/overlay.js"],
+      "css": ["content/overlay.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "fill_forms": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Fill booking form fields"
+    },
+    "next_fallback": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Space"
+      },
+      "description": "Switch to next fallback tab"
+    }
+  }
+}
