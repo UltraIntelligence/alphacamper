@@ -36,6 +36,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (!query.trim() || query.trim().length < 2) {
+      searchSeqRef.current += 1
       setResults([])
       setIsSearching(false)
       return

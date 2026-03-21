@@ -13,6 +13,8 @@
     "activeTab"
   ],
   "host_permissions": [
+    "https://alphacamper.com/*",
+    "http://localhost:3000/*",
     "https://www.recreation.gov/*",
     "https://camping.bcparks.ca/*",
     "https://reservation.pc.gc.ca/*",
@@ -42,6 +44,12 @@
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://alphacamper.com/*",
+      "http://localhost:3000/*"
+    ]
   },
   "content_scripts": [
     {

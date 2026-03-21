@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getVerifiedEmailFromRequest } from "@/lib/auth";
+import { getVerifiedEmailFromRequest, issueExtensionAuthToken } from "@/lib/auth";
 
-// POST — Resolve (or create) the users-table record for the caller.
-// Email is always sourced from a verified Supabase JWT.
 export async function POST(request: Request) {
   try {
     const email = await getVerifiedEmailFromRequest(request);
@@ -14,13 +12,20 @@ export async function POST(request: Request) {
     const { data, error } = await getSupabase()
       .from("users")
       .upsert({ email }, { onConflict: "email" })
-      .select()
+      .select("id, email")
       .single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error || !data?.id || !data?.email) {
+      return NextResponse.json({ error: error?.message ?? "Failed to create extension session" }, { status: 500 });
     }
-    return NextResponse.json({ user: data });
+
+    return NextResponse.json({
+      token: issueExtensionAuthToken(data.id, data.email),
+      user: {
+        id: data.id,
+        email: data.email,
+      },
+    });
   } catch {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }

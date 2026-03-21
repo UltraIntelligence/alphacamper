@@ -4,8 +4,53 @@ importScripts('lib/platforms.js');
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 
-// Track launched mission tabs
-let launchedTabs = [];
+// Persist launched mission tabs because MV3 service workers are ephemeral.
+const LAUNCHED_TABS_KEY = 'launchedTabs';
+const PENDING_AUTOFILL_TABS_KEY = 'pendingAutofillTabIds';
+
+function getSessionStorageArea() {
+  return chrome.storage.session || chrome.storage.local;
+}
+
+async function getLaunchedTabs() {
+  const storage = getSessionStorageArea();
+  const result = await storage.get(LAUNCHED_TABS_KEY);
+  return result[LAUNCHED_TABS_KEY] || [];
+}
+
+async function setLaunchedTabs(tabs) {
+  const storage = getSessionStorageArea();
+  await storage.set({ [LAUNCHED_TABS_KEY]: tabs || [] });
+}
+
+async function clearLaunchedTabs() {
+  const storage = getSessionStorageArea();
+  await storage.remove(LAUNCHED_TABS_KEY);
+}
+
+async function getPendingAutofillTabIds() {
+  const storage = getSessionStorageArea();
+  const result = await storage.get(PENDING_AUTOFILL_TABS_KEY);
+  return result[PENDING_AUTOFILL_TABS_KEY] || [];
+}
+
+async function setPendingAutofillTabIds(tabIds) {
+  const storage = getSessionStorageArea();
+  await storage.set({ [PENDING_AUTOFILL_TABS_KEY]: tabIds || [] });
+}
+
+async function scheduleTabAutofill(tabId) {
+  const tabIds = await getPendingAutofillTabIds();
+  if (!tabIds.includes(tabId)) {
+    tabIds.push(tabId);
+    await setPendingAutofillTabIds(tabIds);
+  }
+}
+
+async function clearPendingAutofillTab(tabId) {
+  const tabIds = await getPendingAutofillTabIds();
+  await setPendingAutofillTabIds(tabIds.filter((id) => id !== tabId));
+}
 
 // Alarm notifications
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -23,8 +68,11 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Register tabs opened during launch
   if (message.action === 'register_launch_tabs') {
-    launchedTabs = message.tabs || [];
-    sendResponse({ success: true });
+    void (async () => {
+      await setLaunchedTabs(message.tabs || []);
+      sendResponse({ success: true });
+    })();
+    return true;
   }
 
   // Fill forms on active tab
@@ -46,7 +94,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // Next fallback tab
   if (message.action === 'next_fallback') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    void (async () => {
+      const launchedTabs = await getLaunchedTabs();
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0] || launchedTabs.length === 0) {
         sendResponse({ switched: false, reason: 'No launched tabs' });
         return;
@@ -59,27 +109,46 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       } else {
         sendResponse({ switched: false, reason: 'No more fallbacks' });
       }
-    });
+      });
+    })();
     return true;
   }
 
   // Get launched tabs status
   if (message.action === 'get_launch_status') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const activeTabId = tabs[0]?.id;
-      const status = launchedTabs.map(t => ({
-        ...t,
-        isActive: t.tabId === activeTabId
-      }));
-      sendResponse({ tabs: status });
-    });
+    void (async () => {
+      const launchedTabs = await getLaunchedTabs();
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const activeTabId = tabs[0]?.id;
+        const status = launchedTabs.map(t => ({
+          ...t,
+          isActive: t.tabId === activeTabId
+        }));
+        sendResponse({ tabs: status });
+      });
+    })();
     return true;
   }
 
   // Clear launched tabs
   if (message.action === 'clear_launch') {
-    launchedTabs = [];
-    sendResponse({ success: true });
+    void (async () => {
+      await clearLaunchedTabs();
+      sendResponse({ success: true });
+    })();
+    return true;
+  }
+
+  if (message.action === 'schedule_tab_fill') {
+    void (async () => {
+      if (typeof message.tabId !== 'number') {
+        sendResponse({ success: false, error: 'tabId required' });
+        return;
+      }
+      await scheduleTabAutofill(message.tabId);
+      sendResponse({ success: true });
+    })();
+    return true;
   }
 });
 
@@ -98,14 +167,17 @@ chrome.commands.onCommand.addListener((command) => {
   }
 
   if (command === 'next_fallback') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs[0] || launchedTabs.length === 0) return;
-      const currentIndex = launchedTabs.findIndex(t => t.tabId === tabs[0].id);
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < launchedTabs.length) {
-        chrome.tabs.update(launchedTabs[nextIndex].tabId, { active: true });
-      }
-    });
+    void (async () => {
+      const launchedTabs = await getLaunchedTabs();
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (!tabs[0] || launchedTabs.length === 0) return;
+        const currentIndex = launchedTabs.findIndex(t => t.tabId === tabs[0].id);
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < launchedTabs.length) {
+          chrome.tabs.update(launchedTabs[nextIndex].tabId, { active: true });
+        }
+      });
+    })();
   }
 });
 
@@ -115,19 +187,19 @@ chrome.commands.onCommand.addListener((command) => {
 const ALERT_ALARM = 'check-alerts';
 const DEFAULT_API = 'https://alphacamper.com';
 
-// Start polling when user has registered for watching
-chrome.storage.local.get(['watchUserId'], (result) => {
-  if (result.watchUserId) {
+// Start polling when extension auth has been established.
+chrome.storage.local.get(['extensionAuthToken'], (result) => {
+  if (result.extensionAuthToken) {
     chrome.alarms.create(ALERT_ALARM, { periodInMinutes: 1 });
   }
 });
 
-// Also start polling when watchUserId is set (e.g., after registration)
+// Also start polling when extension auth is set.
 chrome.storage.onChanged.addListener((changes) => {
-  if (changes.watchUserId?.newValue) {
+  if (changes.extensionAuthToken?.newValue) {
     chrome.alarms.create(ALERT_ALARM, { periodInMinutes: 1 });
   }
-  if (changes.watchUserId && !changes.watchUserId.newValue) {
+  if (changes.extensionAuthToken && !changes.extensionAuthToken.newValue) {
     chrome.alarms.clear(ALERT_ALARM);
   }
 });
@@ -150,13 +222,15 @@ async function addNotifiedId(id) {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name !== ALERT_ALARM) return;
 
-  const { watchUserId: userId } = await chrome.storage.local.get('watchUserId');
-  if (!userId) return;
+  const { extensionAuthToken } = await chrome.storage.local.get('extensionAuthToken');
+  if (!extensionAuthToken) return;
 
   const notifiedIds = await getNotifiedIds();
 
   try {
-    const res = await fetch(`${DEFAULT_API}/api/alerts?userId=${userId}`);
+    const res = await fetch(`${DEFAULT_API}/api/alerts`, {
+      headers: { Authorization: `Bearer ${extensionAuthToken}` }
+    });
     if (!res.ok) return;
 
     const { alerts } = await res.json();
@@ -192,6 +266,43 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (message.action !== 'store_extension_auth' || typeof message.token !== 'string') {
+    return;
+  }
+
+  void (async () => {
+    await chrome.storage.local.set({
+      extensionAuthToken: message.token,
+      extensionUserEmail: typeof message.email === 'string' ? message.email : null,
+    });
+    chrome.alarms.create(ALERT_ALARM, { periodInMinutes: 1 });
+    sendResponse({ success: true });
+  })();
+
+  return true;
+});
+
+chrome.tabs.onUpdated.addListener((tabId, info) => {
+  if (info.status !== 'complete') return;
+
+  void (async () => {
+    const pendingTabIds = await getPendingAutofillTabIds();
+    if (!pendingTabIds.includes(tabId)) return;
+
+    const { profile } = await chrome.storage.local.get('profile');
+    if (profile) {
+      chrome.tabs.sendMessage(tabId, { action: 'fill_forms', profile }, () => {
+        if (chrome.runtime.lastError) {
+          console.warn('[autofill] Failed to reach content script:', chrome.runtime.lastError.message);
+        }
+      });
+    }
+
+    await clearPendingAutofillTab(tabId);
+  })();
+});
+
 // Handle notification click → open booking page + trigger autofill
 chrome.notifications.onClicked.addListener(async (notificationId) => {
   chrome.notifications.clear(notificationId);
@@ -218,23 +329,16 @@ chrome.notifications.onClicked.addListener(async (notificationId) => {
   if (!deepLink) return;
 
   const tab = await chrome.tabs.create({ url: deepLink, active: true });
-
-  chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-    if (tabId === tab.id && info.status === 'complete') {
-      chrome.tabs.onUpdated.removeListener(listener);
-      setTimeout(async () => {
-        const { profile } = await chrome.storage.local.get('profile');
-        if (profile) {
-          chrome.tabs.sendMessage(tabId, { action: 'fill_forms', profile });
-        }
-      }, 2000);
-    }
-  });
+  await scheduleTabAutofill(tab.id);
 
   if (data.alertId) {
+    const { extensionAuthToken } = await chrome.storage.local.get('extensionAuthToken');
     fetch(`${DEFAULT_API}/api/alerts`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(extensionAuthToken ? { Authorization: `Bearer ${extensionAuthToken}` } : {})
+      },
       body: JSON.stringify({ id: data.alertId }),
     }).catch(() => {});
   }
@@ -242,5 +346,9 @@ chrome.notifications.onClicked.addListener(async (notificationId) => {
 
 // Clean up tab references when tabs are closed
 chrome.tabs.onRemoved.addListener((tabId) => {
-  launchedTabs = launchedTabs.filter(t => t.tabId !== tabId);
+  void (async () => {
+    const launchedTabs = await getLaunchedTabs();
+    await setLaunchedTabs(launchedTabs.filter(t => t.tabId !== tabId));
+    await clearPendingAutofillTab(tabId);
+  })();
 });

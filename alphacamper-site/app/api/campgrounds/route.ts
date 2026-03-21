@@ -22,7 +22,9 @@ export async function GET(request: Request) {
     .select('id, platform, name, short_name, province')
     .limit(limit)
 
-  const escapedQuery = q.replace(/%/g, '\\%').replace(/_/g, '\\_')
+  const escapedQuery = q
+    .replace(/[%_]/g, '\\$&')
+    .replace(/[,.()]/g, '')
   query = query.or(
     `name.ilike.%${escapedQuery}%,short_name.ilike.%${escapedQuery}%,province.ilike.%${escapedQuery}%`
   )

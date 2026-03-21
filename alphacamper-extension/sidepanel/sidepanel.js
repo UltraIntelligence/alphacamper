@@ -566,12 +566,12 @@ function renderPlannerResults(data) {
 }
 
 // ── Watching (Cancellation Monitor) ──
-let watchUserId = null;
+let extensionAuthToken = null;
 
 async function loadWatching() {
-  const result = await chrome.storage.local.get('watchUserId');
-  watchUserId = result.watchUserId || null;
-  if (!watchUserId) {
+  const result = await chrome.storage.local.get('extensionAuthToken');
+  extensionAuthToken = result.extensionAuthToken || null;
+  if (!extensionAuthToken) {
     document.getElementById('watch-register').style.display = 'block';
     document.getElementById('watch-list').textContent = '';
     document.getElementById('watch-alerts').textContent = '';
@@ -588,28 +588,36 @@ document.getElementById('watch-register-btn').addEventListener('click', async ()
   if (!email || !email.includes('@')) return;
   try {
     const base = API_BASE || 'http://localhost:3000';
-    const res = await fetch(base + '/api/register', {
+    const btn = document.getElementById('watch-register-btn');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    const res = await fetch(base + '/api/extension-auth/start', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, extensionId: chrome.runtime.id })
     });
-    const data = await res.json();
-    if (data.user) {
-      watchUserId = data.user.id;
-      await chrome.storage.local.set({ watchUserId: watchUserId });
-      document.getElementById('watch-register').style.display = 'none';
-      await refreshWatches();
+
+    if (res.ok) {
+      document.querySelector('#watch-register p').textContent = 'Check your email and click the link to connect this extension.';
+      btn.textContent = 'Check email';
+      return;
     }
+
+    btn.textContent = 'Connect';
+    btn.disabled = false;
   } catch { /* silent */ }
 });
 
 async function refreshWatches() {
-  if (!watchUserId) return;
+  if (!extensionAuthToken) return;
   const listEl = document.getElementById('watch-list');
   const noEl = document.getElementById('no-watches');
   try {
     const base = API_BASE || 'http://localhost:3000';
-    const res = await fetch(base + '/api/watch?userId=' + watchUserId);
+    const res = await fetch(base + '/api/watch', {
+      headers: { Authorization: 'Bearer ' + extensionAuthToken }
+    });
     const data = await res.json();
     const watches = data.watches || [];
     listEl.textContent = '';
@@ -630,7 +638,10 @@ async function refreshWatches() {
       removeBtn.textContent = '\u2715';
       removeBtn.addEventListener('click', async function() {
         const base2 = API_BASE || 'http://localhost:3000';
-        await fetch(base2 + '/api/watch?id=' + w.id, { method: 'DELETE' });
+        await fetch(base2 + '/api/watch?id=' + w.id, {
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + extensionAuthToken }
+        });
         await refreshWatches();
       });
       card.append(info, removeBtn);
@@ -640,12 +651,14 @@ async function refreshWatches() {
 }
 
 async function refreshAlerts() {
-  if (!watchUserId) return;
+  if (!extensionAuthToken) return;
   const alertsEl = document.getElementById('watch-alerts');
   alertsEl.textContent = '';
   try {
     const base = API_BASE || 'http://localhost:3000';
-    const res = await fetch(base + '/api/alerts?userId=' + watchUserId);
+    const res = await fetch(base + '/api/alerts', {
+      headers: { Authorization: 'Bearer ' + extensionAuthToken }
+    });
     const data = await res.json();
     (data.alerts || []).forEach(function(alert) {
       const card = document.createElement('div');
@@ -665,23 +678,13 @@ async function refreshAlerts() {
         const link = Missions.generateDeepLink(platform, cgId);
         if (link) {
           chrome.tabs.create({ url: link, active: true }).then((tab) => {
-            chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-              if (tabId === tab.id && info.status === 'complete') {
-                chrome.tabs.onUpdated.removeListener(listener);
-                setTimeout(async () => {
-                  const { profile } = await chrome.storage.local.get('profile');
-                  if (profile) {
-                    chrome.tabs.sendMessage(tabId, { action: 'fill_forms', profile });
-                  }
-                }, 2000);
-              }
-            });
+            chrome.runtime.sendMessage({ action: 'schedule_tab_fill', tabId: tab.id });
           });
         }
         const base2 = API_BASE || 'http://localhost:3000';
         await fetch(base2 + '/api/alerts', {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + extensionAuthToken },
           body: JSON.stringify({ id: alert.id })
         });
         await refreshAlerts();
@@ -693,7 +696,7 @@ async function refreshAlerts() {
 }
 
 document.getElementById('add-watch-btn').addEventListener('click', () => {
-  if (!watchUserId) { document.getElementById('watch-register').style.display = 'block'; return; }
+  if (!extensionAuthToken) { document.getElementById('watch-register').style.display = 'block'; return; }
   document.getElementById('watch-form').style.display = 'block';
   populateWatchCampgrounds();
 });
@@ -730,7 +733,7 @@ document.getElementById('wf-campground').addEventListener('change', function() {
 });
 
 document.getElementById('wf-save').addEventListener('click', async () => {
-  if (!watchUserId) return;
+  if (!extensionAuthToken) return;
   const campgroundId = document.getElementById('wf-campground').value;
   const campgroundName = document.getElementById('wf-campground-name').value;
   if (!campgroundId || !campgroundName) return;
@@ -738,9 +741,8 @@ document.getElementById('wf-save').addEventListener('click', async () => {
     const base = API_BASE || 'http://localhost:3000';
     await fetch(base + '/api/watch', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + extensionAuthToken },
       body: JSON.stringify({
-        userId: watchUserId,
         platform: document.getElementById('wf-platform').value,
         campgroundId: campgroundId,
         campgroundName: campgroundName,
@@ -756,7 +758,14 @@ document.getElementById('wf-save').addEventListener('click', async () => {
 
 // Poll alerts every 30s when watching view is active
 setInterval(function() {
-  if (currentView === 'watching' && watchUserId) refreshAlerts();
+  if (currentView === 'watching' && extensionAuthToken) refreshAlerts();
 }, 30000);
+
+chrome.storage.onChanged.addListener(function(changes) {
+  if (changes.extensionAuthToken) {
+    extensionAuthToken = changes.extensionAuthToken.newValue || null;
+    loadWatching();
+  }
+});
 
 loadDashboard();

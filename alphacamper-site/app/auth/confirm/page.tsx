@@ -16,6 +16,9 @@ interface PendingWatchDraft {
   departureDate: string
 }
 
+const VALID_OTP_TYPES = ['email', 'magiclink', 'signup', 'recovery'] as const
+type ValidOtpType = typeof VALID_OTP_TYPES[number]
+
 function readPendingWatchDraft(): PendingWatchDraft | null {
   if (typeof window === 'undefined') return null
 
@@ -35,11 +38,40 @@ function readPendingWatchDraft(): PendingWatchDraft | null {
   }
 }
 
+async function sendTokenToExtension(extensionId: string, token: string, email: string): Promise<boolean> {
+  const chromeApi = (window as Window & {
+    chrome?: {
+      runtime?: {
+        sendMessage?: (extensionId: string, message: unknown, callback?: (response?: unknown) => void) => void
+      }
+    }
+  }).chrome as undefined | {
+    runtime?: {
+      sendMessage?: (extensionId: string, message: unknown, callback?: (response?: unknown) => void) => void
+    }
+  }
+
+  const sendMessage = chromeApi?.runtime?.sendMessage
+  if (!sendMessage) return false
+
+  return await new Promise((resolve) => {
+    try {
+      sendMessage(extensionId, { action: 'store_extension_auth', token, email }, (response) => {
+        resolve(Boolean((response as { success?: boolean } | undefined)?.success))
+      })
+    } catch {
+      resolve(false)
+    }
+  })
+}
+
 function AuthConfirmContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [status, setStatus] = useState<'verifying' | 'creating' | 'success' | 'error'>('verifying')
   const [errorMessage, setErrorMessage] = useState('This magic link has expired or was already used.')
+  const [hasPendingWatch, setHasPendingWatch] = useState(false)
+  const isExtensionFlow = Boolean(searchParams.get('extensionId'))
 
   useEffect(() => {
     let isMounted = true
@@ -47,16 +79,16 @@ function AuthConfirmContent() {
 
     const tokenHash = searchParams.get('token_hash')
     const type = searchParams.get('type')
+    const extensionId = searchParams.get('extensionId')
 
-    const validTypes = ['email', 'magiclink', 'signup', 'recovery']
-    if (!tokenHash || !type || !validTypes.includes(type)) {
+    if (!tokenHash || !type || !VALID_OTP_TYPES.includes(type as ValidOtpType)) {
       queueMicrotask(() => { if (isMounted) setStatus('error') })
       return () => { isMounted = false }
     }
 
     const supabase = getSupabase()
     supabase.auth
-      .verifyOtp({ token_hash: tokenHash, type: type as 'email' })
+      .verifyOtp({ token_hash: tokenHash, type: type as ValidOtpType })
       .then(async ({ error }) => {
         if (!isMounted) return
         if (error) {
@@ -64,14 +96,18 @@ function AuthConfirmContent() {
           return
         }
 
-        setStatus('creating')
-
         const { data: { session } } = await supabase.auth.getSession()
         if (!session?.access_token) {
           throw new Error('Your email was confirmed, but we could not finish signing you in. Please try the link again.')
         }
 
         const authHeaders = { Authorization: `Bearer ${session.access_token}` }
+        const draft = readPendingWatchDraft()
+        if (!isMounted) return
+
+        setHasPendingWatch(Boolean(draft))
+        setStatus('creating')
+
         const registerRes = await fetch('/api/register', {
           method: 'POST',
           headers: authHeaders,
@@ -81,7 +117,28 @@ function AuthConfirmContent() {
           throw new Error('Your email was confirmed, but we could not finish setting up your account.')
         }
 
-        const draft = readPendingWatchDraft()
+        if (extensionId) {
+          const extensionSessionRes = await fetch('/api/extension-auth/session', {
+            method: 'POST',
+            headers: authHeaders,
+          })
+
+          if (!extensionSessionRes.ok) {
+            throw new Error('Your email was confirmed, but we could not reconnect the extension.')
+          }
+
+          const extensionSession = await extensionSessionRes.json()
+          const sentToExtension = await sendTokenToExtension(
+            extensionId,
+            extensionSession.token,
+            extensionSession.user?.email ?? ''
+          )
+
+          if (!sentToExtension) {
+            throw new Error('Your email was confirmed, but we could not reconnect the extension. Open the extension and try Connect again.')
+          }
+        }
+
         if (draft) {
           const watchRes = await fetch('/api/watch', {
             method: 'POST',
@@ -96,7 +153,7 @@ function AuthConfirmContent() {
             throw new Error('Your email was confirmed, but we could not save your watch yet.')
           }
 
-              window.localStorage.removeItem(PENDING_WATCH_STORAGE_KEY)
+          window.localStorage.removeItem(PENDING_WATCH_STORAGE_KEY)
         }
 
         if (!isMounted) return
@@ -125,14 +182,21 @@ function AuthConfirmContent() {
       )}
       {status === 'creating' && (
         <>
-          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>Finishing your watch...</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Alpha&apos;s saving your account and watch now.</p>
+          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>
+            {hasPendingWatch ? 'Finishing your watch...' : 'Finishing sign-in...'}
+          </h1>
+          <p style={{ color: 'var(--color-text-muted)' }}>
+            {hasPendingWatch ? 'Alpha&apos;s saving your account and watch now.' : 'Alpha&apos;s setting up your account now.'}
+          </p>
         </>
       )}
       {status === 'success' && (
         <>
           <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>You&apos;re in!</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Your watch is ready. Redirecting to your dashboard...</p>
+          <p style={{ color: 'var(--color-text-muted)' }}>
+            {hasPendingWatch ? 'Your watch is ready. Redirecting to your dashboard...' : 'Your account is ready. Redirecting to your dashboard...'}
+            {isExtensionFlow ? ' Your extension is connected too.' : ''}
+          </p>
         </>
       )}
       {status === 'error' && (
@@ -152,7 +216,7 @@ function AuthConfirmContent() {
 
 export default function AuthConfirmPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<main className="wizard-container" style={{ textAlign: 'center', paddingTop: '80px' }}>Loading...</main>}>
       <AuthConfirmContent />
     </Suspense>
   )

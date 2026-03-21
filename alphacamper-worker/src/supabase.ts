@@ -130,7 +130,7 @@ export async function fetchUserContact(userId: string): Promise<{ email: string 
     .select("email, phone")
     .eq("id", userId)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error) {
     log.error("fetchUserContact failed", { userId, error: error.message });

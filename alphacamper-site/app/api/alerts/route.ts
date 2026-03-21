@@ -4,23 +4,27 @@ import { getUserIdFromRequest } from "@/lib/auth";
 
 // GET — Fetch alerts for the authenticated user
 export async function GET(request: Request) {
-  const userId = await getUserIdFromRequest(request);
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const userId = await getUserIdFromRequest(request);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const { data, error } = await getSupabase()
-    .from("availability_alerts")
-    .select("*, watched_targets(*)")
-    .eq("user_id", userId)
-    .eq("claimed", false)
-    .order("notified_at", { ascending: false })
-    .limit(20);
+    const { data, error } = await getSupabase()
+      .from("availability_alerts")
+      .select("*, watched_targets(*)")
+      .eq("user_id", userId)
+      .eq("claimed", false)
+      .order("notified_at", { ascending: false })
+      .limit(20);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ alerts: data });
+  } catch {
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
-  return NextResponse.json({ alerts: data });
 }
 
 // PATCH — Mark alert as claimed (ownership verified via JWT)

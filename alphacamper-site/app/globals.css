@@ -25,7 +25,7 @@
 
   /* Semantic tokens for wizard */
   --color-primary: var(--paradiso);
-  --color-primary-hover: var(--sea-green);
+  --color-primary-hover: var(--dark);
   --color-accent: var(--horizon);
   --color-accent-hover: var(--dark);
   --color-surface: #ffffff;
@@ -45,6 +45,16 @@
 }
 
 html { scroll-behavior: smooth; font-size: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: -1ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 body {
   font-family: var(--font-body);
@@ -247,7 +257,7 @@ a { color: inherit; text-decoration: none; }
   border: none; border-radius: 100px; cursor: pointer;
   transition: background 0.2s; white-space: nowrap;
 }
-.park-search-btn:hover { background: var(--horizon); }
+.park-search-btn:hover { background: var(--dark); }
 
 .park-search-dropdown {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0;
@@ -1013,6 +1023,12 @@ a { color: inherit; text-decoration: none; }
 
 .field-input-error {
   border-color: #cc3333;
+}
+
+.field-input.field-input-error:focus,
+.field-input-error:focus {
+  border-color: #cc3333;
+  box-shadow: 0 0 0 3px rgba(204, 51, 51, 0.16);
 }
 
 /* ── Selectable list items ── */

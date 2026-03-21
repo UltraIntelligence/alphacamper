@@ -4,6 +4,7 @@ import { log } from "./logger.js";
 import type { AvailableSite } from "./supabase.js";
 
 let hasWarnedAboutMissingPiiSalt = false;
+let hasWarnedAboutMissingFromEmail = false;
 
 /** Produces a consistent 8-char pseudonymous identifier from a PII string (email or phone).
  *  Allows log grouping without storing or exposing the original value. */
@@ -114,7 +115,8 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
 
   try {
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-    if (!process.env.RESEND_FROM_EMAIL) {
+    if (!process.env.RESEND_FROM_EMAIL && !hasWarnedAboutMissingFromEmail) {
+      hasWarnedAboutMissingFromEmail = true;
       log.warn("RESEND_FROM_EMAIL is not set — using Resend sandbox sender; emails may not be delivered in production");
     }
     const { data, error } = await resend.emails.send({
