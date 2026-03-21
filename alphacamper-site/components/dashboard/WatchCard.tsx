@@ -35,7 +35,8 @@ function nightCount(arrival: string, departure: string): number {
 }
 
 function platformLabel(platform: string): string {
-  return platform === 'bc_parks' ? 'BC Parks' : 'Ontario Parks'
+  const labels: Record<string, string> = { bc_parks: 'BC Parks', ontario_parks: 'Ontario Parks', recreation_gov: 'Recreation.gov', parks_canada: 'Parks Canada' }
+  return labels[platform] || platform
 }
 
 export function WatchCard({ watch, isPast, onDelete }: WatchCardProps) {

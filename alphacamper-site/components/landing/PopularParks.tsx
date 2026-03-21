@@ -6,9 +6,9 @@ const parks = [
   { id: '-2493', name: 'Golden Ears', province: 'BC' },
   { id: '-2740399', name: 'Algonquin', province: 'ON' },
   { id: '232447', name: 'Upper Pines (Yosemite)', province: 'CA' },
-  { id: '232493', name: 'Glacier Basin (Mt Rainier)', province: 'WA' },
-  { id: '251869', name: 'Apgar (Glacier NP)', province: 'MT' },
-  { id: '272299', name: 'Jumbo Rocks (Joshua Tree)', province: 'CA' },
+  { id: '232493', name: 'Fish Creek (Glacier NP)', province: 'MT' },
+  { id: '10171274', name: 'Apgar (Glacier NP)', province: 'MT' },
+  { id: '272300', name: 'Jumbo Rocks (Joshua Tree)', province: 'CA' },
 ]
 
 export function PopularParks() {

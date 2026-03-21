@@ -13,7 +13,8 @@ export function WatchConfirmation({
   departureDate: string
   email: string
 }) {
-  const platformLabel = platform === 'bc_parks' ? 'BC Parks' : 'Ontario Parks'
+  const platformLabels: Record<string, string> = { bc_parks: 'BC Parks', ontario_parks: 'Ontario Parks', recreation_gov: 'Recreation.gov', parks_canada: 'Parks Canada' }
+  const platformLabel = platformLabels[platform] || platform
 
   return (
     <div style={{ textAlign: 'center', padding: '40px 24px' }}>
