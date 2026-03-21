@@ -6,7 +6,8 @@ import type { AvailableSite } from "./supabase.js";
 /** Produces a consistent 8-char pseudonymous identifier from a PII string (email or phone).
  *  Allows log grouping without storing or exposing the original value. */
 function maskPii(value: string): string {
-  return createHash("sha256").update(value).digest("hex").slice(0, 8);
+  const salt = process.env.PII_MASK_SALT ?? "alphacamper-log-salt";
+  return createHash("sha256").update(salt + value).digest("hex").slice(0, 8);
 }
 
 // ─── Resend singleton ────────────────────────────────────────────────────────
@@ -104,6 +105,9 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
 
   try {
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+    if (!process.env.RESEND_FROM_EMAIL) {
+      log.warn("RESEND_FROM_EMAIL is not set — using Resend sandbox sender; emails may not be delivered in production");
+    }
     const { data, error } = await resend.emails.send({
       from: `Alphacamper <${fromEmail}>`,
       to: params.email,

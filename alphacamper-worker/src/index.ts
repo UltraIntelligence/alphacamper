@@ -229,26 +229,57 @@ async function runCycle(): Promise<void> {
         // Step 4i-b: Send notifications (non-blocking — fire and forget)
         const watch = groupWatches.find(w => w.id === result.watchId);
         if (watch) {
-          fetchUserContact(result.userId).then((contact) => {
-            if (contact.email) {
-              sendAlertEmail({
-                email: contact.email,
-                campgroundName: watch.campground_name,
+          void (async () => {
+            try {
+              const contact = await fetchUserContact(result.userId);
+              if (contact.email) {
+                try {
+                  await sendAlertEmail({
+                    email: contact.email,
+                    campgroundName: watch.campground_name,
+                    platform: watch.platform,
+                    arrivalDate: watch.arrival_date,
+                    departureDate: watch.departure_date,
+                    sites: confirmResult.sites,
+                  });
+                } catch (err) {
+                  log.error("Email send failed", {
+                    error: String(err),
+                    watchId: result.watchId,
+                    userId: result.userId,
+                    campground: watch.campground_name,
+                    platform: watch.platform,
+                  });
+                }
+              }
+              if (contact.phone) {
+                try {
+                  await sendAlertSMS({
+                    phone: contact.phone,
+                    campgroundName: watch.campground_name,
+                    platform: watch.platform,
+                    sites: confirmResult.sites,
+                  });
+                } catch (err) {
+                  log.error("SMS send failed", {
+                    error: String(err),
+                    watchId: result.watchId,
+                    userId: result.userId,
+                    campground: watch.campground_name,
+                    platform: watch.platform,
+                  });
+                }
+              }
+            } catch (err) {
+              log.error("Failed to fetch user contact for notification", {
+                error: String(err),
+                watchId: result.watchId,
+                userId: result.userId,
+                campground: watch.campground_name,
                 platform: watch.platform,
-                arrivalDate: watch.arrival_date,
-                departureDate: watch.departure_date,
-                sites: confirmResult.sites,
-              }).catch((err) => log.error("Email send failed", { error: String(err), watchId: result.watchId }));
+              });
             }
-            if (contact.phone) {
-              sendAlertSMS({
-                phone: contact.phone,
-                campgroundName: watch.campground_name,
-                platform: watch.platform,
-                sites: confirmResult.sites,
-              }).catch((err) => log.error("SMS send failed", { error: String(err), watchId: result.watchId }));
-            }
-          }).catch((err) => log.error("Failed to fetch user contact for notification", { error: String(err), watchId: result.watchId }));
+          })();
         }
       }
     }
@@ -309,7 +340,12 @@ async function loop() {
 // ─── Directory sync ───────────────────────────────────────────────────────────
 
 async function syncAllDirectories(): Promise<void> {
+  const disabledPlatforms = getDisabledPlatforms();
   for (const platform of Object.keys(DOMAINS)) {
+    if (disabledPlatforms.has(platform)) {
+      log.info("Platform disabled — skipping directory sync", { platform });
+      continue;
+    }
     try {
       const domain = DOMAINS[platform];
       if (cookieManager.isExpired(domain)) {
@@ -330,8 +366,8 @@ async function syncAllDirectories(): Promise<void> {
 // ─── Startup ──────────────────────────────────────────────────────────────────
 
 log.info("Alphacamper Worker starting");
-// Health server is already listening — sync directories before starting the poll loop.
-// Failures are non-fatal; loop() always starts via .finally().
+// Start polling immediately — directory sync runs in the background.
+// A stalled sync must not block the poll loop from starting.
+loop();
 syncAllDirectories()
-  .catch(err => log.error("Directory sync aborted", { error: String(err) }))
-  .finally(() => loop());
+  .catch(err => log.error("Directory sync failed", { error: String(err) }));

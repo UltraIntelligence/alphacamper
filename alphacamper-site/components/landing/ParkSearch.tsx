@@ -13,11 +13,17 @@ export function ParkSearch() {
   const router = useRouter()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const latestSearchRef = useRef(0)
+
   async function fetchResults(q: string, limit = 8): Promise<SearchResult[]> {
     if (!q.trim() || q.trim().length < 2) return []
-    const res = await fetch(`/api/campgrounds?q=${encodeURIComponent(q)}&limit=${limit}`)
-    if (!res.ok) return []
-    return (await res.json()).campgrounds ?? []
+    try {
+      const res = await fetch(`/api/campgrounds?q=${encodeURIComponent(q)}&limit=${limit}`)
+      if (!res.ok) return []
+      return (await res.json()).campgrounds ?? []
+    } catch {
+      return []
+    }
   }
 
   function handleChange(value: string) {
@@ -29,7 +35,9 @@ export function ParkSearch() {
       return
     }
     debounceRef.current = setTimeout(async () => {
+      const seq = ++latestSearchRef.current
       const matches = await fetchResults(value)
+      if (seq !== latestSearchRef.current) return
       setResults(matches)
       setIsOpen(matches.length > 0)
     }, 200)
@@ -47,8 +55,10 @@ export function ParkSearch() {
       debounceRef.current = null
     }
     if (!query.trim()) return
+    const seq = ++latestSearchRef.current
     // Immediate fetch (no debounce) so Enter key always gets fresh results
     const matches = await fetchResults(query, 1)
+    if (seq !== latestSearchRef.current) return
     if (matches.length > 0) {
       handleSelect(matches[0])
     } else {

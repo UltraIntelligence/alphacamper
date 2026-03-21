@@ -5,10 +5,6 @@ interface RecreationGovSite {
   availabilities: Record<string, string>;
 }
 
-interface RecreationGovResponse {
-  campsites: Record<string, RecreationGovSite>;
-}
-
 export class RecreationGovPoller implements PlatformPoller {
   async checkCampground(
     watches: WatchedTarget[],
@@ -63,9 +59,17 @@ export class RecreationGovPoller implements PlatformPoller {
         // Merge: for each site, merge availabilities
         for (const [siteId, siteData] of Object.entries(campsites) as [string, { site: unknown; availabilities?: Record<string, unknown> }][]) {
           if (!allCampsites[siteId]) {
-            allCampsites[siteId] = { site: siteData.site, availabilities: {} };
+            allCampsites[siteId] = {
+              site: typeof siteData.site === 'string' ? siteData.site : String(siteData.site ?? ''),
+              availabilities: {},
+            };
           }
-          Object.assign(allCampsites[siteId].availabilities, siteData.availabilities || {});
+          const avails = siteData.availabilities || {};
+          const validAvails: Record<string, string> = {};
+          for (const [k, v] of Object.entries(avails)) {
+            if (typeof v === 'string') validAvails[k] = v;
+          }
+          Object.assign(allCampsites[siteId].availabilities, validAvails);
         }
       } catch {
         continue;

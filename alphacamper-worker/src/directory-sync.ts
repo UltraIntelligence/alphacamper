@@ -39,9 +39,15 @@ export async function syncDirectoryForDomain(
     });
   }
 
+  let allSucceeded = true;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    await upsertCampgrounds(rows.slice(i, i + BATCH_SIZE));
+    const ok = await upsertCampgrounds(rows.slice(i, i + BATCH_SIZE));
+    if (!ok) allSucceeded = false;
   }
 
-  log.info("Directory sync complete", { platform, count: rows.length });
+  if (allSucceeded) {
+    log.info("Directory sync complete", { platform, count: rows.length });
+  } else {
+    log.warn("Directory sync completed with errors", { platform, count: rows.length });
+  }
 }

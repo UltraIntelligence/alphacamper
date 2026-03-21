@@ -5,12 +5,19 @@ import { getUserIdFromRequest } from "@/lib/auth";
 // POST — Add a new watch target
 export async function POST(request: Request) {
   try {
-    const userId = await getUserIdFromRequest(request);
+    // Read body first — needed for watch fields in all cases
+    const body = await request.json();
+
+    // Authenticated path: userId from JWT. Unauthenticated wizard path: userId from body.
+    let userId = await getUserIdFromRequest(request);
+    if (!userId) {
+      userId = typeof body.userId === "string" ? body.userId : null;
+    }
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
     const { platform, campgroundId, campgroundName, siteNumber, arrivalDate, departureDate } = body;
 
     if (!platform || !campgroundId || !arrivalDate || !departureDate) {

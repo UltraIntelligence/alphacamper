@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const q = searchParams.get('q')?.trim() ?? ''
   const platform = searchParams.get('platform') ?? undefined
-  const limit = Math.min(Number(searchParams.get('limit') ?? 10), 20)
+  const limit = Math.min(Math.max(1, Number(searchParams.get('limit')) || 10), 20)
 
   if (q.length < 2) {
     return NextResponse.json({ campgrounds: [] })
@@ -20,12 +20,16 @@ export async function GET(request: Request) {
   let query = supabase
     .from('campgrounds')
     .select('id, platform, name, short_name, province')
-    .ilike('name', `%${q}%`)
+    .ilike('name', `%${q.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`)
     .limit(limit)
 
   if (platform) query = query.eq('platform', platform)
 
   const { data, error } = await query
+
+  if (error) {
+    console.error('[campgrounds] Supabase query failed:', error.message)
+  }
 
   const dbResults = (error ? [] : (data ?? [])) as Array<{
     id: string
@@ -36,7 +40,7 @@ export async function GET(request: Request) {
   }>
 
   // Merge static fallback — covers Recreation.gov and pre-sync state for Camis platforms
-  const staticResults = searchCampgrounds(q).map(c => ({
+  const staticResults = searchCampgrounds(q).filter(c => !platform || c.platform === platform).map(c => ({
     id: c.id,
     platform: c.platform,
     name: c.name,

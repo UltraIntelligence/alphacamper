@@ -15,18 +15,23 @@ export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSea
   const [results, setResults] = useState<{ id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchSeqRef = useRef(0)
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (!query.trim() || query.trim().length < 2) { setResults([]); return }
 
     debounceRef.current = setTimeout(async () => {
+      const seq = ++searchSeqRef.current
       setIsSearching(true)
       try {
         const res = await fetch(`/api/campgrounds?q=${encodeURIComponent(query)}&limit=10`)
-        if (res.ok) setResults((await res.json()).campgrounds ?? [])
+        if (seq !== searchSeqRef.current) return
+        setResults(res.ok ? ((await res.json()).campgrounds ?? []) : [])
+      } catch {
+        if (seq === searchSeqRef.current) setResults([])
       } finally {
-        setIsSearching(false)
+        if (seq === searchSeqRef.current) setIsSearching(false)
       }
     }, 250)
 

@@ -124,26 +124,10 @@ export async function createAlert(
   return true;
 }
 
-export async function fetchUserEmail(userId: string): Promise<string | null> {
-  const { data, error } = await getClient()
-    .from("users")
-    .select("email")
-    .eq("id", userId)
-    .limit(1)
-    .single();
-
-  if (error) {
-    log.error("fetchUserEmail failed", { userId, error: error.message });
-    return null;
-  }
-
-  return data?.email ?? null;
-}
-
 export async function fetchUserContact(userId: string): Promise<{ email: string | null; phone: string | null }> {
   const { data, error } = await getClient()
     .from("users")
-    .select("email, phone")
+    .select("email")
     .eq("id", userId)
     .limit(1)
     .single();
@@ -153,7 +137,7 @@ export async function fetchUserContact(userId: string): Promise<{ email: string 
     return { email: null, phone: null };
   }
 
-  return { email: data?.email ?? null, phone: data?.phone ?? null };
+  return { email: data?.email ?? null, phone: null };
 }
 
 export async function updateLastChecked(watchIds: string[]): Promise<void> {
@@ -199,12 +183,16 @@ export async function upsertCampgrounds(
     short_name: string | null;
     province: string | null;
   }>
-): Promise<void> {
-  if (rows.length === 0) return;
+): Promise<boolean> {
+  if (rows.length === 0) return true;
   const { error } = await getClient()
     .from("campgrounds")
     .upsert(rows, { onConflict: "id,platform" });
-  if (error) log.error("upsertCampgrounds failed", { error: error.message, count: rows.length });
+  if (error) {
+    log.error("upsertCampgrounds failed", { error: error.message, count: rows.length });
+    return false;
+  }
+  return true;
 }
 
 export async function updateWorkerStatus(stats: Record<string, unknown>): Promise<void> {

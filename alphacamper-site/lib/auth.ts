@@ -6,16 +6,21 @@ import { getSupabase } from './supabase'
  * then resolves the caller's row ID from the users table.
  * Returns null if the token is missing, invalid, or the user has no DB record.
  */
-export async function getUserIdFromRequest(request: Request): Promise<string | null> {
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '')
-  if (!token) return null
+async function getVerifiedUser(request: Request) {
+  const authHeader = request.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) return null
+  const token = authHeader.slice(7)
 
-  // Validate the token against Supabase's auth server (not just local decode)
   const authClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
   const { data: { user } } = await authClient.auth.getUser(token)
+  return user ?? null
+}
+
+export async function getUserIdFromRequest(request: Request): Promise<string | null> {
+  const user = await getVerifiedUser(request)
   if (!user?.email) return null
 
   const { data } = await getSupabase()
@@ -32,14 +37,7 @@ export async function getUserIdFromRequest(request: Request): Promise<string | n
  * users-table ID. Used by /api/register which needs to upsert the users table.
  */
 export async function getVerifiedEmailFromRequest(request: Request): Promise<string | null> {
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '')
-  if (!token) return null
-
-  const authClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const { data: { user } } = await authClient.auth.getUser(token)
+  const user = await getVerifiedUser(request)
   return user?.email ?? null
 }
 

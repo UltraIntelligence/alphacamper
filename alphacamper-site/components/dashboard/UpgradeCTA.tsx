@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export function UpgradeCTA() {
   return (
     <div className="upgrade-card">
@@ -12,13 +14,13 @@ export function UpgradeCTA() {
       <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '16px' }}>
         $3.99/mo or $19/yr
       </p>
-      <a
-        href="/pricing"
+      <Link
+        href="/#pricing"
         className="btn-bold btn-bold-inverse"
         style={{ textDecoration: 'none' }}
       >
         Get the Extension →
-      </a>
+      </Link>
     </div>
   )
 }

@@ -87,7 +87,7 @@ This is a development shortcut and must **never** reach production.
 ## Site API Routes
 
 - `POST/GET/DELETE /api/watch` — CRUD watched_targets
-- `GET /api/check-availability` — cron endpoint (every 15min via vercel.json)
+- `GET /api/check-availability` — cron endpoint (every 15 min via vercel.json)
 - `GET/PATCH /api/alerts` — alert management
 - `POST /api/plan-trip` — AI trip planning (OpenRouter)
 - `POST /api/register` — user registration
@@ -115,4 +115,4 @@ Vitest 4.1.0 for both site and worker. No extension tests.
 - TypeScript for site and worker; vanilla JS for extension
 - No monorepo workspace manager — each app has independent node_modules
 - Docker multi-stage build for worker (Playwright base image)
-- Cron job: `vercel.json` schedules `/api/check-availability` every 15min
+- Cron job: `vercel.json` schedules `/api/check-availability` every 15 min

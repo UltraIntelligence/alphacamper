@@ -45,10 +45,11 @@ const STEPS: { key: WizardStep; number: number; title: string }[] = [
 
 function getStepSummary(step: WizardStep, data: WatchData): string | null {
   switch (step) {
-    case 'search':
+    case 'search': {
       if (!data.campgroundName) return null
       const platformLabels: Record<string, string> = { bc_parks: 'BC Parks', ontario_parks: 'Ontario Parks', recreation_gov: 'Recreation.gov', parks_canada: 'Parks Canada' }
       return `${data.campgroundName} — ${platformLabels[data.platform] || data.platform}`
+    }
     case 'dates':
       if (!data.arrivalDate || !data.departureDate) return null
       return `${data.arrivalDate} → ${data.departureDate} (${data.nights} night${data.nights !== 1 ? 's' : ''})`
