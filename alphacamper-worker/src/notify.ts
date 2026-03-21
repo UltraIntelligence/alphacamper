@@ -106,7 +106,8 @@ function getBookingUrl(platform: string, campgroundId: string): string | null {
       return `https://reservations.ontarioparks.ca/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
     case "parks_canada":
       // Parks Canada campground IDs are in the format "ParkSlug/CampgroundSlug"
-      return `https://reservation.pc.gc.ca/${campgroundId}`;
+      // Encode each segment individually to preserve the path separator
+      return `https://reservation.pc.gc.ca/${campgroundId.split("/").map(encodeURIComponent).join("/")}`;
     case "recreation_gov":
       return `https://www.recreation.gov/camping/campgrounds/${encodeURIComponent(campgroundId)}`;
     default:

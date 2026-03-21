@@ -28,13 +28,16 @@ export async function POST(request: Request) {
     }
     const email = user.email;
 
-    // Ensure user row exists (INSERT if new, SELECT if existing)
+    // Ensure user row exists (INSERT if new, ignore conflict if existing)
     const supabase = getSupabase();
-    await supabase
+    const { error: insertError } = await supabase
       .from("users")
-      .insert({ email })
-      .select()
-      .maybeSingle(); // ignore conflict — row may already exist
+      .insert({ email });
+
+    // 23505 = unique_violation (expected for existing users) — anything else is unexpected
+    if (insertError && insertError.code !== "23505") {
+      console.error("[extension-auth/session] Unexpected insert error", insertError.message);
+    }
 
     const { data, error } = await supabase
       .from("users")

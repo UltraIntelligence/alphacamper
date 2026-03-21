@@ -586,9 +586,9 @@ async function loadWatching() {
 document.getElementById('watch-register-btn').addEventListener('click', async () => {
   const email = document.getElementById('watch-email').value.trim();
   if (!email || !email.includes('@')) return;
+  const btn = document.getElementById('watch-register-btn');
   try {
     const base = API_BASE || 'http://localhost:3000';
-    const btn = document.getElementById('watch-register-btn');
     btn.textContent = 'Sending...';
     btn.disabled = true;
 

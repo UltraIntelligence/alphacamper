@@ -15,11 +15,14 @@ export async function POST(request: Request) {
 
     // INSERT is safe even for existing users — on conflict the row is untouched.
     // This avoids relying on an UPDATE RLS policy, which doesn't exist for `users`.
-    await supabase
+    const { error: insertError } = await supabase
       .from("users")
-      .insert({ email })
-      .select()
-      .maybeSingle(); // ignore conflict error
+      .insert({ email });
+
+    // 23505 = unique_violation (expected for existing users) — anything else is unexpected
+    if (insertError && insertError.code !== "23505") {
+      console.error("[register] Unexpected insert error", insertError.message);
+    }
 
     // Always SELECT to get the row (whether just-inserted or already-existing).
     const { data, error } = await supabase
