@@ -1,5 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
 import { getSupabase } from './supabase'
+
+export function getBearerToken(authHeader: string | null): string | null {
+  if (!authHeader) return null
+
+  const match = authHeader.match(/^bearer\s+(.+)$/i)
+  if (!match) return null
+
+  const token = match[1]?.trim()
+  return token ? token : null
+}
 
 /**
  * Verifies the Supabase JWT from an Authorization: Bearer header,
@@ -7,15 +16,10 @@ import { getSupabase } from './supabase'
  * Returns null if the token is missing, invalid, or the user has no DB record.
  */
 async function getVerifiedUser(request: Request) {
-  const authHeader = request.headers.get('Authorization')
-  if (!authHeader?.startsWith('Bearer ')) return null
-  const token = authHeader.slice(7)
+  const token = getBearerToken(request.headers.get('Authorization'))
+  if (!token) return null
 
-  const authClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const { data: { user } } = await authClient.auth.getUser(token)
+  const { data: { user } } = await getSupabase().auth.getUser(token)
   return user ?? null
 }
 
@@ -23,11 +27,19 @@ export async function getUserIdFromRequest(request: Request): Promise<string | n
   const user = await getVerifiedUser(request)
   if (!user?.email) return null
 
-  const { data } = await getSupabase()
+  const { data, error } = await getSupabase()
     .from('users')
     .select('id')
     .eq('email', user.email)
     .single()
+
+  if (error) {
+    console.error('[auth] Failed users.select(id) lookup', {
+      email: user.email,
+      error: error.message,
+    })
+    throw new Error('Failed to load authenticated user')
+  }
 
   return data?.id ?? null
 }
@@ -46,12 +58,13 @@ export function validateEmail(email: string): boolean {
 }
 
 export function getRedirectUrl(origin: string): string {
-  return `${origin}/auth/confirm`
+  const normalizedOrigin = origin.replace(/\/+$/, '')
+  return `${normalizedOrigin}/auth/confirm`
 }
 
 /**
  * Send magic link email for account activation.
- * Fire-and-forget in Phase 1 — watch creation doesn't depend on auth.
+ * Watch creation completes after the caller returns with a verified session.
  */
 export async function sendMagicLink(email: string, origin: string): Promise<{ error: string | null }> {
   const supabase = getSupabase()

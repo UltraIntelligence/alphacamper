@@ -3,21 +3,10 @@ import { getSupabase } from "@/lib/supabase";
 import { getVerifiedEmailFromRequest } from "@/lib/auth";
 
 // POST — Resolve (or create) the users-table record for the caller.
-// Authenticated callers: email sourced from verified Supabase JWT.
-// Unauthenticated callers (wizard flow): email accepted from request body.
+// Email is always sourced from a verified Supabase JWT.
 export async function POST(request: Request) {
   try {
-    let email = await getVerifiedEmailFromRequest(request);
-
-    if (!email) {
-      // Unauthenticated wizard flow — accept email from body
-      const body = await request.json().catch(() => ({}));
-      const candidate = typeof body.email === "string" ? body.email.trim() : "";
-      if (candidate && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate)) {
-        email = candidate;
-      }
-    }
-
+    const email = await getVerifiedEmailFromRequest(request);
     if (!email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

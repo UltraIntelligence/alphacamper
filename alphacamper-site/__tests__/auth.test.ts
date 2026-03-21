@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateEmail, getRedirectUrl } from '@/lib/auth'
+import { validateEmail, getRedirectUrl, getBearerToken } from '@/lib/auth'
 
 describe('validateEmail', () => {
   it('accepts valid emails', () => {
@@ -18,5 +18,19 @@ describe('getRedirectUrl', () => {
   it('returns auth confirm path', () => {
     const url = getRedirectUrl('http://localhost:3000')
     expect(url).toBe('http://localhost:3000/auth/confirm')
+  })
+})
+
+describe('getBearerToken', () => {
+  it('accepts bearer headers regardless of casing', () => {
+    expect(getBearerToken('Bearer token-123')).toBe('token-123')
+    expect(getBearerToken('bearer token-123')).toBe('token-123')
+    expect(getBearerToken('BeArEr token-123')).toBe('token-123')
+  })
+
+  it('rejects invalid authorization headers', () => {
+    expect(getBearerToken(null)).toBeNull()
+    expect(getBearerToken('Basic abc')).toBeNull()
+    expect(getBearerToken('Bearer    ')).toBeNull()
   })
 })

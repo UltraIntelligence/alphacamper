@@ -8,7 +8,7 @@ export const metadata = {
 export default async function WatchNewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ park?: string; q?: string }>
+  searchParams: Promise<{ park?: string; q?: string; platform?: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada' }>
 }) {
   const params = await searchParams
   return (
@@ -20,7 +20,7 @@ export default async function WatchNewPage({
       <div className="illustration-placeholder" style={{ marginBottom: '32px', maxWidth: '240px', marginInline: 'auto', minHeight: '120px' }}>
         Alpha with binoculars — eager to help
       </div>
-      <WatchWizard initialParkId={params.park} initialQuery={params.q} />
+      <WatchWizard initialParkId={params.park} initialQuery={params.q} initialPlatform={params.platform} />
     </main>
   )
 }

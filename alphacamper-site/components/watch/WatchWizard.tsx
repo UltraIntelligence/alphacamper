@@ -11,6 +11,7 @@ import { StepEmail } from './StepEmail'
 import { WatchConfirmation } from './WatchConfirmation'
 
 export type WizardStep = 'search' | 'dates' | 'site' | 'email'
+const PENDING_WATCH_STORAGE_KEY = 'alphacamper.pendingWatch'
 
 export interface WatchData {
   campgroundId: string
@@ -65,9 +66,10 @@ function getStepSummary(step: WizardStep, data: WatchData): string | null {
 interface WatchWizardProps {
   initialParkId?: string
   initialQuery?: string
+  initialPlatform?: WatchData['platform']
 }
 
-export function WatchWizard({ initialParkId, initialQuery }: WatchWizardProps) {
+export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' }: WatchWizardProps) {
   const [activeStep, setActiveStep] = useState<WizardStep>('search')
   const [data, setData] = useState<WatchData>(INITIAL_DATA)
   const [completedSteps, setCompletedSteps] = useState<Set<WizardStep>>(new Set())
@@ -91,8 +93,10 @@ export function WatchWizard({ initialParkId, initialQuery }: WatchWizardProps) {
         setCompletedSteps((prev) => new Set([...prev, 'search']))
         setActiveStep('dates')
       }
+    } else if (initialPlatform) {
+      setData((prev) => ({ ...prev, platform: initialPlatform }))
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialParkId, initialPlatform])
 
   const updateData = useCallback((partial: Partial<WatchData>) => {
     setData((prev) => ({ ...prev, ...partial }))
@@ -109,40 +113,28 @@ export function WatchWizard({ initialParkId, initialQuery }: WatchWizardProps) {
     setSubmitError(null)
 
     try {
-      const registerRes = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email }),
-      })
-      if (!registerRes.ok) throw new Error('Failed to create account')
-      const { user } = await registerRes.json()
-
-      const watchRes = await fetch('/api/watch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(PENDING_WATCH_STORAGE_KEY, JSON.stringify({
           platform: data.platform,
           campgroundId: data.campgroundId,
           campgroundName: data.campgroundName,
           siteNumber: data.siteNumber || null,
           arrivalDate: data.arrivalDate,
           departureDate: data.departureDate,
-        }),
-      })
-      if (!watchRes.ok) throw new Error('Failed to create watch')
+        }))
+      }
+
+      const { error } = await sendMagicLink(data.email, window.location.origin)
+      if (error) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem(PENDING_WATCH_STORAGE_KEY)
+        }
+        throw new Error(error)
+      }
 
       setIsComplete(true)
-
-      sendMagicLink(data.email, window.location.origin).then(({ error }) => {
-        if (error) {
-          setMagicLinkError(error)
-        } else {
-          setMagicLinkSent(true)
-        }
-      }).catch(() => {
-        setMagicLinkError('Failed to send login link. You can resend it below.')
-      })
+      setMagicLinkSent(true)
+      setMagicLinkError(null)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
@@ -219,6 +211,7 @@ export function WatchWizard({ initialParkId, initialQuery }: WatchWizardProps) {
                   <StepSearch
                     data={data}
                     initialQuery={initialQuery}
+                    platformFilter={initialPlatform}
                     onUpdate={updateData}
                     onComplete={() => completeStep('search', 'dates')}
                   />

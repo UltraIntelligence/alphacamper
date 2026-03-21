@@ -6,11 +6,27 @@ import type { WatchData } from './WatchWizard'
 interface StepSearchProps {
   data: WatchData
   initialQuery?: string
+  platformFilter?: WatchData['platform']
   onUpdate: (partial: Partial<WatchData>) => void
   onComplete: () => void
 }
 
-export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSearchProps) {
+function getPlatformLabel(platform: WatchData['platform']): string {
+  switch (platform) {
+    case 'bc_parks':
+      return 'BC Parks'
+    case 'ontario_parks':
+      return 'Ontario Parks'
+    case 'parks_canada':
+      return 'Parks Canada'
+    case 'recreation_gov':
+      return 'Recreation.gov'
+    default:
+      return platform || 'Unknown platform'
+  }
+}
+
+export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onComplete }: StepSearchProps) {
   const [query, setQuery] = useState(initialQuery ?? '')
   const [results, setResults] = useState<{ id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }[]>([])
   const [isSearching, setIsSearching] = useState(false)
@@ -19,13 +35,25 @@ export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSea
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    if (!query.trim() || query.trim().length < 2) { setResults([]); return }
+    if (!query.trim() || query.trim().length < 2) {
+      setResults([])
+      setIsSearching(false)
+      return
+    }
 
     debounceRef.current = setTimeout(async () => {
       const seq = ++searchSeqRef.current
       setIsSearching(true)
       try {
-        const res = await fetch(`/api/campgrounds?q=${encodeURIComponent(query)}&limit=10`)
+        const params = new URLSearchParams({
+          q: query,
+          limit: '10',
+        })
+        if (platformFilter) {
+          params.set('platform', platformFilter)
+        }
+
+        const res = await fetch(`/api/campgrounds?${params.toString()}`)
         if (seq !== searchSeqRef.current) return
         setResults(res.ok ? ((await res.json()).campgrounds ?? []) : [])
       } catch {
@@ -36,7 +64,7 @@ export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSea
     }, 250)
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [query])
+  }, [platformFilter, query])
 
   const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }) => {
     setQuery(cg.name)
@@ -91,14 +119,14 @@ export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSea
           ) : (
             results.slice(0, 10).map((cg) => (
               <button
-                key={cg.id}
+                key={`${cg.platform}:${cg.id}`}
                 type="button"
                 className="selectable-item"
                 onClick={() => handleSelect(cg)}
               >
                 <strong>{cg.name}</strong>
                 <span className="selectable-item-label">
-                  {cg.platform === 'bc_parks' ? 'BC Parks' : cg.platform === 'ontario_parks' ? 'Ontario Parks' : cg.platform === 'parks_canada' ? 'Parks Canada' : 'Recreation.gov'}
+                  {getPlatformLabel(cg.platform)}
                 </span>
               </button>
             ))
@@ -111,7 +139,7 @@ export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSea
           <div className="selectable-item" data-selected="true" style={{ cursor: 'default' }}>
             <strong>{data.campgroundName}</strong>
             <span className="selectable-item-label">
-              {data.platform === 'bc_parks' ? 'BC Parks' : data.platform === 'ontario_parks' ? 'Ontario Parks' : data.platform === 'parks_canada' ? 'Parks Canada' : 'Recreation.gov'}
+              {getPlatformLabel(data.platform)}
             </span>
           </div>
           <button

@@ -36,7 +36,8 @@ export function WatchConfirmation({
       </h2>
 
       <p style={{ color: 'var(--color-text-muted)', fontSize: '1.05rem', marginBottom: '24px' }}>
-        Watching <strong>{campgroundName}</strong> ({platformLabel}) for openings
+        We&apos;ll save your watch for <strong>{campgroundName}</strong> ({platformLabel})
+        after you confirm your email, then start watching for openings
         from <strong>{arrivalDate}</strong> to <strong>{departureDate}</strong>.
       </p>
 
@@ -45,6 +46,11 @@ export function WatchConfirmation({
           Alerts will go to <strong>{email}</strong>.
           {!magicLinkError && ' Check your inbox for a link to activate your account.'}
         </p>
+        {!magicLinkError && (
+          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '8px' }}>
+            Open that link on this device to finish saving your watch automatically.
+          </p>
+        )}
         {magicLinkError && (
           <p style={{ fontSize: '0.85rem', color: 'var(--color-error, #c0392b)', marginTop: '8px' }}>
             {magicLinkError}{' '}

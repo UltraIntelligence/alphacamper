@@ -20,8 +20,12 @@ export async function GET(request: Request) {
   let query = supabase
     .from('campgrounds')
     .select('id, platform, name, short_name, province')
-    .ilike('name', `%${q.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`)
     .limit(limit)
+
+  const escapedQuery = q.replace(/%/g, '\\%').replace(/_/g, '\\_')
+  query = query.or(
+    `name.ilike.%${escapedQuery}%,short_name.ilike.%${escapedQuery}%,province.ilike.%${escapedQuery}%`
+  )
 
   if (platform) query = query.eq('platform', platform)
 

@@ -3,10 +3,19 @@ import { Resend } from "resend";
 import { log } from "./logger.js";
 import type { AvailableSite } from "./supabase.js";
 
+let hasWarnedAboutMissingPiiSalt = false;
+
 /** Produces a consistent 8-char pseudonymous identifier from a PII string (email or phone).
  *  Allows log grouping without storing or exposing the original value. */
 function maskPii(value: string): string {
-  const salt = process.env.PII_MASK_SALT ?? "alphacamper-log-salt";
+  const salt = process.env.PII_MASK_SALT;
+  if (!salt) {
+    if (!hasWarnedAboutMissingPiiSalt) {
+      hasWarnedAboutMissingPiiSalt = true;
+      log.warn("PII_MASK_SALT not set — recipient identifiers will be redacted instead of hashed");
+    }
+    return "redacted";
+  }
   return createHash("sha256").update(salt + value).digest("hex").slice(0, 8);
 }
 
