@@ -1,0 +1,34 @@
+const steps = [
+  {
+    number: 1,
+    title: 'Tell us where.',
+    body: 'Pick your park, dates, and preferred sites. Alphacamper starts watching immediately.',
+  },
+  {
+    number: 2,
+    title: 'We watch.',
+    body: 'We check every few minutes, 24/7. When someone cancels, you\'ll know first.',
+  },
+  {
+    number: 3,
+    title: 'You book it.',
+    body: 'Instant alert + direct link. Our Chrome extension fills your forms in seconds.',
+  },
+]
+
+export function HowAlphaWorks() {
+  return (
+    <section id="how-it-works" className="how-section">
+      <h2>How Alphacamper Works</h2>
+      <div className="how-grid">
+        {steps.map((step) => (
+          <div key={step.number} className="how-card">
+            <div className="how-card-number">{step.number}</div>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}

@@ -124,6 +124,22 @@ export async function createAlert(
   return true;
 }
 
+export async function fetchUserContact(userId: string): Promise<{ email: string | null; phone: string | null }> {
+  const { data, error } = await getClient()
+    .from("users")
+    .select("email, phone")
+    .eq("id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    log.error("fetchUserContact failed", { userId, error: error.message });
+    return { email: null, phone: null };
+  }
+
+  return { email: data?.email ?? null, phone: data?.phone ?? null };
+}
+
 export async function updateLastChecked(watchIds: string[]): Promise<void> {
   if (watchIds.length === 0) return;
 
@@ -157,6 +173,26 @@ export async function expireStaleAlerts(): Promise<number> {
     log.info("Expired stale alerts", { count });
   }
   return count;
+}
+
+export async function upsertCampgrounds(
+  rows: Array<{
+    id: string;
+    platform: string;
+    name: string;
+    short_name: string | null;
+    province: string | null;
+  }>
+): Promise<boolean> {
+  if (rows.length === 0) return true;
+  const { error } = await getClient()
+    .from("campgrounds")
+    .upsert(rows, { onConflict: "id,platform" });
+  if (error) {
+    log.error("upsertCampgrounds failed", { error: error.message, count: rows.length });
+    return false;
+  }
+  return true;
 }
 
 export async function updateWorkerStatus(stats: Record<string, unknown>): Promise<void> {

@@ -8,7 +8,9 @@ import {
   updateLastChecked,
   expireStaleAlerts,
   updateWorkerStatus,
+  fetchUserContact,
 } from "./supabase.js";
+import { sendAlertEmail, sendAlertSMS } from "./notify.js";
 import { checkCampground, delay, clearCartCache } from "./poller.js";
 import {
   fetchCampgroundMap,
@@ -25,6 +27,7 @@ import {
 } from "./config.js";
 import { log } from "./logger.js";
 import { alertOperator } from "./alerter.js";
+import { syncDirectoryForDomain } from "./directory-sync.js";
 
 // ─── Health state ─────────────────────────────────────────────────────────────
 
@@ -222,6 +225,64 @@ async function runCycle(): Promise<void> {
           userId: result.userId,
           siteCount: confirmResult.sites.length,
         });
+
+        // Step 4i-b: Send notifications (non-blocking — fire and forget)
+        const watch = groupWatches.find(w => w.id === result.watchId);
+        if (watch) {
+          void (async () => {
+            try {
+              const contact = await fetchUserContact(result.userId);
+              if (contact.email) {
+                try {
+                  await sendAlertEmail({
+                    email: contact.email,
+                    campgroundName: watch.campground_name,
+                    campgroundId: watch.campground_id,
+                    platform: watch.platform,
+                    arrivalDate: watch.arrival_date,
+                    departureDate: watch.departure_date,
+                    sites: confirmResult.sites,
+                  });
+                } catch (err) {
+                  log.error("Email send failed", {
+                    error: String(err),
+                    watchId: result.watchId,
+                    userId: result.userId,
+                    campground: watch.campground_name,
+                    platform: watch.platform,
+                  });
+                }
+              }
+              if (contact.phone) {
+                try {
+                  await sendAlertSMS({
+                    phone: contact.phone,
+                    campgroundName: watch.campground_name,
+                    campgroundId: watch.campground_id,
+                    platform: watch.platform,
+                    sites: confirmResult.sites,
+                  });
+                } catch (err) {
+                  log.error("SMS send failed", {
+                    error: String(err),
+                    watchId: result.watchId,
+                    userId: result.userId,
+                    campground: watch.campground_name,
+                    platform: watch.platform,
+                  });
+                }
+              }
+            } catch (err) {
+              log.error("Failed to fetch user contact for notification", {
+                error: String(err),
+                watchId: result.watchId,
+                userId: result.userId,
+                campground: watch.campground_name,
+                platform: watch.platform,
+              });
+            }
+          })();
+        }
       }
     }
 
@@ -278,5 +339,37 @@ async function loop() {
   }
 }
 
+// ─── Directory sync ───────────────────────────────────────────────────────────
+
+async function syncAllDirectories(): Promise<void> {
+  const disabledPlatforms = getDisabledPlatforms();
+  for (const platform of Object.keys(DOMAINS)) {
+    if (disabledPlatforms.has(platform)) {
+      log.info("Platform disabled — skipping directory sync", { platform });
+      continue;
+    }
+    try {
+      const domain = DOMAINS[platform];
+      if (cookieManager.isExpired(domain)) {
+        const ok = await cookieManager.refreshCookies(domain);
+        if (!ok) {
+          log.warn("Cookie refresh failed — skipping directory sync for platform", { platform });
+          continue;
+        }
+      }
+      const cookieHeader = cookieManager.getCookieHeader(domain);
+      await syncDirectoryForDomain(platform, cookieHeader);
+    } catch (err) {
+      log.error("Directory sync failed for platform", { platform, error: String(err) });
+    }
+  }
+}
+
+// ─── Startup ──────────────────────────────────────────────────────────────────
+
 log.info("Alphacamper Worker starting");
+// Start polling immediately — directory sync runs in the background.
+// A stalled sync must not block the poll loop from starting.
 loop();
+syncAllDirectories()
+  .catch(err => log.error("Directory sync failed", { error: String(err) }));

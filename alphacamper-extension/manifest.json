@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Alphacamper",
   "version": "0.2.0",
+  "default_locale": "en",
   "description": "Your AI-powered campsite launch system. Three clicks. We handle everything else.",
   "permissions": [
     "sidePanel",
@@ -12,6 +13,8 @@
     "activeTab"
   ],
   "host_permissions": [
+    "https://alphacamper.com/*",
+    "http://localhost:3000/*",
     "https://www.recreation.gov/*",
     "https://camping.bcparks.ca/*",
     "https://reservation.pc.gc.ca/*",
@@ -41,6 +44,11 @@
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://alphacamper.com/*"
+    ]
   },
   "content_scripts": [
     {

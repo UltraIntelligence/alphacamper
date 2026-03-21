@@ -28,7 +28,7 @@ CANADA:
 
 POPULAR CAMPGROUND IDS:
 
-Recreation.gov: Upper Pines/Yosemite=232447, Lower Pines=232450, North Pines=232449, Wawona=232448, Hodgdon Meadow=232452, Jumbo Rocks/Joshua Tree=251869, Black Rock=251870, Watchman/Zion=232473, Mather/Grand Canyon=232493, Seawall/Acadia=10083745, Moraine Park/RMNP=232770, Kalaloch/Olympic=232468
+Recreation.gov: Upper Pines/Yosemite=232447, Lower Pines=232450, North Pines=232449, Wawona=232448, Hodgdon Meadow=232452, Jumbo Rocks/Joshua Tree=272300, Black Rock=251870, Watchman/Zion=232473, Seawall/Acadia=10083745, Moraine Park/RMNP=232770, Kalaloch/Olympic=232468, Fish Creek/Glacier=232493, Apgar/Glacier=10171274, Many Glacier/Glacier=251869
 
 BC Parks: Rathtrevor Beach=-2504, Golden Ears=-2493, Cultus Lake=-2471, Birkenhead Lake=-2443, Shuswap Lake=-2532, Porteau Cove=-2503, Alice Lake=-2430, Okanagan Lake South=-2521
 

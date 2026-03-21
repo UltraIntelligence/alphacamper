@@ -1,31 +1,34 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { getVerifiedEmailFromRequest } from "@/lib/auth.server";
 
-// POST — Register a user from the extension (email-based, simple auth)
+// POST — Resolve (or create) the users-table record for the caller.
+// Email is always sourced from a verified Supabase JWT.
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    const email = await getVerifiedEmailFromRequest(request);
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user exists
-    const { data: existing } = await getSupabase()
-      .from("users")
-      .select("id, email")
-      .eq("email", email)
-      .single();
+    const supabase = getSupabase();
 
-    if (existing) {
-      return NextResponse.json({ user: existing });
+    // INSERT is safe even for existing users — on conflict the row is untouched.
+    // This avoids relying on an UPDATE RLS policy, which doesn't exist for `users`.
+    const { error: insertError } = await supabase
+      .from("users")
+      .insert({ email });
+
+    // 23505 = unique_violation (expected for existing users) — anything else is unexpected
+    if (insertError && insertError.code !== "23505") {
+      console.error("[register] Unexpected insert error", insertError.message);
     }
 
-    // Create new user
-    const { data, error } = await getSupabase()
+    // Always SELECT to get the row (whether just-inserted or already-existing).
+    const { data, error } = await supabase
       .from("users")
-      .insert({ email })
       .select()
+      .eq("email", email)
       .single();
 
     if (error) {
@@ -36,3 +39,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+

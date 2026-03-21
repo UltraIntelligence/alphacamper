@@ -1,6 +1,7 @@
 export const DOMAINS: Record<string, string> = {
   bc_parks: "camping.bcparks.ca",
   ontario_parks: "reservations.ontarioparks.ca",
+  parks_canada: "reservation.pc.gc.ca",
 };
 
 export const SUPPORTED_PLATFORMS = Object.keys(DOMAINS);
@@ -8,6 +9,7 @@ export const SUPPORTED_PLATFORMS = Object.keys(DOMAINS);
 export const COOKIE_TTLS: Record<string, number> = {
   "camping.bcparks.ca": 25 * 60 * 1000,
   "reservations.ontarioparks.ca": 20 * 60 * 1000,
+  "reservation.pc.gc.ca": 20 * 60 * 1000,
 };
 
 export const POLL_INTERVAL_FAST_MS = Number(process.env.POLL_INTERVAL_FAST_MS) || 5 * 60 * 1000;
