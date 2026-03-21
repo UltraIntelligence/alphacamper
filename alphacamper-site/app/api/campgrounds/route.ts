@@ -25,6 +25,14 @@ export async function GET(request: Request) {
   const escapedQuery = q
     .replace(/[%_]/g, '\\$&')
     .replace(/[,.()]/g, '')
+    .trim()
+
+  // After stripping punctuation, query might be empty (e.g., ".." or "(),").
+  // An empty pattern would produce a match-all `%%` ILIKE — return empty instead.
+  if (escapedQuery.length < 2) {
+    return NextResponse.json({ campgrounds: [] })
+  }
+
   query = query.or(
     `name.ilike.%${escapedQuery}%,short_name.ilike.%${escapedQuery}%,province.ilike.%${escapedQuery}%`
   )

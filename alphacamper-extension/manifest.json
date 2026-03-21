@@ -47,8 +47,7 @@
   },
   "externally_connectable": {
     "matches": [
-      "https://alphacamper.com/*",
-      "http://localhost:3000/*"
+      "https://alphacamper.com/*"
     ]
   },
   "content_scripts": [

@@ -291,12 +291,31 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
     if (!pendingTabIds.includes(tabId)) return;
 
     const { profile } = await chrome.storage.local.get('profile');
-    if (profile) {
-      chrome.tabs.sendMessage(tabId, { action: 'fill_forms', profile }, () => {
-        if (chrome.runtime.lastError) {
-          console.warn('[autofill] Failed to reach content script:', chrome.runtime.lastError.message);
-        }
+    if (!profile) {
+      await clearPendingAutofillTab(tabId);
+      return;
+    }
+
+    // Content scripts (run_at: document_idle) may not be ready immediately
+    // when tabs.onUpdated fires status:'complete'. Retry a few times.
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 500;
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      if (attempt > 0) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+      }
+      const success = await new Promise(resolve => {
+        chrome.tabs.sendMessage(tabId, { action: 'fill_forms', profile }, () => {
+          if (chrome.runtime.lastError) {
+            console.warn(`[autofill] Attempt ${attempt + 1}/${MAX_RETRIES} failed:`, chrome.runtime.lastError.message);
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
       });
+      if (success) break;
     }
 
     await clearPendingAutofillTab(tabId);

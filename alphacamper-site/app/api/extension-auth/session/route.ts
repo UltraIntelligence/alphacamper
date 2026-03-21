@@ -1,18 +1,45 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getVerifiedEmailFromRequest, issueExtensionAuthToken } from "@/lib/auth";
+import { getBearerToken, issueExtensionAuthToken } from "@/lib/auth";
 
+/**
+ * POST /api/extension-auth/session
+ *
+ * Issues a long-lived extension auth token.
+ * SECURITY: Only Supabase JWTs are accepted here — extension tokens are
+ * explicitly rejected to prevent token-to-token reissuance without real
+ * re-authentication (magic-link or OAuth).
+ */
 export async function POST(request: Request) {
   try {
-    const email = await getVerifiedEmailFromRequest(request);
-    if (!email) {
+    const token = getBearerToken(request.headers.get("Authorization"));
+    if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data, error } = await getSupabase()
+    // Reject extension tokens — only Supabase JWTs can mint new extension tokens
+    if (token.startsWith("ext_")) {
+      return NextResponse.json({ error: "Re-authentication required" }, { status: 401 });
+    }
+
+    const { data: { user } } = await getSupabase().auth.getUser(token);
+    if (!user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const email = user.email;
+
+    // Ensure user row exists (INSERT if new, SELECT if existing)
+    const supabase = getSupabase();
+    await supabase
       .from("users")
-      .upsert({ email }, { onConflict: "email" })
+      .insert({ email })
+      .select()
+      .maybeSingle(); // ignore conflict — row may already exist
+
+    const { data, error } = await supabase
+      .from("users")
       .select("id, email")
+      .eq("email", email)
       .single();
 
     if (error || !data?.id || !data?.email) {

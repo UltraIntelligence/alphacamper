@@ -38,7 +38,26 @@ function readPendingWatchDraft(): PendingWatchDraft | null {
   }
 }
 
+// Allowlist of known legitimate Alphacamper extension IDs.
+// In production, the Chrome Web Store assigns a fixed ID based on the signing key.
+// During local development, Chrome creates a different ID for unpacked extensions.
+const ALLOWED_EXTENSION_IDS: ReadonlySet<string> = new Set(
+  (process.env.NEXT_PUBLIC_ALLOWED_EXTENSION_IDS ?? '')
+    .split(',')
+    .map(id => id.trim())
+    .filter(Boolean)
+)
+
+function isAllowedExtensionId(extensionId: string): boolean {
+  // If no allowlist is configured (e.g., early dev), reject all extension auth
+  // to fail-closed rather than allowing any extension to receive tokens.
+  if (ALLOWED_EXTENSION_IDS.size === 0) return false
+  return ALLOWED_EXTENSION_IDS.has(extensionId)
+}
+
 async function sendTokenToExtension(extensionId: string, token: string, email: string): Promise<boolean> {
+  if (!isAllowedExtensionId(extensionId)) return false
+
   const chromeApi = (window as Window & {
     chrome?: {
       runtime?: {

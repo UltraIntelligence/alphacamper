@@ -606,7 +606,10 @@ document.getElementById('watch-register-btn').addEventListener('click', async ()
 
     btn.textContent = 'Connect';
     btn.disabled = false;
-  } catch { /* silent */ }
+  } catch {
+    btn.textContent = 'Connect';
+    btn.disabled = false;
+  }
 });
 
 async function refreshWatches() {

@@ -11,10 +11,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data, error } = await getSupabase()
+    const supabase = getSupabase();
+
+    // INSERT is safe even for existing users — on conflict the row is untouched.
+    // This avoids relying on an UPDATE RLS policy, which doesn't exist for `users`.
+    await supabase
       .from("users")
-      .upsert({ email }, { onConflict: "email" })
+      .insert({ email })
       .select()
+      .maybeSingle(); // ignore conflict error
+
+    // Always SELECT to get the row (whether just-inserted or already-existing).
+    const { data, error } = await supabase
+      .from("users")
+      .select()
+      .eq("email", email)
       .single();
 
     if (error) {
@@ -25,3 +36,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+
