@@ -27,7 +27,7 @@ export function ParkDirectory() {
           <h3>Canada</h3>
           <div className="directory-list">
             {provinces.map((p) => (
-              <Link key={p.slug} href={`/watch/new`} className="directory-item">
+              <Link key={p.slug} href={`/watch/new?q=${encodeURIComponent(p.name)}`} className="directory-item">
                 <span className="directory-name">Camping in {p.name}</span>
                 <span className="directory-count">{p.count}</span>
               </Link>
@@ -38,7 +38,7 @@ export function ParkDirectory() {
           <h3>United States</h3>
           <div className="directory-list">
             {usStates.map((s) => (
-              <Link key={s.slug} href={`/watch/new`} className="directory-item">
+              <Link key={s.slug} href={`/watch/new?q=${encodeURIComponent(s.name)}`} className="directory-item">
                 <span className="directory-name">Camping in {s.name}</span>
                 <span className="directory-count">{s.count}</span>
               </Link>

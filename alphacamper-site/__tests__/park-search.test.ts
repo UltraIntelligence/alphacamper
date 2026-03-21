@@ -7,9 +7,9 @@ const LANDING_PAGE_PARK_IDS = [
   '-2493',     // Golden Ears (BC)
   '-2740399',  // Algonquin (ON)
   '232447',    // Upper Pines, Yosemite (CA)
-  '232493',    // Glacier Basin, Mt Rainier (WA)
-  '251869',    // Apgar, Glacier NP (MT)
-  '272299',    // Jumbo Rocks, Joshua Tree (CA)
+  '232493',    // Fish Creek, Glacier NP (MT)
+  '10171274',  // Apgar, Glacier NP (MT)
+  '272300',    // Jumbo Rocks, Joshua Tree (CA)
 ]
 
 describe('landing page park integration', () => {

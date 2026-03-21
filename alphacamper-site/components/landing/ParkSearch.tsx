@@ -2,39 +2,65 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { searchCampgrounds, type Campground } from '@/lib/parks'
+
+type SearchResult = { id: string; platform: string; name: string; province: string | null }
 
 export function ParkSearch() {
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<Campground[]>([])
+  const [results, setResults] = useState<SearchResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  async function fetchResults(q: string, limit = 8): Promise<SearchResult[]> {
+    if (!q.trim() || q.trim().length < 2) return []
+    const res = await fetch(`/api/campgrounds?q=${encodeURIComponent(q)}&limit=${limit}`)
+    if (!res.ok) return []
+    return (await res.json()).campgrounds ?? []
+  }
 
   function handleChange(value: string) {
     setQuery(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      const matches = searchCampgrounds(value)
-      setResults(matches.slice(0, 8))
-      setIsOpen(matches.length > 0 && value.length > 0)
+    if (!value.trim() || value.trim().length < 2) {
+      setResults([])
+      setIsOpen(false)
+      return
+    }
+    debounceRef.current = setTimeout(async () => {
+      const matches = await fetchResults(value)
+      setResults(matches)
+      setIsOpen(matches.length > 0)
     }, 200)
   }
 
-  function handleSelect(park: Campground) {
+  function handleSelect(park: SearchResult) {
     setQuery(park.name)
     setIsOpen(false)
     router.push(`/watch/new?park=${park.id}`)
   }
 
-  function handleSubmit() {
-    if (results.length > 0) {
-      handleSelect(results[0])
-    } else if (query.trim()) {
+  async function handleSubmit() {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+      debounceRef.current = null
+    }
+    if (!query.trim()) return
+    // Immediate fetch (no debounce) so Enter key always gets fresh results
+    const matches = await fetchResults(query, 1)
+    if (matches.length > 0) {
+      handleSelect(matches[0])
+    } else {
       router.push(`/watch/new?q=${encodeURIComponent(query.trim())}`)
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -55,7 +81,7 @@ export function ParkSearch() {
           placeholder="Search for a park or campground..."
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
           aria-label="Search for a park or campground"
           autoComplete="off"
         />
@@ -72,14 +98,14 @@ export function ParkSearch() {
         <div className="park-search-dropdown" role="listbox">
           {results.map((park) => (
             <div
-              key={park.id}
+              key={`${park.id}:${park.platform}`}
               className="park-search-item"
               onClick={() => handleSelect(park)}
               role="option"
               aria-selected={false}
             >
               <span className="park-search-item-name">{park.name}</span>
-              <span className="park-search-item-badge">{park.province}</span>
+              <span className="park-search-item-badge">{park.province ?? 'Parks Canada'}</span>
             </div>
           ))}
         </div>

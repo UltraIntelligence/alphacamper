@@ -1,30 +1,45 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { searchCampgrounds } from '@/lib/parks'
+import { useState, useEffect, useRef } from 'react'
 import type { WatchData } from './WatchWizard'
 
 interface StepSearchProps {
   data: WatchData
+  initialQuery?: string
   onUpdate: (partial: Partial<WatchData>) => void
   onComplete: () => void
 }
 
-export function StepSearch({ data, onUpdate, onComplete }: StepSearchProps) {
-  const [query, setQuery] = useState('')
+export function StepSearch({ data, initialQuery, onUpdate, onComplete }: StepSearchProps) {
+  const [query, setQuery] = useState(initialQuery ?? '')
+  const [results, setResults] = useState<{ id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const results = useMemo(() => {
-    if (!query.trim()) return []
-    return searchCampgrounds(query)
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (!query.trim() || query.trim().length < 2) { setResults([]); return }
+
+    debounceRef.current = setTimeout(async () => {
+      setIsSearching(true)
+      try {
+        const res = await fetch(`/api/campgrounds?q=${encodeURIComponent(query)}&limit=10`)
+        if (res.ok) setResults((await res.json()).campgrounds ?? [])
+      } finally {
+        setIsSearching(false)
+      }
+    }, 250)
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [query])
 
-  const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string }) => {
+  const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }) => {
     setQuery(cg.name)
     onUpdate({
       campgroundId: cg.id,
       campgroundName: cg.name,
       platform: cg.platform,
-      province: cg.province,
+      province: cg.province ?? '',
     })
   }
 
@@ -62,7 +77,9 @@ export function StepSearch({ data, onUpdate, onComplete }: StepSearchProps) {
 
       {!isSelected && query.trim().length > 0 && (
         <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {results.length === 0 ? (
+          {isSearching && results.length === 0 ? (
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>Searching...</p>
+          ) : results.length === 0 ? (
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
               No campgrounds found matching &ldquo;{query}&rdquo;.
             </p>

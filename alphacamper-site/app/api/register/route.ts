@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { getVerifiedEmailFromRequest } from "@/lib/auth";
 
-// POST — Register a user from the extension (email-based, simple auth)
+// POST — Resolve (or create) the users-table record for the authenticated caller.
+// Email is sourced from the verified Supabase JWT — never from the request body.
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    const email = await getVerifiedEmailFromRequest(request);
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user exists
     const { data: existing } = await getSupabase()
       .from("users")
       .select("id, email")
@@ -21,7 +21,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ user: existing });
     }
 
-    // Create new user
     const { data, error } = await getSupabase()
       .from("users")
       .insert({ email })

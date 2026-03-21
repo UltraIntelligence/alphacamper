@@ -191,6 +191,22 @@ export async function expireStaleAlerts(): Promise<number> {
   return count;
 }
 
+export async function upsertCampgrounds(
+  rows: Array<{
+    id: string;
+    platform: string;
+    name: string;
+    short_name: string | null;
+    province: string | null;
+  }>
+): Promise<void> {
+  if (rows.length === 0) return;
+  const { error } = await getClient()
+    .from("campgrounds")
+    .upsert(rows, { onConflict: "id,platform" });
+  if (error) log.error("upsertCampgrounds failed", { error: error.message, count: rows.length });
+}
+
 export async function updateWorkerStatus(stats: Record<string, unknown>): Promise<void> {
   const { error } = await getClient()
     .from("worker_status")

@@ -224,6 +224,10 @@ a { color: inherit; text-decoration: none; }
   border: 2px solid rgba(255, 255, 255, 0.8); background: #ffffff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
+.park-search-input-wrap:focus-within {
+  border-color: var(--paradiso);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(62, 140, 139, 0.4);
+}
 
 .hero-section .park-search { margin: 0 auto; }
 
@@ -1137,8 +1141,14 @@ a { color: inherit; text-decoration: none; }
 }
 
 .watch-card[data-past="true"] {
-  opacity: 0.5;
+  background: var(--color-surface-muted);
   border-color: var(--color-border);
+}
+.watch-card[data-past="true"] .watch-card-name {
+  color: var(--color-text-muted);
+}
+.watch-card[data-past="true"] .status-dot {
+  background: var(--color-border);
 }
 
 .watch-card-name {

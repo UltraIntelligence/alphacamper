@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: 'What parks do you monitor?',
-    a: 'We currently monitor BC Parks, Ontario Parks, and Recreation.gov campgrounds. We\'re adding more parks regularly.',
+    a: 'We currently monitor BC Parks, Ontario Parks, Parks Canada, and Recreation.gov campgrounds. We\'re adding more parks regularly.',
   },
   {
     q: 'How fast are the alerts?',

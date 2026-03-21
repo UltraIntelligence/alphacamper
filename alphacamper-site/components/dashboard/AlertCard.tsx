@@ -28,6 +28,9 @@ function formatTime(dateStr: string): string {
 }
 
 function buildBookingLink(platform: string, campgroundId: string): string | null {
+  if (platform === 'recreation_gov') {
+    return `https://www.recreation.gov/camping/campgrounds/${campgroundId}`
+  }
   const domain = getPlatformDomain(platform)
   if (!domain) return null
   return `https://${domain}/create-booking/results?resourceLocationId=${campgroundId}`

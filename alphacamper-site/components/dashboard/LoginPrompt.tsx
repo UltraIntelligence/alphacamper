@@ -16,12 +16,15 @@ export function LoginPrompt() {
     setStatus('sending')
 
     const supabase = getSupabase()
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
-    })
-
-    setStatus(error ? 'error' : 'sent')
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+      })
+      setStatus(error ? 'error' : 'sent')
+    } catch {
+      setStatus('error')
+    }
   }
 
   if (status === 'sent') {

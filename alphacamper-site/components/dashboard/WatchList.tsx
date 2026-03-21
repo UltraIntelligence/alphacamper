@@ -5,7 +5,7 @@ import { WatchCard, type Watch } from './WatchCard'
 import Link from 'next/link'
 
 interface WatchListProps {
-  userId: string
+  token: string
 }
 
 function todayStr(): string {
@@ -13,16 +13,19 @@ function todayStr(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-export function WatchList({ userId }: WatchListProps) {
+export function WatchList({ token }: WatchListProps) {
   const [watches, setWatches] = useState<Watch[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showPast, setShowPast] = useState(false)
 
   const fetchWatches = useCallback(async () => {
+    setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/watch?userId=${userId}`)
+      const res = await fetch('/api/watch', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (!res.ok) throw new Error('Failed to load watches')
       const { watches } = await res.json()
       setWatches(watches || [])
@@ -31,13 +34,16 @@ export function WatchList({ userId }: WatchListProps) {
     } finally {
       setLoading(false)
     }
-  }, [userId])
+  }, [token])
 
   useEffect(() => { fetchWatches() }, [fetchWatches])
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/watch?id=${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/watch?id=${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (!res.ok) throw new Error('Failed to delete')
       setWatches((prev) => prev.filter((w) => w.id !== id))
     } catch {

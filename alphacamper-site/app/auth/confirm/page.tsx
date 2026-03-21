@@ -11,26 +11,36 @@ function AuthConfirmContent() {
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying')
 
   useEffect(() => {
+    let isMounted = true
+    let redirectTimer: ReturnType<typeof setTimeout> | undefined
+
     const tokenHash = searchParams.get('token_hash')
     const type = searchParams.get('type')
 
     const validTypes = ['email', 'magiclink', 'signup', 'recovery']
     if (!tokenHash || !type || !validTypes.includes(type)) {
-      queueMicrotask(() => setStatus('error'))
-      return
+      queueMicrotask(() => { if (isMounted) setStatus('error') })
+      return () => { isMounted = false }
     }
 
     const supabase = getSupabase()
     supabase.auth
       .verifyOtp({ token_hash: tokenHash, type: type as 'email' })
       .then(({ error }) => {
+        if (!isMounted) return
         if (error) {
           setStatus('error')
         } else {
           setStatus('success')
-          setTimeout(() => router.push('/dashboard'), 1500)
+          redirectTimer = setTimeout(() => { if (isMounted) router.push('/dashboard') }, 1500)
         }
       })
+      .catch(() => { if (isMounted) setStatus('error') })
+
+    return () => {
+      isMounted = false
+      clearTimeout(redirectTimer)
+    }
   }, [searchParams, router])
 
   return (

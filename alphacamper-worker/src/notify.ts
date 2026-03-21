@@ -1,6 +1,13 @@
+import { createHash } from "crypto";
 import { Resend } from "resend";
 import { log } from "./logger.js";
 import type { AvailableSite } from "./supabase.js";
+
+/** Produces a consistent 8-char pseudonymous identifier from a PII string (email or phone).
+ *  Allows log grouping without storing or exposing the original value. */
+function maskPii(value: string): string {
+  return createHash("sha256").update(value).digest("hex").slice(0, 8);
+}
 
 // ─── Resend singleton ────────────────────────────────────────────────────────
 
@@ -28,12 +35,25 @@ interface AlertEmailParams {
   sites: AvailableSite[];
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function buildAlertHtml(params: AlertEmailParams): string {
   const { campgroundName, platform, arrivalDate, departureDate, sites } = params;
 
+  const safeName = escapeHtml(campgroundName);
+  const safeArrival = escapeHtml(arrivalDate);
+  const safeDeparture = escapeHtml(departureDate);
+
   const siteList = sites
     .slice(0, 10)
-    .map((s) => `<li>${s.siteName}</li>`)
+    .map((s) => `<li>${escapeHtml(s.siteName)}</li>`)
     .join("");
   const moreText = sites.length > 10 ? `<p>...and ${sites.length - 10} more</p>` : "";
 
@@ -47,9 +67,9 @@ function buildAlertHtml(params: AlertEmailParams): string {
 <head><meta charset="utf-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#1a1a1a;">
   <h2 style="color:#2d6a4f;margin-bottom:4px;">A spot opened up!</h2>
-  <p style="font-size:18px;margin-top:0;"><strong>${campgroundName}</strong></p>
+  <p style="font-size:18px;margin-top:0;"><strong>${safeName}</strong></p>
   <table style="border-collapse:collapse;margin:16px 0;">
-    <tr><td style="padding:4px 12px 4px 0;color:#666;">Dates</td><td>${arrivalDate} to ${departureDate}</td></tr>
+    <tr><td style="padding:4px 12px 4px 0;color:#666;">Dates</td><td>${safeArrival} to ${safeDeparture}</td></tr>
     <tr><td style="padding:4px 12px 4px 0;color:#666;">Sites</td><td>${sites.length} available</td></tr>
   </table>
   <ul style="padding-left:20px;margin:8px 0;">${siteList}</ul>
@@ -83,8 +103,9 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
   if (!resend) return false;
 
   try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
     const { data, error } = await resend.emails.send({
-      from: "Alphacamper <onboarding@resend.dev>",
+      from: `Alphacamper <${fromEmail}>`,
       to: params.email,
       subject: `🏕️ Spot open at ${params.campgroundName}!`,
       html: buildAlertHtml(params),
@@ -92,7 +113,7 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
 
     if (error) {
       log.error("Resend API error", {
-        email: params.email,
+        recipient: maskPii(params.email),
         campground: params.campgroundName,
         error: error.message,
       });
@@ -100,14 +121,14 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
     }
 
     log.info("Alert email sent", {
-      email: params.email,
+      recipient: maskPii(params.email),
       campground: params.campgroundName,
       emailId: data?.id,
     });
     return true;
   } catch (err) {
     log.error("sendAlertEmail failed", {
-      email: params.email,
+      recipient: maskPii(params.email),
       campground: params.campgroundName,
       error: String(err),
     });
@@ -154,7 +175,7 @@ export async function sendAlertSMS(params: AlertSMSParams): Promise<boolean> {
     if (!res.ok) {
       const body = await res.text();
       log.error("Telnyx API error", {
-        phone: params.phone,
+        recipient: maskPii(params.phone),
         campground: params.campgroundName,
         status: res.status,
         body,
@@ -163,13 +184,13 @@ export async function sendAlertSMS(params: AlertSMSParams): Promise<boolean> {
     }
 
     log.info("Alert SMS sent", {
-      phone: params.phone,
+      recipient: maskPii(params.phone),
       campground: params.campgroundName,
     });
     return true;
   } catch (err) {
     log.error("sendAlertSMS failed", {
-      phone: params.phone,
+      recipient: maskPii(params.phone),
       campground: params.campgroundName,
       error: String(err),
     });

@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { getUserIdFromRequest } from "@/lib/auth";
 
 // POST — Add a new watch target
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { userId, platform, campgroundId, campgroundName, siteNumber, arrivalDate, departureDate } = body;
+    const userId = await getUserIdFromRequest(request);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!userId || !platform || !campgroundId || !arrivalDate || !departureDate) {
+    const body = await request.json();
+    const { platform, campgroundId, campgroundName, siteNumber, arrivalDate, departureDate } = body;
+
+    if (!platform || !campgroundId || !arrivalDate || !departureDate) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -34,13 +40,11 @@ export async function POST(request: Request) {
   }
 }
 
-// GET — List watches for a user
+// GET — List watches for the authenticated user
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId");
-
+  const userId = await getUserIdFromRequest(request);
   if (!userId) {
-    return NextResponse.json({ error: "userId required" }, { status: 400 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { data, error } = await getSupabase()
@@ -56,8 +60,13 @@ export async function GET(request: Request) {
   return NextResponse.json({ watches: data });
 }
 
-// DELETE — Remove a watch
+// DELETE — Remove a watch (ownership verified before soft-delete)
 export async function DELETE(request: Request) {
+  const userId = await getUserIdFromRequest(request);
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
 
@@ -68,7 +77,8 @@ export async function DELETE(request: Request) {
   const { error } = await getSupabase()
     .from("watched_targets")
     .update({ active: false })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", userId);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

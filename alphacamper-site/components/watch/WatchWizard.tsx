@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { sendMagicLink } from '@/lib/auth'
 import { getCampground } from '@/lib/parks'
 import { StepSummary } from './StepSummary'
 import { StepSearch } from './StepSearch'
@@ -65,13 +66,15 @@ interface WatchWizardProps {
   initialQuery?: string
 }
 
-export function WatchWizard({ initialParkId }: WatchWizardProps) {
+export function WatchWizard({ initialParkId, initialQuery }: WatchWizardProps) {
   const [activeStep, setActiveStep] = useState<WizardStep>('search')
   const [data, setData] = useState<WatchData>(INITIAL_DATA)
   const [completedSteps, setCompletedSteps] = useState<Set<WizardStep>>(new Set())
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isComplete, setIsComplete] = useState(false)
+  const [magicLinkSent, setMagicLinkSent] = useState(false)
+  const [magicLinkError, setMagicLinkError] = useState<string | null>(null)
 
   useEffect(() => {
     if (initialParkId) {
@@ -128,15 +131,36 @@ export function WatchWizard({ initialParkId }: WatchWizardProps) {
       })
       if (!watchRes.ok) throw new Error('Failed to create watch')
 
-      import('@/lib/auth').then(({ sendMagicLink }) => {
-        sendMagicLink(data.email, window.location.origin).catch(() => {})
-      })
-
       setIsComplete(true)
+
+      sendMagicLink(data.email, window.location.origin).then(({ error }) => {
+        if (error) {
+          setMagicLinkError(error)
+        } else {
+          setMagicLinkSent(true)
+        }
+      }).catch(() => {
+        setMagicLinkError('Failed to send login link. You can resend it below.')
+      })
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleResendMagicLink = async () => {
+    setMagicLinkError(null)
+    setMagicLinkSent(false)
+    try {
+      const { error } = await sendMagicLink(data.email, window.location.origin)
+      if (error) {
+        setMagicLinkError(error)
+      } else {
+        setMagicLinkSent(true)
+      }
+    } catch {
+      setMagicLinkError('Failed to send login link. Please try again.')
     }
   }
 
@@ -148,6 +172,9 @@ export function WatchWizard({ initialParkId }: WatchWizardProps) {
         arrivalDate={data.arrivalDate}
         departureDate={data.departureDate}
         email={data.email}
+        magicLinkSent={magicLinkSent}
+        magicLinkError={magicLinkError}
+        onResend={handleResendMagicLink}
       />
     )
   }
@@ -190,6 +217,7 @@ export function WatchWizard({ initialParkId }: WatchWizardProps) {
                 {key === 'search' && (
                   <StepSearch
                     data={data}
+                    initialQuery={initialQuery}
                     onUpdate={updateData}
                     onComplete={() => completeStep('search', 'dates')}
                   />

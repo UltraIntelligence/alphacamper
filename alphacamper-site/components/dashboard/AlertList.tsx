@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { AlertCard, type Alert } from './AlertCard'
 
 interface AlertListProps {
-  userId: string
+  token: string
 }
 
-export function AlertList({ userId }: AlertListProps) {
+export function AlertList({ token }: AlertListProps) {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -15,7 +15,10 @@ export function AlertList({ userId }: AlertListProps) {
   const fetchAlerts = useCallback(async (signal?: AbortSignal) => {
     setError(null)
     try {
-      const res = await fetch(`/api/alerts?userId=${userId}`, { signal })
+      const res = await fetch('/api/alerts', {
+        signal,
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (!res.ok) throw new Error('Failed to load alerts')
       const { alerts } = await res.json()
       setAlerts(alerts || [])
@@ -25,7 +28,7 @@ export function AlertList({ userId }: AlertListProps) {
     } finally {
       setLoading(false)
     }
-  }, [userId])
+  }, [token])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -37,7 +40,7 @@ export function AlertList({ userId }: AlertListProps) {
     try {
       const res = await fetch('/api/alerts', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ id }),
       })
       if (!res.ok) throw new Error('Failed to dismiss alert')
@@ -45,7 +48,7 @@ export function AlertList({ userId }: AlertListProps) {
     } catch {
       setError('Failed to dismiss alert. Please try again.')
     }
-  }, [])
+  }, [token])
 
   if (loading) {
     return (

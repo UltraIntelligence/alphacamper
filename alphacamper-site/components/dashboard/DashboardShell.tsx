@@ -12,7 +12,7 @@ type AuthState = 'loading' | 'authenticated' | 'unauthenticated' | 'error'
 
 export function DashboardShell() {
   const [authState, setAuthState] = useState<AuthState>('loading')
-  const [userId, setUserId] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -24,16 +24,20 @@ export function DashboardShell() {
         return
       }
 
-      // Resolve Supabase Auth email → users table ID
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) {
+        setAuthState('unauthenticated')
+        return
+      }
+
+      // Ensure the user has a record in the users table
       try {
         const res = await fetch('/api/register', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: user.email }),
+          headers: { Authorization: `Bearer ${session.access_token}` },
         })
         if (res.ok) {
-          const { user: dbUser } = await res.json()
-          setUserId(dbUser.id)
+          setToken(session.access_token)
           setAuthState('authenticated')
         } else {
           setAuthState('error')
@@ -87,8 +91,8 @@ export function DashboardShell() {
         </Link>
       </div>
 
-      <WatchList userId={userId!} />
-      <AlertList userId={userId!} />
+      <WatchList token={token!} />
+      <AlertList token={token!} />
       <UpgradeCTA />
     </div>
   )

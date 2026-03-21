@@ -61,7 +61,7 @@ export class RecreationGovPoller implements PlatformPoller {
         const campsites = data?.campsites || {};
 
         // Merge: for each site, merge availabilities
-        for (const [siteId, siteData] of Object.entries(campsites) as [string, any][]) {
+        for (const [siteId, siteData] of Object.entries(campsites) as [string, { site: unknown; availabilities?: Record<string, unknown> }][]) {
           if (!allCampsites[siteId]) {
             allCampsites[siteId] = { site: siteData.site, availabilities: {} };
           }

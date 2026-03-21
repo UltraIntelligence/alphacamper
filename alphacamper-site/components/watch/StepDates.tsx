@@ -28,6 +28,10 @@ function todayStr(): string {
 
 export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
   const handleArrivalChange = (arrivalDate: string) => {
+    if (!arrivalDate) {
+      onUpdate({ arrivalDate: '', departureDate: '' })
+      return
+    }
     onUpdate({ arrivalDate, departureDate: addDays(arrivalDate, data.nights) })
   }
 

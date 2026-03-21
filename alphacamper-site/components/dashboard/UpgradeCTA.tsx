@@ -13,7 +13,7 @@ export function UpgradeCTA() {
         $3.99/mo or $19/yr
       </p>
       <a
-        href="#"
+        href="/pricing"
         className="btn-bold btn-bold-inverse"
         style={{ textDecoration: 'none' }}
       >

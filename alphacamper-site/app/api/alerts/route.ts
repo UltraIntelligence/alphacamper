@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { getUserIdFromRequest } from "@/lib/auth";
 
-// GET — Fetch alerts for a user
+// GET — Fetch alerts for the authenticated user
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId");
-
+  const userId = await getUserIdFromRequest(request);
   if (!userId) {
-    return NextResponse.json({ error: "userId required" }, { status: 400 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { data, error } = await getSupabase()
@@ -24,19 +23,25 @@ export async function GET(request: Request) {
   return NextResponse.json({ alerts: data });
 }
 
-// PATCH — Mark alert as claimed
+// PATCH — Mark alert as claimed (ownership verified via JWT)
 export async function PATCH(request: Request) {
   try {
+    const userId = await getUserIdFromRequest(request);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await request.json();
 
     if (!id) {
-      return NextResponse.json({ error: "Alert id required" }, { status: 400 });
+      return NextResponse.json({ error: "id required" }, { status: 400 });
     }
 
     const { error } = await getSupabase()
       .from("availability_alerts")
       .update({ claimed: true })
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", userId);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

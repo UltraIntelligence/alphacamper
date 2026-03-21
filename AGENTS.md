@@ -40,7 +40,10 @@ Three tables:
 - `availability_alerts` — watched_target_id FK, user_id FK, site_details (JSONB), notified_at, claimed
 
 Schema: `alphacamper-site/supabase/schema-v1.1.sql`
-RLS: MVP placeholder (all `true`) — real auth TBD
+RLS: **DEV/TEST ONLY** — all policies currently set to `true` (permissive).
+This is a development shortcut and must **never** reach production.
+- Must be gated behind a `NEXT_PUBLIC_RLS_DEV_OVERRIDE=true` env var (dev/preview only)
+- Before any production release: search for `NEXT_PUBLIC_RLS_DEV_OVERRIDE` and remove it, then replace all `true` RLS policies with real auth-based rules (user_id checks, service-role guards, etc.)
 
 ## Environment Variables
 
@@ -53,6 +56,7 @@ RLS: MVP placeholder (all `true`) — real auth TBD
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`
 - `SLACK_WEBHOOK_URL` — operator alerts
 - `RESEND_API_KEY` — Resend email service (alert notifications)
+- `RESEND_FROM_EMAIL` — verified sender address (e.g. `alerts@alphacamper.com`); falls back to Resend sandbox domain if unset (dev only)
 - `TELNYX_API_KEY` — Telnyx SMS service (alert notifications)
 - `TELNYX_FROM_NUMBER` — Telnyx phone number to send SMS from
 - `DISABLED_PLATFORMS` — kill switch (comma-separated)

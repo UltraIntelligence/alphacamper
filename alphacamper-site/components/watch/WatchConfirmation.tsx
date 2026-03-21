@@ -6,12 +6,18 @@ export function WatchConfirmation({
   arrivalDate,
   departureDate,
   email,
+  magicLinkSent,
+  magicLinkError,
+  onResend,
 }: {
   campgroundName: string
   platform: string
   arrivalDate: string
   departureDate: string
   email: string
+  magicLinkSent?: boolean
+  magicLinkError?: string | null
+  onResend?: () => void
 }) {
   const platformLabels: Record<string, string> = { bc_parks: 'BC Parks', ontario_parks: 'Ontario Parks', recreation_gov: 'Recreation.gov', parks_canada: 'Parks Canada' }
   const platformLabel = platformLabels[platform] || platform
@@ -37,8 +43,23 @@ export function WatchConfirmation({
       <div className="confirm-card">
         <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
           Alerts will go to <strong>{email}</strong>.
-          Check your inbox for a link to activate your account.
+          {!magicLinkError && ' Check your inbox for a link to activate your account.'}
         </p>
+        {magicLinkError && (
+          <p style={{ fontSize: '0.85rem', color: 'var(--color-error, #c0392b)', marginTop: '8px' }}>
+            {magicLinkError}{' '}
+            {onResend && (
+              <button onClick={onResend} style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', textDecoration: 'underline', cursor: 'pointer', fontSize: 'inherit' }}>
+                Resend link
+              </button>
+            )}
+          </p>
+        )}
+        {magicLinkSent && !magicLinkError && (
+          <p style={{ fontSize: '0.85rem', color: 'var(--color-success, #27ae60)', marginTop: '8px' }}>
+            Login link sent — check your inbox.
+          </p>
+        )}
       </div>
 
       <Link href="/" className="btn-bold btn-bold-outline" style={{ textDecoration: 'none' }}>

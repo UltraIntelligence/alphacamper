@@ -65,6 +65,10 @@ describe('getPlatformDomain', () => {
     expect(getPlatformDomain('recreation_gov')).toBe('www.recreation.gov')
   })
 
+  it('returns domain for parks_canada', () => {
+    expect(getPlatformDomain('parks_canada')).toBe('reservation.pc.gc.ca')
+  })
+
   it('returns null for unsupported platform', () => {
     expect(getPlatformDomain('unknown')).toBeNull()
   })

@@ -61,10 +61,8 @@ export const CAMPGROUNDS: Campground[] = [
   { id: '-2505', name: 'Lac Le Jeune', platform: 'bc_parks', province: 'BC' },
 
   // ── Kootenays ──
-  { id: '-2503a', name: 'Kokanee Creek', platform: 'bc_parks', province: 'BC' }, // verify ID
   { id: '-2512', name: 'Moyie Lake', platform: 'bc_parks', province: 'BC' },
   { id: '-2548', name: 'Wasa Lake', platform: 'bc_parks', province: 'BC' },
-  { id: '-2503b', name: 'Kikomun Creek', platform: 'bc_parks', province: 'BC' }, // verify ID
   { id: '-2519', name: 'Norbury Lake', platform: 'bc_parks', province: 'BC' },
   { id: '-2525', name: 'Premier Lake', platform: 'bc_parks', province: 'BC' },
   { id: '-2549', name: 'Whiteswan Lake', platform: 'bc_parks', province: 'BC' },
@@ -87,8 +85,6 @@ export const CAMPGROUNDS: Campground[] = [
   // ── Sunshine Coast / North Coast ──
   { id: '-2523', name: 'Porpoise Bay', platform: 'bc_parks', province: 'BC' },
   { id: '-2529', name: 'Saltery Bay', platform: 'bc_parks', province: 'BC' },
-  { id: '-2504a', name: 'Lakelse Lake', platform: 'bc_parks', province: 'BC' }, // verify ID
-  { id: '-2506a', name: 'Liard River Hot Springs', platform: 'bc_parks', province: 'BC' }, // verify ID
 
   // ═══════════════════════════════════════════════════════════════
   // Ontario Parks — resourceLocationId from Camis /api/resourceLocation

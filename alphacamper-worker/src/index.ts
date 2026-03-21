@@ -8,7 +8,6 @@ import {
   updateLastChecked,
   expireStaleAlerts,
   updateWorkerStatus,
-  fetchUserEmail,
   fetchUserContact,
 } from "./supabase.js";
 import { sendAlertEmail, sendAlertSMS } from "./notify.js";
@@ -28,6 +27,7 @@ import {
 } from "./config.js";
 import { log } from "./logger.js";
 import { alertOperator } from "./alerter.js";
+import { syncDirectoryForDomain } from "./directory-sync.js";
 
 // ─── Health state ─────────────────────────────────────────────────────────────
 
@@ -226,30 +226,29 @@ async function runCycle(): Promise<void> {
           siteCount: confirmResult.sites.length,
         });
 
-        // Step 4i-b: Send notifications (non-blocking, errors logged but don't crash)
+        // Step 4i-b: Send notifications (non-blocking — fire and forget)
         const watch = groupWatches.find(w => w.id === result.watchId);
         if (watch) {
-          const contact = await fetchUserContact(result.userId);
-
-          if (contact.email) {
-            await sendAlertEmail({
-              email: contact.email,
-              campgroundName: watch.campground_name,
-              platform: watch.platform,
-              arrivalDate: watch.arrival_date,
-              departureDate: watch.departure_date,
-              sites: confirmResult.sites,
-            });
-          }
-
-          if (contact.phone) {
-            await sendAlertSMS({
-              phone: contact.phone,
-              campgroundName: watch.campground_name,
-              platform: watch.platform,
-              sites: confirmResult.sites,
-            });
-          }
+          fetchUserContact(result.userId).then((contact) => {
+            if (contact.email) {
+              sendAlertEmail({
+                email: contact.email,
+                campgroundName: watch.campground_name,
+                platform: watch.platform,
+                arrivalDate: watch.arrival_date,
+                departureDate: watch.departure_date,
+                sites: confirmResult.sites,
+              }).catch((err) => log.error("Email send failed", { error: String(err), watchId: result.watchId }));
+            }
+            if (contact.phone) {
+              sendAlertSMS({
+                phone: contact.phone,
+                campgroundName: watch.campground_name,
+                platform: watch.platform,
+                sites: confirmResult.sites,
+              }).catch((err) => log.error("SMS send failed", { error: String(err), watchId: result.watchId }));
+            }
+          }).catch((err) => log.error("Failed to fetch user contact for notification", { error: String(err), watchId: result.watchId }));
         }
       }
     }
@@ -307,5 +306,32 @@ async function loop() {
   }
 }
 
+// ─── Directory sync ───────────────────────────────────────────────────────────
+
+async function syncAllDirectories(): Promise<void> {
+  for (const platform of Object.keys(DOMAINS)) {
+    try {
+      const domain = DOMAINS[platform];
+      if (cookieManager.isExpired(domain)) {
+        const ok = await cookieManager.refreshCookies(domain);
+        if (!ok) {
+          log.warn("Cookie refresh failed — skipping directory sync for platform", { platform });
+          continue;
+        }
+      }
+      const cookieHeader = cookieManager.getCookieHeader(domain);
+      await syncDirectoryForDomain(platform, cookieHeader);
+    } catch (err) {
+      log.error("Directory sync failed for platform", { platform, error: String(err) });
+    }
+  }
+}
+
+// ─── Startup ──────────────────────────────────────────────────────────────────
+
 log.info("Alphacamper Worker starting");
-loop();
+// Health server is already listening — sync directories before starting the poll loop.
+// Failures are non-fatal; loop() always starts via .finally().
+syncAllDirectories()
+  .catch(err => log.error("Directory sync aborted", { error: String(err) }))
+  .finally(() => loop());
