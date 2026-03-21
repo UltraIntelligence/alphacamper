@@ -22,6 +22,7 @@ describe("sendAlertEmail", () => {
   const baseParams = {
     email: "camper@example.com",
     campgroundName: "Rathtrevor Beach",
+    campgroundId: "-2504",
     platform: "bc_parks",
     arrivalDate: "2026-07-10",
     departureDate: "2026-07-12",
@@ -84,6 +85,7 @@ describe("buildAlertHtml", () => {
     const html = buildAlertHtml({
       email: "test@example.com",
       campgroundName: "Canisbay Lake",
+      campgroundId: "-2740399",
       platform: "ontario_parks",
       arrivalDate: "2026-08-01",
       departureDate: "2026-08-03",
@@ -106,6 +108,7 @@ describe("buildAlertHtml", () => {
     const html = buildAlertHtml({
       email: "test@example.com",
       campgroundName: "Test Park",
+      campgroundId: "-2504",
       platform: "bc_parks",
       arrivalDate: "2026-07-01",
       departureDate: "2026-07-03",
@@ -121,13 +124,14 @@ describe("buildAlertHtml", () => {
     const html = buildAlertHtml({
       email: "test@example.com",
       campgroundName: "Test",
+      campgroundId: "-2504",
       platform: "bc_parks",
       arrivalDate: "2026-07-01",
       departureDate: "2026-07-03",
       sites: [{ siteId: "1", siteName: "A1" }],
     });
 
-    expect(html).toContain("https://camping.bcparks.ca");
+    expect(html).toContain("https://camping.bcparks.ca/create-booking/results?resourceLocationId=-2504");
     expect(html).toContain("Book now");
   });
 
@@ -135,13 +139,14 @@ describe("buildAlertHtml", () => {
     const html = buildAlertHtml({
       email: "test@example.com",
       campgroundName: "Test",
+      campgroundId: "-2740399",
       platform: "ontario_parks",
       arrivalDate: "2026-07-01",
       departureDate: "2026-07-03",
       sites: [{ siteId: "1", siteName: "A1" }],
     });
 
-    expect(html).toContain("https://reservations.ontarioparks.ca");
+    expect(html).toContain("https://reservations.ontarioparks.ca/create-booking/results?resourceLocationId=-2740399");
   });
 });
 
@@ -149,6 +154,7 @@ describe("sendAlertSMS", () => {
   const baseSMSParams = {
     phone: "+16045551234",
     campgroundName: "Alice Lake",
+    campgroundId: "-2430",
     platform: "bc_parks",
     sites: [
       { siteId: "101", siteName: "A1" },

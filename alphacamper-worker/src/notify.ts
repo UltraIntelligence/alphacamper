@@ -40,6 +40,7 @@ function getResend(): Resend | null {
 interface AlertEmailParams {
   email: string;
   campgroundName: string;
+  campgroundId: string;
   platform: string;
   arrivalDate: string;
   departureDate: string;
@@ -56,7 +57,7 @@ function escapeHtml(str: string): string {
 }
 
 function buildAlertHtml(params: AlertEmailParams): string {
-  const { campgroundName, platform, arrivalDate, departureDate, sites } = params;
+  const { campgroundName, platform, arrivalDate, departureDate, sites, campgroundId } = params;
 
   const safeName = escapeHtml(campgroundName);
   const safeArrival = escapeHtml(arrivalDate);
@@ -68,7 +69,7 @@ function buildAlertHtml(params: AlertEmailParams): string {
     .join("");
   const moreText = sites.length > 10 ? `<p>...and ${sites.length - 10} more</p>` : "";
 
-  const bookingUrl = getBookingUrl(platform, campgroundName);
+  const bookingUrl = getBookingUrl(platform, params.campgroundId);
   const bookingLink = bookingUrl
     ? `<p><a href="${bookingUrl}" style="display:inline-block;padding:12px 24px;background:#2d6a4f;color:#fff;text-decoration:none;border-radius:6px;font-weight:500;">Book now</a></p>`
     : "";
@@ -92,16 +93,22 @@ function buildAlertHtml(params: AlertEmailParams): string {
 </html>`;
 }
 
-function getBookingUrl(platform: string, _campgroundName: string): string | null {
+/**
+ * Generates a campground-specific booking URL.
+ * Mirrors the deep-link patterns from AlertCard.tsx and platforms.js.
+ */
+function getBookingUrl(platform: string, campgroundId: string): string | null {
+  if (!campgroundId) return null;
   switch (platform) {
     case "bc_parks":
-      return "https://camping.bcparks.ca";
+      return `https://camping.bcparks.ca/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
     case "ontario_parks":
-      return "https://reservations.ontarioparks.ca";
+      return `https://reservations.ontarioparks.ca/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
     case "parks_canada":
-      return "https://reservation.pc.gc.ca";
+      // Parks Canada campground IDs are in the format "ParkSlug/CampgroundSlug"
+      return `https://reservation.pc.gc.ca/${campgroundId}`;
     case "recreation_gov":
-      return "https://www.recreation.gov";
+      return `https://www.recreation.gov/camping/campgrounds/${encodeURIComponent(campgroundId)}`;
     default:
       return null;
   }
@@ -156,6 +163,7 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
 interface AlertSMSParams {
   phone: string;
   campgroundName: string;
+  campgroundId: string;
   platform: string;
   sites: AvailableSite[];
 }
@@ -170,7 +178,7 @@ export async function sendAlertSMS(params: AlertSMSParams): Promise<boolean> {
   }
 
   const siteCount = params.sites.length;
-  const bookingUrl = getBookingUrl(params.platform, params.campgroundName);
+  const bookingUrl = getBookingUrl(params.platform, params.campgroundId);
   const text = `🏕️ ${siteCount} spot${siteCount > 1 ? "s" : ""} open at ${params.campgroundName}! ${bookingUrl || "Check Alphacamper for details."}`;
 
   try {

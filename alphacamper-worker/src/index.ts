@@ -237,6 +237,7 @@ async function runCycle(): Promise<void> {
                   await sendAlertEmail({
                     email: contact.email,
                     campgroundName: watch.campground_name,
+                    campgroundId: watch.campground_id,
                     platform: watch.platform,
                     arrivalDate: watch.arrival_date,
                     departureDate: watch.departure_date,
@@ -257,6 +258,7 @@ async function runCycle(): Promise<void> {
                   await sendAlertSMS({
                     phone: contact.phone,
                     campgroundName: watch.campground_name,
+                    campgroundId: watch.campground_id,
                     platform: watch.platform,
                     sites: confirmResult.sites,
                   });
