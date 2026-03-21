@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getVerifiedEmailFromRequest } from "@/lib/auth";
+import { getVerifiedEmailFromRequest } from "@/lib/auth.server";
 
 // POST — Resolve (or create) the users-table record for the caller.
 // Email is always sourced from a verified Supabase JWT.

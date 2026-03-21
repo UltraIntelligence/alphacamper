@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getUserIdFromRequest } from "@/lib/auth";
+import { getUserIdFromRequest } from "@/lib/auth.server";
 
 // POST — Add a new watch target
 export async function POST(request: Request) {

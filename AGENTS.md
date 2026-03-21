@@ -51,6 +51,9 @@ This is a development shortcut and must **never** reach production.
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — client
 - `SUPABASE_SERVICE_ROLE_KEY` — server-side admin
 - `OPENROUTER_API_KEY` — AI trip planning
+- `EXTENSION_AUTH_SECRET` — server-only HMAC secret for signing extension auth tokens (required)
+- `NEXT_PUBLIC_SITE_URL` — canonical site URL used in extension auth redirects; falls back to `VERCEL_URL` then `http://localhost:3000`
+- `NEXT_PUBLIC_ALLOWED_EXTENSION_IDS` — comma-separated Chrome extension IDs permitted to complete the extension auth flow
 
 ### Worker
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`

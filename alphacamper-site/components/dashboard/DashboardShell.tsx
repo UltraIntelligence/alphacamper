@@ -54,6 +54,7 @@ export function DashboardShell() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.access_token) {
         setToken(session.access_token)
+        setAuthState('authenticated')
       } else {
         setAuthState('unauthenticated')
         setToken(null)

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getUserIdFromRequest } from "@/lib/auth";
+import { getUserIdFromRequest } from "@/lib/auth.server";
 
 // GET — Fetch alerts for the authenticated user
 export async function GET(request: Request) {

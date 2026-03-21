@@ -568,6 +568,20 @@ function renderPlannerResults(data) {
 // ── Watching (Cancellation Monitor) ──
 let extensionAuthToken = null;
 
+function setWatchRegisterStatus(message, color) {
+  const statusEl = document.getElementById('watch-register-status');
+  if (!statusEl) return;
+  if (!message) {
+    statusEl.style.display = 'none';
+    statusEl.textContent = '';
+    statusEl.style.color = '';
+    return;
+  }
+  statusEl.style.display = 'block';
+  statusEl.textContent = message;
+  statusEl.style.color = color || 'var(--text-light)';
+}
+
 async function loadWatching() {
   const result = await chrome.storage.local.get('extensionAuthToken');
   extensionAuthToken = result.extensionAuthToken || null;
@@ -576,19 +590,25 @@ async function loadWatching() {
     document.getElementById('watch-list').textContent = '';
     document.getElementById('watch-alerts').textContent = '';
     document.getElementById('no-watches').style.display = 'block';
+    setWatchRegisterStatus('', '');
     return;
   }
   document.getElementById('watch-register').style.display = 'none';
+  setWatchRegisterStatus('', '');
   await refreshWatches();
   await refreshAlerts();
 }
 
 document.getElementById('watch-register-btn').addEventListener('click', async () => {
   const email = document.getElementById('watch-email').value.trim();
-  if (!email || !email.includes('@')) return;
+  if (!email || !email.includes('@')) {
+    setWatchRegisterStatus('Enter a valid email first.', '#dc2626');
+    return;
+  }
   const btn = document.getElementById('watch-register-btn');
   try {
     const base = API_BASE || 'http://localhost:3000';
+    setWatchRegisterStatus('Sending your login link...', 'var(--text-light)');
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
@@ -601,14 +621,18 @@ document.getElementById('watch-register-btn').addEventListener('click', async ()
     if (res.ok) {
       document.querySelector('#watch-register p').textContent = 'Check your email and click the link to connect this extension.';
       btn.textContent = 'Check email';
+      setWatchRegisterStatus('Magic link sent. Check your inbox and spam folder.', 'var(--green)');
       return;
     }
 
+    const data = await res.json().catch(() => ({}));
     btn.textContent = 'Connect';
     btn.disabled = false;
+    setWatchRegisterStatus(data.error || 'Could not send the magic link.', '#dc2626');
   } catch {
     btn.textContent = 'Connect';
     btn.disabled = false;
+    setWatchRegisterStatus('Could not reach Alphacamper. Please try again.', '#dc2626');
   }
 });
 
@@ -699,7 +723,12 @@ async function refreshAlerts() {
 }
 
 document.getElementById('add-watch-btn').addEventListener('click', () => {
-  if (!extensionAuthToken) { document.getElementById('watch-register').style.display = 'block'; return; }
+  if (!extensionAuthToken) {
+    document.getElementById('watch-register').style.display = 'block';
+    setWatchRegisterStatus('Connect your email first to add a watch.', '#dc2626');
+    document.getElementById('watch-email').focus();
+    return;
+  }
   document.getElementById('watch-form').style.display = 'block';
   populateWatchCampgrounds();
 });

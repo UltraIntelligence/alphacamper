@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getBearerToken, issueExtensionAuthToken } from "@/lib/auth";
+import { getBearerToken } from "@/lib/auth";
+import { issueExtensionAuthToken } from "@/lib/auth.server";
 
 /**
  * POST /api/extension-auth/session
