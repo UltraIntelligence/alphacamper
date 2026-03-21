@@ -50,11 +50,11 @@ export function DashboardShell() {
 
     checkAuth()
 
-    // Keep token fresh — Supabase auto-refreshes sessions before expiry
+    // Keep token fresh on token refresh — initial auth is handled by checkAuth (which includes /api/register).
+    // Only update the token if already authenticated; don't let token refresh events override 'error' state.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.access_token) {
-        setToken(session.access_token)
-        setAuthState('authenticated')
+        setToken(prev => prev ? session.access_token : prev)
       } else {
         setAuthState('unauthenticated')
         setToken(null)

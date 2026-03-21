@@ -24,6 +24,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Valid email and extensionId required" }, { status: 400 });
     }
 
+    const allowedIds = (process.env.NEXT_PUBLIC_ALLOWED_EXTENSION_IDS ?? "")
+      .split(",")
+      .map(id => id.trim())
+      .filter(Boolean);
+    if (allowedIds.length > 0 && !allowedIds.includes(extensionId)) {
+      return NextResponse.json({ error: "Unrecognized extension" }, { status: 400 });
+    }
+
     const origin = getTrustedOrigin();
     const redirectUrl = new URL("/auth/confirm", origin);
     redirectUrl.searchParams.set("extensionId", extensionId);
