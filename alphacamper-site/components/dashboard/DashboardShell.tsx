@@ -15,8 +15,9 @@ export function DashboardShell() {
   const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
+    const supabase = getSupabase()
+
     const checkAuth = async () => {
-      const supabase = getSupabase()
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user?.email) {
@@ -48,6 +49,18 @@ export function DashboardShell() {
     }
 
     checkAuth()
+
+    // Keep token fresh — Supabase auto-refreshes sessions before expiry
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.access_token) {
+        setToken(session.access_token)
+      } else {
+        setAuthState('unauthenticated')
+        setToken(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   if (authState === 'loading') {
