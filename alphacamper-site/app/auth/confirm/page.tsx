@@ -137,6 +137,12 @@ function AuthConfirmContent() {
         }
 
         if (extensionId) {
+          // Validate extension ID BEFORE minting a token — don't create
+          // credentials for extensions that aren't on the allowlist.
+          if (!isAllowedExtensionId(extensionId)) {
+            throw new Error('Your email was confirmed, but the extension ID is not recognized. Open the extension and try Connect again.')
+          }
+
           const extensionSessionRes = await fetch('/api/extension-auth/session', {
             method: 'POST',
             headers: authHeaders,
