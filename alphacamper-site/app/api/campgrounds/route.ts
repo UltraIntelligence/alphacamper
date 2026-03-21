@@ -20,6 +20,7 @@ export async function GET(request: Request) {
     .limit(limit)
 
   const escapedQuery = q
+    .replace(/\\/g, '\\\\')
     .replace(/[%_]/g, '\\$&')
     .replace(/[,.()]/g, '')
     .trim()

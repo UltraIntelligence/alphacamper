@@ -524,7 +524,7 @@ function renderPlannerResults(data) {
 
     if (target.parkName) {
       const park = document.createElement('p');
-      park.textContent = target.parkName + ' \u00b7 ' + (target.platform === 'bc_parks' ? 'BC Parks' : 'Recreation.gov');
+      park.textContent = target.parkName + ' \u00b7 ' + (PLATFORMS[target.platform]?.name || 'Recreation.gov');
       card.appendChild(park);
     }
     const dates = document.createElement('p');
