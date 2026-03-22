@@ -9,7 +9,7 @@ export function getSupabase() {
     if (!url || !key) {
       throw new Error("Missing Supabase environment variables");
     }
-    _client = createClient(url, key);
+    _client = createClient(url, key, { auth: { flowType: 'pkce' } });
   }
   return _client;
 }
