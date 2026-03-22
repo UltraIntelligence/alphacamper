@@ -125,11 +125,11 @@ export function LandingHero() {
       />
       <LandingNav />
       <div className="hero-content cinematic-content" style={{ position: 'relative', zIndex: 10 }}>
-        <div className="hero-pre-title">THE EQUALIZER FOR CAMPERS</div>
-        <h1 className="hero-title-massive">Beat the bots. Get the site.</h1>
+        <div className="hero-pre-title">CAMPSITE ALERTS FOR CANADA &amp; THE US</div>
+        <h1 className="hero-title-massive">Never miss a campsite opening.</h1>
         <p className="hero-description-refined">
-          Campsites shouldn't only go to scalpers or people who can refresh a screen all day.
-          Alphacamper gives your family the exact tools you need to secure a sold-out spot without the stress.
+          We check sold-out parks every 15 minutes, day and night.<br />
+          You get an alert the moment a spot opens up.
         </p>
         <div className="hero-action-container">
           <ParkSearch />
