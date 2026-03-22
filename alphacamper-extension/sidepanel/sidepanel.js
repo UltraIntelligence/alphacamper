@@ -14,6 +14,7 @@ function switchView(viewName) {
   clearCountdowns();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.body.classList.remove('launch-hud-active');
   const viewEl = document.getElementById('view-' + viewName);
   if (viewEl) viewEl.classList.add('active');
   const tabEl = document.querySelector('.tab[data-view="' + viewName + '"]');
@@ -320,6 +321,7 @@ document.getElementById('launch-btn').addEventListener('click', async () => {
 
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-launch').classList.add('active');
+  document.body.classList.add('launch-hud-active');
   const cdEl = document.getElementById('launch-countdown');
   const statusEl = document.getElementById('launch-status-text');
   if (mission.bookingWindow.date && mission.bookingWindow.time) {

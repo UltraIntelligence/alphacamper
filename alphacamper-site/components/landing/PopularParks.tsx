@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 
 const parks = [
   { id: '-2430', name: 'Alice Lake', province: 'BC' },
@@ -12,17 +13,33 @@ const parks = [
 ]
 
 export function PopularParks() {
+  const formatName = (fullName: string) => {
+    const match = fullName.match(/^(.*?)\s*\((.*?)\)$/);
+    if (match) {
+      return { name: match[1], bracketText: match[2] };
+    }
+    return { name: fullName, bracketText: null };
+  };
+
   return (
     <section id="parks" className="parks-section">
-      <h2>Popular parks we monitor</h2>
-      <div className="parks-grid">
-        {parks.map((park) => (
-          <Link key={park.id} href={`/watch/new?park=${park.id}`} className="park-card">
-            <div className="park-card-name">{park.name}</div>
-            <div className="park-card-province">{park.province}</div>
-            <div className="park-card-arrow">Watch this park &rarr;</div>
-          </Link>
-        ))}
+      <div className="container">
+        <h2 className="section-title-elegant" style={{ color: '#ffffff', textAlign: 'center', marginBottom: '64px' }}>Popular parks we monitor</h2>
+        <div className="parks-grid">
+          {parks.map((park) => {
+            const { name, bracketText } = formatName(park.name);
+            return (
+              <Link key={park.id} href={`/watch/new?park=${park.id}`} className="park-card">
+                <div className="park-card-name">{name}</div>
+                {bracketText && <div className="park-card-subname">{bracketText}</div>}
+                <div className="park-card-province">{park.province}</div>
+                <div className="park-card-arrow">
+                  Watch this park <ArrowRight size={14} strokeWidth={2} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle', position: 'relative', top: '-1px' }} />
+                </div>
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </section>
   )

@@ -633,3 +633,65 @@ body {
 }
 .alert-card p { font-size: 0.75rem; color: var(--text-mid); margin-bottom: 10px; }
 .alert-card .btn { padding: 8px 20px; font-size: 0.78rem; }
+
+/* ═══ Launch HUD Dark Mode ═══ */
+body.launch-hud-active {
+  background: var(--green-deep);
+  color: var(--white);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+body.launch-hud-active .header {
+  background: rgba(26, 58, 42, 0.92);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+
+body.launch-hud-active .header-title {
+  color: var(--white);
+}
+
+body.launch-hud-active .tab-bar {
+  background: rgba(26, 58, 42, 0.95);
+  border-top-color: rgba(255,255,255,0.08);
+}
+
+body.launch-hud-active .tab {
+  color: rgba(255,255,255,0.4);
+}
+
+body.launch-hud-active .tab.active {
+  color: var(--green-light);
+}
+body.launch-hud-active .tab.active::before {
+  background: var(--green-light);
+}
+
+body.launch-hud-active .text-muted {
+  color: rgba(255,255,255,0.4);
+}
+
+body.launch-hud-active #launch-status-text {
+  color: rgba(255,255,255,0.7);
+}
+
+body.launch-hud-active .countdown-large {
+  color: var(--white);
+  text-shadow: 0 0 20px rgba(82,183,136,0.3);
+}
+
+body.launch-hud-active .launch-tab-item {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+  color: var(--white);
+}
+
+body.launch-hud-active .btn-outline {
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+}
+
+body.launch-hud-active .btn-outline:hover {
+  border-color: var(--green-light);
+  color: var(--green-light);
+  background: rgba(255,255,255,0.05);
+}

@@ -1,4 +1,4 @@
-import { LandingHero } from '@/components/landing/LandingHero'
+import { LandingHero } from '@/components/landing/LandingHero' 
 import { HowAlphaWorks } from '@/components/landing/HowAlphaWorks'
 import { Reviews } from '@/components/landing/Reviews'
 import { Capabilities } from '@/components/landing/Capabilities'
