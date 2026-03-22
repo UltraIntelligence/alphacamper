@@ -33,7 +33,6 @@ export function LandingHero() {
     const styleUrl = `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${key}`
 
     let map: import('maplibre-gl').Map
-    let gpsTimer: ReturnType<typeof setTimeout> | undefined
 
     async function init() {
       const maplibregl = (await import('maplibre-gl')).default
@@ -82,20 +81,6 @@ export function LandingHero() {
           .then((data: { latitude?: number; longitude?: number; error?: boolean }) => {
             if (!data.error && data.latitude != null && data.longitude != null) {
               map.flyTo({ center: [data.longitude, data.latitude], zoom: 9, duration: 2000 })
-
-              // GPS upgrade after IP fly-in settles
-              gpsTimer = setTimeout(() => {
-                navigator.geolocation?.getCurrentPosition(
-                  pos => {
-                    map.flyTo({
-                      center: [pos.coords.longitude, pos.coords.latitude],
-                      zoom: 10,
-                      duration: 1500,
-                    })
-                  },
-                  () => { /* denied or unavailable — stay on IP result */ }
-                )
-              }, 2500)
             }
           })
           .catch(() => { /* stay on Squamish */ })
@@ -105,7 +90,6 @@ export function LandingHero() {
     init()
 
     return () => {
-      clearTimeout(gpsTimer)
       map?.remove()
     }
   }, [])
