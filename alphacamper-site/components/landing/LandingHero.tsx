@@ -33,6 +33,7 @@ export function LandingHero() {
     const styleUrl = `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${key}`
 
     let map: import('maplibre-gl').Map
+    let gpsTimer: ReturnType<typeof setTimeout> | undefined
 
     async function init() {
       const maplibregl = (await import('maplibre-gl')).default
@@ -75,15 +76,15 @@ export function LandingHero() {
             .addTo(map)
         }
 
-        // IP geolocation fly-in
-        fetch('https://ip-api.com/json')
+        // IP geolocation fly-in (ipapi.co supports HTTPS on free tier)
+        fetch('https://ipapi.co/json/')
           .then(r => r.json())
-          .then((data: { lat?: number; lon?: number; status?: string }) => {
-            if (data.status === 'success' && data.lat && data.lon) {
-              map.flyTo({ center: [data.lon, data.lat], zoom: 9, duration: 2000 })
+          .then((data: { latitude?: number; longitude?: number; error?: boolean }) => {
+            if (!data.error && data.latitude && data.longitude) {
+              map.flyTo({ center: [data.longitude, data.latitude], zoom: 9, duration: 2000 })
 
               // GPS upgrade after IP fly-in settles
-              setTimeout(() => {
+              gpsTimer = setTimeout(() => {
                 navigator.geolocation?.getCurrentPosition(
                   pos => {
                     map.flyTo({
@@ -103,7 +104,10 @@ export function LandingHero() {
 
     init()
 
-    return () => { map?.remove() }
+    return () => {
+      clearTimeout(gpsTimer)
+      map?.remove()
+    }
   }, [])
 
   return (
