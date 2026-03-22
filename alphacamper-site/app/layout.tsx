@@ -15,6 +15,11 @@ const momoTrust = Momo_Trust_Display({
   display: "swap",
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata: Metadata = {
   title: "Alphacamper — Stop refreshing. Start camping.",
   description:

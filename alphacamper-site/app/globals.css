@@ -152,7 +152,7 @@ a { color: inherit; text-decoration: none; }
   margin-top: 0;
   padding: 100px 32px 80px;
   text-align: center;
-  background: url('/hero-bg.png') center center / cover no-repeat;
+  background: #1a2e1a;
   position: relative;
   overflow: hidden;
   min-height: 80vh;
@@ -799,6 +799,18 @@ a { color: inherit; text-decoration: none; }
   padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .landing-mobile-menu a:hover { color: #ffffff; }
+
+@media (max-width: 640px) {
+  .hero-content h1 { font-size: 3.2rem; }
+  .hero-stats { gap: 16px; }
+  .hero-stat-value { font-size: 1.2rem; }
+
+  .split-panel { padding: 48px 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .why-grid { grid-template-columns: 1fr; }
+  .directory-grid { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 900px) {
   .landing-nav-links { display: none; }

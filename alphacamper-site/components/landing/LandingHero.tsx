@@ -1,9 +1,18 @@
+import Image from 'next/image'
 import { ParkSearch } from './ParkSearch'
 import { LandingNav } from './LandingNav'
 
 export function LandingHero() {
   return (
     <section className="hero-section">
+      <Image
+        src="/hero-bg.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        style={{ objectFit: 'cover', zIndex: 0 }}
+      />
       <LandingNav />
       <div className="hero-content">
         <h1>Stop refreshing. Start camping.</h1>
