@@ -135,7 +135,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
             }
           }}
           role="combobox"
-          aria-expanded={!isSelected && results.length > 0}
+          aria-expanded={!isSelected && query.trim().length > 0}
           aria-autocomplete="list"
           aria-controls="step-search-listbox"
           aria-activedescendant={highlightedIndex >= 0 ? `step-search-result-${highlightedIndex}` : undefined}
