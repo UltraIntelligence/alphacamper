@@ -144,7 +144,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
       </div>
 
       {!isSelected && query.trim().length > 0 && (
-        <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div role="listbox" id="step-search-listbox" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {isSearching && results.length === 0 ? (
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>Searching...</p>
           ) : results.length === 0 ? (
@@ -152,26 +152,24 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
               No campgrounds found matching &ldquo;{query}&rdquo;.
             </p>
           ) : (
-            <div role="listbox" id="step-search-listbox">
-              {results.slice(0, 10).map((cg, index) => (
-                <div
-                  key={`${cg.platform}:${cg.id}`}
-                  ref={(el) => { itemsRef.current[index] = el as HTMLElement | null }}
-                  id={`step-search-result-${index}`}
-                  role="option"
-                  aria-selected={index === highlightedIndex}
-                  tabIndex={-1}
-                  className="selectable-item"
-                  data-highlighted={index === highlightedIndex ? 'true' : undefined}
-                  onClick={() => handleSelect(cg)}
-                >
-                  <strong>{cg.name}</strong>
-                  <span className="selectable-item-label">
-                    {getPlatformLabel(cg.platform)}
-                  </span>
-                </div>
-              ))}
-            </div>
+            results.slice(0, 10).map((cg, index) => (
+              <div
+                key={`${cg.platform}:${cg.id}`}
+                ref={(el) => { itemsRef.current[index] = el as HTMLElement | null }}
+                id={`step-search-result-${index}`}
+                role="option"
+                aria-selected={index === highlightedIndex}
+                tabIndex={-1}
+                className="selectable-item"
+                data-highlighted={index === highlightedIndex ? 'true' : undefined}
+                onClick={() => handleSelect(cg)}
+              >
+                <strong>{cg.name}</strong>
+                <span className="selectable-item-label">
+                  {getPlatformLabel(cg.platform)}
+                </span>
+              </div>
+            ))
           )}
         </div>
       )}
