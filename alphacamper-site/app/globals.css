@@ -711,6 +711,9 @@ a { color: inherit; text-decoration: none; }
   .why-wireframe-notif-wrap { margin-top: 32px; }
   .why-trust-banner { flex-direction: column; gap: 24px; }
   .why-trust-item { max-width: 100%; border-radius: 20px; padding: 28px; }
+
+  .hero-specs-row { flex-wrap: wrap; gap: 20px 32px; justify-content: flex-start; padding-left: 20px; padding-right: 20px; }
+  .hero-spec-divider { display: none; }
 }
 
 /* ── Capabilities — massive stat ── */
@@ -1154,7 +1157,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .why-section {
-  padding: 140px 0;
+  padding: 140px 32px;
   background: var(--cloud);
 }
 
