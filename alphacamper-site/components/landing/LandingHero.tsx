@@ -43,7 +43,6 @@ export function LandingHero() {
         style: styleUrl,
         center: SQUAMISH,
         zoom: 9,
-        attributionControl: true,
       })
 
       map.on('load', () => {
