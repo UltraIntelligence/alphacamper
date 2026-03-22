@@ -80,7 +80,7 @@ export function LandingHero() {
         fetch('https://ipapi.co/json/')
           .then(r => r.json())
           .then((data: { latitude?: number; longitude?: number; error?: boolean }) => {
-            if (!data.error && data.latitude && data.longitude) {
+            if (!data.error && data.latitude != null && data.longitude != null) {
               map.flyTo({ center: [data.longitude, data.latitude], zoom: 9, duration: 2000 })
 
               // GPS upgrade after IP fly-in settles
