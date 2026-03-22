@@ -4,10 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [100, 75],
   },
-  experimental: {
-    turbopack: {
-      root: "/Users/ryan/Code/Alphacamper/alphacamper-site",
-    },
+  turbopack: {
+    root: "/Users/ryan/Code/Alphacamper/alphacamper-site",
   },
 };
 
