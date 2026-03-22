@@ -6,20 +6,20 @@ export function UpgradeCTA() {
       <div className="illustration-placeholder" style={{ maxWidth: '160px', marginInline: 'auto', marginBottom: '16px', minHeight: '100px', background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}>
         Alpha wearing sunglasses, pointing at a laptop
       </div>
-      <h3>Want to book faster?</h3>
+      <h3>Upgrade to Pro</h3>
       <p>
-        Get the Chrome extension — autofill forms, practice booking,
-        and grab sites the moment they open.
+        Watch flexible date windows, run unlimited watches, and book
+        faster with the Chrome extension.
       </p>
       <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '16px' }}>
-        $3.99/mo or $19/yr
+        $3/mo or $19/yr
       </p>
       <Link
         href="/#pricing"
         className="btn-bold btn-bold-inverse"
         style={{ textDecoration: 'none' }}
       >
-        Get the Extension →
+        See Pro features →
       </Link>
     </div>
   )
