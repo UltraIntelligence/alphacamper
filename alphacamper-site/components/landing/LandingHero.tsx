@@ -12,7 +12,7 @@ export function LandingHero() {
         priority
         quality={90}
         sizes="100vw"
-        style={{ objectFit: 'cover', objectPosition: 'center 65%', zIndex: 0 }}
+        style={{ objectFit: 'cover', objectPosition: 'center 65%', zIndex: 0, filter: 'brightness(0.72) saturate(1.3)' }}
       />
       <LandingNav />
       <div className="hero-content">
