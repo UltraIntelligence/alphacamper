@@ -42,7 +42,7 @@ export function LandingHero() {
         container: mapRef.current!,
         style: styleUrl,
         center: SQUAMISH,
-        zoom: 9,
+        zoom: 7,
       })
 
       map.on('load', () => {
@@ -80,7 +80,7 @@ export function LandingHero() {
           .then(r => r.json())
           .then((data: { latitude?: number; longitude?: number; error?: boolean }) => {
             if (!data.error && data.latitude != null && data.longitude != null) {
-              map.flyTo({ center: [data.longitude, data.latitude], zoom: 9, duration: 2000 })
+              map.flyTo({ center: [data.longitude, data.latitude], zoom: 7, duration: 2000 })
             }
           })
           .catch(() => { /* stay on Squamish */ })
