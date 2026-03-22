@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     q: 'How does it work?',
-    a: 'Tell us which park and dates you want. We check the reservation website every few minutes, around the clock. When someone cancels, you get an instant alert with a direct link to book.',
+    a: 'Tell us which park and dates you want. We check the reservation website every few minutes, around the clock. When someone cancels, you get an instant alert with a direct link to book. Pro users can search flexible date windows — just set your earliest date, latest date, and minimum stay length.',
   },
   {
     q: 'Do you book campsites for me?',
@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Your first watch is completely free — no credit card required. For unlimited watches and our Chrome extension, it\'s $3/month or $19/year.',
+    a: 'Free lets you track one exact stay at one campground — no credit card required. Pro is $6/month, or $29/year for early users (regularly $39/year), and includes unlimited watches, flexible date windows, and the Chrome extension.',
   },
   {
     q: 'What parks do you monitor?',
@@ -33,7 +33,7 @@ const faqs = [
   },
   {
     q: 'Is it really free?',
-    a: 'Yes. One active watch with email alerts is free forever. No credit card, no trial period, no catch.',
+    a: 'Yes. One active exact-date watch with email alerts is free forever — no credit card, no trial period, no catch. Upgrade to Pro for flexible date windows up to 30 days and unlimited watches.',
   },
 ]
 

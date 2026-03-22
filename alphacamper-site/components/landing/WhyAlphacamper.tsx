@@ -13,7 +13,7 @@ const benefits = [
   },
   {
     title: 'Honest, simple pricing',
-    body: 'One free watch forever. Paid plans start at $3/month. No per-scan fees, no surprise charges, cancel anytime.',
+    body: 'One free watch forever. Pro is $6/month, or $29/year for early users. No surprise fees. Cancel anytime.',
   },
   {
     title: 'Built by campers who get it',
