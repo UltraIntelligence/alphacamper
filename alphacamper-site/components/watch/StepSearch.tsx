@@ -34,6 +34,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const searchSeqRef = useRef(0)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const [isDismissed, setIsDismissed] = useState(false)
   const itemsRef = useRef<(HTMLElement | null)[]>([])
 
   useEffect(() => {
@@ -117,6 +118,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
+            setIsDismissed(false)
             if (isSelected) {
               onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
             }
@@ -124,18 +126,22 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
               e.preventDefault()
-              setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, results.length))
+              setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, Math.min(results.length, 10)))
             } else if (e.key === 'Enter') {
               if (highlightedIndex >= 0 && results[highlightedIndex] != null) {
                 handleSelect(results[highlightedIndex])
               }
             } else if (e.key === 'Escape') {
+              if (debounceRef.current) clearTimeout(debounceRef.current)
+              searchSeqRef.current += 1
               setResults([])
               setHighlightedIndex(-1)
+              setIsSearching(false)
+              setIsDismissed(true)
             }
           }}
           role="combobox"
-          aria-expanded={!isSelected && query.trim().length > 0}
+          aria-expanded={!isSelected && query.trim().length > 0 && !isDismissed}
           aria-autocomplete="list"
           aria-controls="step-search-listbox"
           aria-activedescendant={highlightedIndex >= 0 ? `step-search-result-${highlightedIndex}` : undefined}
@@ -143,34 +149,35 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
         />
       </div>
 
-      {!isSelected && query.trim().length > 0 && (
+      {!isSelected && query.trim().length > 0 && !isDismissed && results.length === 0 && (
+        <p
+          role="status"
+          aria-live="polite"
+          style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}
+        >
+          {isSearching ? 'Searching...' : `No campgrounds found matching "${query}".`}
+        </p>
+      )}
+      {!isSelected && query.trim().length > 0 && !isDismissed && results.length > 0 && (
         <div role="listbox" id="step-search-listbox" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {isSearching && results.length === 0 ? (
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>Searching...</p>
-          ) : results.length === 0 ? (
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              No campgrounds found matching &ldquo;{query}&rdquo;.
-            </p>
-          ) : (
-            results.slice(0, 10).map((cg, index) => (
-              <div
-                key={`${cg.platform}:${cg.id}`}
-                ref={(el) => { itemsRef.current[index] = el as HTMLElement | null }}
-                id={`step-search-result-${index}`}
-                role="option"
-                aria-selected={index === highlightedIndex}
-                tabIndex={-1}
-                className="selectable-item"
-                data-highlighted={index === highlightedIndex ? 'true' : undefined}
-                onClick={() => handleSelect(cg)}
-              >
-                <strong>{cg.name}</strong>
-                <span className="selectable-item-label">
-                  {getPlatformLabel(cg.platform)}
-                </span>
-              </div>
-            ))
-          )}
+          {results.slice(0, 10).map((cg, index) => (
+            <div
+              key={`${cg.platform}:${cg.id}`}
+              ref={(el) => { itemsRef.current[index] = el as HTMLElement | null }}
+              id={`step-search-result-${index}`}
+              role="option"
+              aria-selected={index === highlightedIndex}
+              tabIndex={-1}
+              className="selectable-item"
+              data-highlighted={index === highlightedIndex ? 'true' : undefined}
+              onClick={() => handleSelect(cg)}
+            >
+              <strong>{cg.name}</strong>
+              <span className="selectable-item-label">
+                {getPlatformLabel(cg.platform)}
+              </span>
+            </div>
+          ))}
         </div>
       )}
 

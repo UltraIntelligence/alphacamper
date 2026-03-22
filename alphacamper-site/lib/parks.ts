@@ -1,7 +1,9 @@
+export type CampgroundPlatform = 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
+
 export interface Campground {
   id: string
   name: string
-  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
+  platform: CampgroundPlatform
   province: string
   park?: string
 }

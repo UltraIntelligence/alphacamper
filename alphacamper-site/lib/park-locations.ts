@@ -5,10 +5,12 @@
  * GeoJSON spec: coordinates are [longitude, latitude].
  */
 
+import type { CampgroundPlatform } from './parks'
+
 export interface ParkFeature {
   type: 'Feature'
   geometry: { type: 'Point'; coordinates: [number, number] }
-  properties: { name: string; platform: string }
+  properties: { name: string; platform: CampgroundPlatform }
 }
 
 export const PARK_LOCATIONS: ParkFeature[] = [

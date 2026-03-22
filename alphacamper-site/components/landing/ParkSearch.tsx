@@ -48,6 +48,14 @@ export function ParkSearch() {
     }, 200)
   }
 
+  function dismiss() {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    latestSearchRef.current += 1
+    setIsOpen(false)
+    setResults([])
+    setHighlightedIndex(-1)
+  }
+
   function handleSelect(park: SearchResult) {
     setQuery(park.name)
     setIsOpen(false)
@@ -81,8 +89,7 @@ export function ParkSearch() {
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setIsOpen(false)
-        setHighlightedIndex(-1)
+        dismiss()
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -107,16 +114,17 @@ export function ParkSearch() {
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
               e.preventDefault()
-              setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, results.length))
+              if (isOpen) {
+                setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, results.length))
+              }
             } else if (e.key === 'Enter') {
-              if (highlightedIndex >= 0 && results[highlightedIndex] != null) {
+              if (isOpen && highlightedIndex >= 0 && results[highlightedIndex] != null) {
                 handleSelect(results[highlightedIndex])
               } else {
                 handleSubmit()
               }
             } else if (e.key === 'Escape') {
-              setIsOpen(false)
-              setHighlightedIndex(-1)
+              dismiss()
             }
           }}
           role="combobox"
