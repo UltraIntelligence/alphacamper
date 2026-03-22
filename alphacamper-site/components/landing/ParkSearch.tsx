@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { getNextHighlightedIndex } from '@/lib/search-nav'
 
 type SearchResult = { id: string; platform: string; name: string; province: string | null }
 
@@ -9,7 +10,9 @@ export function ParkSearch() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const wrapRef = useRef<HTMLDivElement>(null)
+  const itemsRef = useRef<(HTMLElement | null)[]>([])
   const router = useRouter()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -32,6 +35,7 @@ export function ParkSearch() {
     if (!value.trim() || value.trim().length < 2) {
       setResults([])
       setIsOpen(false)
+      setHighlightedIndex(-1)
       return
     }
     debounceRef.current = setTimeout(async () => {
@@ -40,12 +44,14 @@ export function ParkSearch() {
       if (seq !== latestSearchRef.current) return
       setResults(matches)
       setIsOpen(matches.length > 0)
+      setHighlightedIndex(-1)
     }, 200)
   }
 
   function handleSelect(park: SearchResult) {
     setQuery(park.name)
     setIsOpen(false)
+    setHighlightedIndex(-1)
     router.push(`/watch/new?park=${park.id}`)
   }
 
@@ -82,6 +88,12 @@ export function ParkSearch() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    if (highlightedIndex >= 0) {
+      itemsRef.current[highlightedIndex]?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [highlightedIndex])
+
   return (
     <div className="park-search" ref={wrapRef}>
       <div className="park-search-input-wrap">
@@ -91,7 +103,26 @@ export function ParkSearch() {
           placeholder="Park or campground name"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+              e.preventDefault()
+              setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, results.length))
+            } else if (e.key === 'Enter') {
+              if (highlightedIndex >= 0 && results[highlightedIndex] != null) {
+                handleSelect(results[highlightedIndex])
+              } else {
+                handleSubmit()
+              }
+            } else if (e.key === 'Escape') {
+              setIsOpen(false)
+              setHighlightedIndex(-1)
+            }
+          }}
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-autocomplete="list"
+          aria-controls="park-search-listbox"
+          aria-activedescendant={highlightedIndex >= 0 ? `park-search-result-${highlightedIndex}` : undefined}
           aria-label="Search for a park or campground"
           autoComplete="off"
         />
@@ -105,14 +136,17 @@ export function ParkSearch() {
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="park-search-dropdown" role="listbox">
-          {results.map((park) => (
+        <div className="park-search-dropdown" id="park-search-listbox" role="listbox">
+          {results.map((park, index) => (
             <div
               key={`${park.id}:${park.platform}`}
+              ref={(el) => { itemsRef.current[index] = el }}
+              id={`park-search-result-${index}`}
               className="park-search-item"
+              data-highlighted={index === highlightedIndex ? 'true' : undefined}
               onClick={() => handleSelect(park)}
               role="option"
-              aria-selected={false}
+              aria-selected={index === highlightedIndex}
             >
               <span className="park-search-item-name">{park.name}</span>
               <span className="park-search-item-badge">{park.province ?? 'Parks Canada'}</span>
