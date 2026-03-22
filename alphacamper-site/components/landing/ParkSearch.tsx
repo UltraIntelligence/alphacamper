@@ -82,6 +82,7 @@ export function ParkSearch() {
     function handleClickOutside(e: MouseEvent) {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
         setIsOpen(false)
+        setHighlightedIndex(-1)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
