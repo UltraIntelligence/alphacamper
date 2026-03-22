@@ -88,7 +88,7 @@ export function ParkSearch() {
         <input
           className="park-search-input"
           type="text"
-          placeholder="Search for a park or campground..."
+          placeholder="Park or campground name"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
