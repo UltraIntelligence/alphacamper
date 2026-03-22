@@ -12,7 +12,7 @@ export function UpgradeCTA() {
         faster with the Chrome extension.
       </p>
       <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '16px' }}>
-        $3/mo or $19/yr
+        $6/mo or $29/yr
       </p>
       <Link
         href="/#pricing"

@@ -52,6 +52,10 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
       return
     }
     const nights = nightsBetween(range.from, range.to)
+    if (nights < 1) {
+      onUpdate({ arrivalDate: dateToStr(range.from), departureDate: '', nights: 1 })
+      return
+    }
     if (nights > MAX_NIGHTS) {
       setTooLong(true)
       onUpdate({ arrivalDate: dateToStr(range.from), departureDate: '', nights: 1 })
