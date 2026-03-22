@@ -10,8 +10,9 @@ export function LandingHero() {
         alt=""
         fill
         priority
+        quality={90}
         sizes="100vw"
-        style={{ objectFit: 'cover', zIndex: 0 }}
+        style={{ objectFit: 'cover', objectPosition: 'center 65%', zIndex: 0 }}
       />
       <LandingNav />
       <div className="hero-content">
