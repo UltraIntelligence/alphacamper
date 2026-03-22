@@ -3,25 +3,13 @@
 import { useRef, useEffect } from 'react'
 import { ParkSearch } from './ParkSearch'
 import { LandingNav } from './LandingNav'
-
-interface HeroMarker {
-  id: string
-  name: string
-  lng: number
-  lat: number
-  available: boolean
-}
-
-const MOCK_MARKERS: HeroMarker[] = [
-  { id: '1', name: 'Alice Lake Provincial Park', lng: -123.1098, lat: 49.7611, available: true },
-  { id: '2', name: 'Garibaldi Lake Camp', lng: -122.9912, lat: 49.9327, available: true },
-  { id: '3', name: 'Brandywine Falls Camp', lng: -123.1204, lat: 50.0442, available: false },
-  { id: '4', name: 'Squamish Valley Camp', lng: -123.2300, lat: 49.7800, available: true },
-  { id: '5', name: 'Cheakamus Lake Camp', lng: -123.0100, lat: 50.0050, available: false },
-  { id: '6', name: 'Porteau Cove Park', lng: -123.2367, lat: 49.5542, available: true },
-]
+import { PARK_LOCATIONS_GEOJSON } from '@/lib/park-locations'
 
 const SQUAMISH: [number, number] = [-123.1558, 49.7016]
+
+// Symbol layer IDs containing these keywords are text/place labels — hide them.
+// POI icon layers (campsite, amenity, etc.) don't match and stay visible.
+const LABEL_KEYWORDS = ['place', 'label', 'country', 'state', 'city', 'town', 'village', 'capital', 'waterway-name', 'water-name', 'road', 'rail', 'peak', 'settlement']
 
 export function LandingHero() {
   const mapRef = useRef<HTMLDivElement>(null)
@@ -30,66 +18,86 @@ export function LandingHero() {
     if (!mapRef.current) return
 
     const key = process.env.NEXT_PUBLIC_MAPTILER_KEY
+    if (!key) {
+      console.warn('NEXT_PUBLIC_MAPTILER_KEY not set — hero map will not render')
+      return
+    }
     const styleUrl = `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${key}`
 
-    let map: import('maplibre-gl').Map
+    let disposed = false
+    const controller = new AbortController()
+    let map: import('maplibre-gl').Map | undefined
+    let zoomOutTimer: ReturnType<typeof setTimeout> | undefined
 
     async function init() {
       const maplibregl = (await import('maplibre-gl')).default
       await import('maplibre-gl/dist/maplibre-gl.css')
 
+      if (disposed || !mapRef.current) return
+
       map = new maplibregl.Map({
-        container: mapRef.current!,
+        container: mapRef.current,
         style: styleUrl,
         center: SQUAMISH,
-        zoom: 7,
+        zoom: 10,
       })
 
       map.on('load', () => {
-        // Hide all place/city label layers
-        for (const layer of map.getStyle().layers ?? []) {
-          if (layer.type === 'symbol') {
-            map.setLayoutProperty(layer.id, 'visibility', 'none')
+        if (disposed) return
+
+        // Hide text/place label layers; keep POI icon layers (campsite, amenity, etc.)
+        for (const layer of map!.getStyle().layers ?? []) {
+          if (layer.type === 'symbol' && LABEL_KEYWORDS.some(kw => layer.id.includes(kw))) {
+            map!.setLayoutProperty(layer.id, 'visibility', 'none')
           }
         }
 
-        // Add mock campground markers
-        for (const marker of MOCK_MARKERS) {
-          const el = document.createElement('div')
-          el.style.cssText = [
-            'width:14px',
-            'height:14px',
-            'border-radius:50%',
-            `background:${marker.available ? '#2F847C' : '#888888'}`,
-            'border:2px solid rgba(255,255,255,0.8)',
-            'box-shadow:0 1px 4px rgba(0,0,0,0.4)',
-            'cursor:pointer',
-          ].join(';')
+        // Overlay all parks we track as teal dots
+        map!.addSource('parks', { type: 'geojson', data: PARK_LOCATIONS_GEOJSON })
+        map!.addLayer({
+          id: 'parks-dots',
+          type: 'circle',
+          source: 'parks',
+          paint: {
+            'circle-radius': 6,
+            'circle-color': '#2F847C',
+            'circle-stroke-width': 2,
+            'circle-stroke-color': 'rgba(255,255,255,0.7)',
+          },
+        })
 
-          const popup = new maplibregl.Popup({ offset: 10, closeButton: false })
-            .setText(marker.name)
-
-          new maplibregl.Marker({ element: el })
-            .setLngLat([marker.lng, marker.lat])
-            .setPopup(popup)
-            .addTo(map)
+        // Slowly ease out to show broad coverage across Canada & the US
+        const scheduleZoomOut = (delay = 0) => {
+          zoomOutTimer = setTimeout(() => {
+            if (disposed) return
+            map!.easeTo({ zoom: 5.5, duration: 45000 })
+          }, delay)
         }
 
-        // IP geolocation fly-in (ipapi.co supports HTTPS on free tier)
-        fetch('https://ipapi.co/json/')
+        // IP geolocation fly-in via server-side proxy (uses Vercel edge geo headers),
+        // then zoom out to regional context
+        fetch('/api/geo', { signal: controller.signal })
           .then(r => r.json())
-          .then((data: { latitude?: number; longitude?: number; error?: boolean }) => {
-            if (!data.error && data.latitude != null && data.longitude != null) {
-              map.flyTo({ center: [data.longitude, data.latitude], zoom: 7, duration: 2000 })
+          .then((data: { lat?: number; lon?: number }) => {
+            if (disposed) return
+            if (data.lat !== undefined && data.lon !== undefined) {
+              map!.flyTo({ center: [data.lon, data.lat], zoom: 10, duration: 2000 })
+              map!.once('moveend', () => scheduleZoomOut())
+            } else {
+              scheduleZoomOut(1000)
             }
           })
-          .catch(() => { /* stay on Squamish */ })
+          .catch(() => scheduleZoomOut(1000))
+
       })
     }
 
     init()
 
     return () => {
+      disposed = true
+      controller.abort()
+      clearTimeout(zoomOutTimer)
       map?.remove()
     }
   }, [])
@@ -112,7 +120,7 @@ export function LandingHero() {
         <div className="hero-pre-title">CAMPSITE ALERTS FOR CANADA &amp; THE US</div>
         <h1 className="hero-title-massive">Never miss a campsite opening.</h1>
         <p className="hero-description-refined">
-          We check sold-out parks every 15 minutes, day and night.<br />
+          We check sold-out parks continually, day and night.<br />
           You get an alert the moment a spot opens up.
         </p>
         <div className="hero-action-container">

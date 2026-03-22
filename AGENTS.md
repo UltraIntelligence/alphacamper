@@ -54,6 +54,7 @@ This is a development shortcut and must **never** reach production.
 - `EXTENSION_AUTH_SECRET` — server-only HMAC secret for signing extension auth tokens (required)
 - `NEXT_PUBLIC_SITE_URL` — canonical site URL used in extension auth redirects; falls back to `VERCEL_URL` then `http://localhost:3000`
 - `NEXT_PUBLIC_ALLOWED_EXTENSION_IDS` — comma-separated Chrome extension IDs permitted to complete the extension auth flow
+- `NEXT_PUBLIC_MAPTILER_KEY` — MapTiler API key for the landing hero map
 
 ### Worker
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`
