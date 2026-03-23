@@ -715,7 +715,7 @@ a { color: inherit; text-decoration: none; }
   .why-trust-banner { flex-direction: column; gap: 24px; }
   .why-trust-item { max-width: 100%; border-radius: 20px; padding: 28px; }
 
-  .hero-specs-row { flex-wrap: wrap; gap: 20px 32px; justify-content: flex-start; padding-left: 20px; padding-right: 20px; }
+  .hero-specs-row { flex-direction: column; align-items: flex-start; gap: 16px; padding-left: 20px; padding-right: 20px; }
   .hero-spec-divider { display: none; }
 }
 
