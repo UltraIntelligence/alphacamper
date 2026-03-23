@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { getNextHighlightedIndex } from '@/lib/search-nav'
 import type { WatchData } from './WatchWizard'
 
 interface StepSearchProps {
@@ -32,12 +33,16 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   const [isSearching, setIsSearching] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const searchSeqRef = useRef(0)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const [isDismissed, setIsDismissed] = useState(false)
+  const itemsRef = useRef<(HTMLElement | null)[]>([])
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (!query.trim() || query.trim().length < 2) {
       searchSeqRef.current += 1
       setResults([])
+      setHighlightedIndex(-1)
       setIsSearching(false)
       return
     }
@@ -57,8 +62,12 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
         const res = await fetch(`/api/campgrounds?${params.toString()}`)
         if (seq !== searchSeqRef.current) return
         setResults(res.ok ? ((await res.json()).campgrounds ?? []) : [])
+        setHighlightedIndex(-1)
       } catch {
-        if (seq === searchSeqRef.current) setResults([])
+        if (seq === searchSeqRef.current) {
+          setResults([])
+          setHighlightedIndex(-1)
+        }
       } finally {
         if (seq === searchSeqRef.current) setIsSearching(false)
       }
@@ -67,7 +76,14 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [platformFilter, query])
 
+  useEffect(() => {
+    if (highlightedIndex >= 0) {
+      itemsRef.current[highlightedIndex]?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [highlightedIndex])
+
   const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }) => {
+    setHighlightedIndex(-1)
     setQuery(cg.name)
     onUpdate({
       campgroundId: cg.id,
@@ -78,6 +94,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   }
 
   const handleClear = () => {
+    setHighlightedIndex(-1)
     setQuery('')
     onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
   }
@@ -101,37 +118,66 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
+            setIsDismissed(false)
             if (isSelected) {
               onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
             }
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+              e.preventDefault()
+              setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, Math.min(results.length, 10)))
+            } else if (e.key === 'Enter') {
+              if (highlightedIndex >= 0 && results[highlightedIndex] != null) {
+                handleSelect(results[highlightedIndex])
+              }
+            } else if (e.key === 'Escape') {
+              if (debounceRef.current) clearTimeout(debounceRef.current)
+              searchSeqRef.current += 1
+              setResults([])
+              setHighlightedIndex(-1)
+              setIsSearching(false)
+              setIsDismissed(true)
+            }
+          }}
+          role="combobox"
+          aria-expanded={!isSelected && query.trim().length > 0 && !isDismissed}
+          aria-autocomplete="list"
+          aria-controls="step-search-listbox"
+          aria-activedescendant={highlightedIndex >= 0 ? `step-search-result-${highlightedIndex}` : undefined}
           autoFocus
         />
       </div>
 
-      {!isSelected && query.trim().length > 0 && (
-        <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {isSearching && results.length === 0 ? (
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>Searching...</p>
-          ) : results.length === 0 ? (
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              No campgrounds found matching &ldquo;{query}&rdquo;.
-            </p>
-          ) : (
-            results.slice(0, 10).map((cg) => (
-              <button
-                key={`${cg.platform}:${cg.id}`}
-                type="button"
-                className="selectable-item"
-                onClick={() => handleSelect(cg)}
-              >
-                <strong>{cg.name}</strong>
-                <span className="selectable-item-label">
-                  {getPlatformLabel(cg.platform)}
-                </span>
-              </button>
-            ))
-          )}
+      {!isSelected && query.trim().length > 0 && !isDismissed && results.length === 0 && (
+        <p
+          role="status"
+          aria-live="polite"
+          style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}
+        >
+          {isSearching ? 'Searching...' : `No campgrounds found matching "${query}".`}
+        </p>
+      )}
+      {!isSelected && query.trim().length > 0 && !isDismissed && results.length > 0 && (
+        <div role="listbox" id="step-search-listbox" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {results.slice(0, 10).map((cg, index) => (
+            <div
+              key={`${cg.platform}:${cg.id}`}
+              ref={(el) => { itemsRef.current[index] = el as HTMLElement | null }}
+              id={`step-search-result-${index}`}
+              role="option"
+              aria-selected={index === highlightedIndex}
+              tabIndex={-1}
+              className="selectable-item"
+              data-highlighted={index === highlightedIndex ? 'true' : undefined}
+              onClick={() => handleSelect(cg)}
+            >
+              <strong>{cg.name}</strong>
+              <span className="selectable-item-label">
+                {getPlatformLabel(cg.platform)}
+              </span>
+            </div>
+          ))}
         </div>
       )}
 
