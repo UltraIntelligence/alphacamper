@@ -9,6 +9,7 @@ import { StepDates } from './StepDates'
 import { StepSiteNumber } from './StepSiteNumber'
 import { StepEmail } from './StepEmail'
 import { WatchConfirmation } from './WatchConfirmation'
+import { WatchMapBackground } from './WatchMapBackground'
 
 export type WizardStep = 'search' | 'dates' | 'site' | 'email'
 const PENDING_WATCH_STORAGE_KEY = 'alphacamper.pendingWatch'
@@ -173,8 +174,10 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
   }
 
   return (
-    <div>
-      {STEPS.map(({ key, number, title }) => {
+    <>
+      <WatchMapBackground campgroundName={data.campgroundName} platform={data.platform} />
+      <div className="wizard-glass-panel">
+        {STEPS.map(({ key, number, title }) => {
         const isActive = activeStep === key
         const isCompleted = completedSteps.has(key)
         const summary = getStepSummary(key, data)
@@ -236,6 +239,7 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
           </div>
         )
       })}
-    </div>
+      </div>
+    </>
   )
 }
