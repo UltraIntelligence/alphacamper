@@ -61,8 +61,8 @@ This is a development shortcut and must **never** reach production.
 - `SLACK_WEBHOOK_URL` — operator alerts
 - `RESEND_API_KEY` — Resend email service (alert notifications)
 - `RESEND_FROM_EMAIL` — verified sender address (e.g. `alerts@alphacamper.com`); falls back to Resend sandbox domain if unset (dev only)
-- `TELNYX_API_KEY` — Telnyx SMS service (alert notifications)
-- `TELNYX_FROM_NUMBER` — Telnyx phone number to send SMS from
+- `SENTDM_API_KEY` — Sent.dm API key for SMS/WhatsApp/RCS alert notifications
+- `SENTDM_TEMPLATE_NAME` — Sent.dm message template name (default: `campsite_alert`)
 - `DISABLED_PLATFORMS` — kill switch (comma-separated)
 - `POLL_INTERVAL_MS` / `SLOW_POLL_INTERVAL_MS` / `CYCLE_TIMEOUT_MS`
 

@@ -22,7 +22,11 @@ export interface WatchData {
   arrivalDate: string
   departureDate: string
   nights: number
+  isAnyOpening: boolean
   siteNumber: string
+  siteType: 'rv' | 'tent' | 'any'
+  amenities: string[]
+  loops: string[]
   email: string
 }
 
@@ -34,14 +38,18 @@ const INITIAL_DATA: WatchData = {
   arrivalDate: '',
   departureDate: '',
   nights: 1,
+  isAnyOpening: false,
   siteNumber: '',
+  siteType: 'any',
+  amenities: [],
+  loops: [],
   email: '',
 }
 
 const STEPS: { key: WizardStep; number: number; title: string }[] = [
   { key: 'search', number: 1, title: 'Find your campground' },
   { key: 'dates', number: 2, title: 'Pick your dates' },
-  { key: 'site', number: 3, title: 'Preferred site (optional)' },
+  { key: 'site', number: 3, title: 'Preferences' },
   { key: 'email', number: 4, title: 'Get notified' },
 ]
 
@@ -160,16 +168,21 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
 
   if (isComplete) {
     return (
-      <WatchConfirmation
-        campgroundName={data.campgroundName}
-        platform={data.platform}
-        arrivalDate={data.arrivalDate}
-        departureDate={data.departureDate}
-        email={data.email}
-        magicLinkSent={magicLinkSent}
-        magicLinkError={magicLinkError}
-        onResend={handleResendMagicLink}
-      />
+      <>
+        <WatchMapBackground campgroundName={data.campgroundName} platform={data.platform} isComplete={true} />
+        <div className="wizard-glass-panel">
+          <WatchConfirmation
+            campgroundName={data.campgroundName}
+            platform={data.platform}
+            arrivalDate={data.arrivalDate}
+            departureDate={data.departureDate}
+            email={data.email}
+            magicLinkSent={magicLinkSent}
+            magicLinkError={magicLinkError}
+            onResend={handleResendMagicLink}
+          />
+        </div>
+      </>
     )
   }
 

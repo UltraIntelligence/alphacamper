@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { Resend } from "resend";
+import SentDm from "@sentdm/sentdm";
 import { log } from "./logger.js";
 import type { AvailableSite } from "./supabase.js";
 
@@ -158,7 +159,20 @@ export async function sendAlertEmail(params: AlertEmailParams): Promise<boolean>
   }
 }
 
-// ─── SMS via Telnyx ──────────────────────────────────────────────────────────
+// ─── SMS/WhatsApp via Sent.dm ─────────────────────────────────────────────────
+
+let _sentdm: SentDm | null = null;
+
+function getSentDm(): SentDm | null {
+  if (_sentdm) return _sentdm;
+  const key = process.env.SENTDM_API_KEY;
+  if (!key) {
+    log.warn("SENTDM_API_KEY not set — SMS/WhatsApp notifications disabled");
+    return null;
+  }
+  _sentdm = new SentDm({ apiKey: key });
+  return _sentdm;
+}
 
 interface AlertSMSParams {
   phone: string;
@@ -169,46 +183,40 @@ interface AlertSMSParams {
 }
 
 export async function sendAlertSMS(params: AlertSMSParams): Promise<boolean> {
-  const apiKey = process.env.TELNYX_API_KEY;
-  const fromNumber = process.env.TELNYX_FROM_NUMBER;
-
-  if (!apiKey || !fromNumber) {
-    log.warn("TELNYX_API_KEY or TELNYX_FROM_NUMBER not set — SMS disabled");
-    return false;
-  }
+  const client = getSentDm();
+  if (!client) return false;
 
   const siteCount = params.sites.length;
   const bookingUrl = getBookingUrl(params.platform, params.campgroundId);
-  const text = `🏕️ ${siteCount} spot${siteCount > 1 ? "s" : ""} open at ${params.campgroundName}! ${bookingUrl || "Check Alphacamper for details."}`;
+  const templateName = process.env.SENTDM_TEMPLATE_NAME ?? "campsite_alert";
 
   try {
-    const res = await fetch("https://api.telnyx.com/v2/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+    const response = await client.messages.send({
+      channel: ["sms", "whatsapp"],
+      to: [params.phone],
+      template: {
+        name: templateName,
+        parameters: {
+          campground_name: params.campgroundName,
+          site_count: String(siteCount),
+          booking_url: bookingUrl ?? "https://alphacamper.com",
+        },
       },
-      body: JSON.stringify({
-        from: fromNumber,
-        to: params.phone,
-        text,
-      }),
     });
 
-    if (!res.ok) {
-      const body = await res.text();
-      log.error("Telnyx API error", {
+    if (!response.success) {
+      log.error("Sent.dm API error", {
         recipient: maskPii(params.phone),
         campground: params.campgroundName,
-        status: res.status,
-        body,
+        error: response.error,
       });
       return false;
     }
 
-    log.info("Alert SMS sent", {
+    log.info("Alert message sent", {
       recipient: maskPii(params.phone),
       campground: params.campgroundName,
+      messageIds: response.data?.recipients?.map((r) => r.message_id),
     });
     return true;
   } catch (err) {

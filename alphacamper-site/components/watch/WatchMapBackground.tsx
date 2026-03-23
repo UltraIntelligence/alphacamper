@@ -8,10 +8,12 @@ const LABEL_KEYWORDS = ['place', 'label', 'country', 'state', 'city', 'town', 'v
 
 export function WatchMapBackground({
   campgroundName,
-  platform
+  platform,
+  isComplete
 }: {
   campgroundName?: string
   platform?: string
+  isComplete?: boolean
 }) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<any>(null)
@@ -98,14 +100,32 @@ export function WatchMapBackground({
 
     if (feature) {
       const [lng, lat] = feature.geometry.coordinates
-      mapInstance.current.flyTo({
-        center: [lng, lat],
-        zoom: 13,
-        duration: 3000,
-        essential: true
-      })
+      
+      if (isComplete) {
+        mapInstance.current.flyTo({
+          center: [lng, lat],
+          zoom: 16.5,
+          pitch: 55,
+          bearing: -15,
+          speed: 0.3, // Ultra slow, luxurious final swoop
+          curve: 1.2, // Flatter flight arc
+          essential: true,
+          easing: (t: number) => t * t * (3 - 2 * t) // Smooth step (ease-in-out)
+        })
+      } else {
+        mapInstance.current.flyTo({
+          center: [lng, lat],
+          zoom: 13,
+          pitch: 0,
+          bearing: 0,
+          speed: 0.6, // Relaxed panning speed
+          curve: 1.4, // Standard flight arc
+          essential: true,
+          easing: (t: number) => t * t * (3 - 2 * t)
+        })
+      }
     }
-  }, [campgroundName, platform])
+  }, [campgroundName, platform, isComplete])
 
   return (
     <div className="fixed inset-0 w-full h-full z-[-1]" style={{ pointerEvents: 'none', background: '#000' }}>

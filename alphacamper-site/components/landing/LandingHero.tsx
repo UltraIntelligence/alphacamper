@@ -70,7 +70,7 @@ export function LandingHero() {
         const scheduleZoomOut = (delay = 0) => {
           zoomOutTimer = setTimeout(() => {
             if (disposed) return
-            map!.easeTo({ zoom: 5.5, duration: 45000 })
+            map!.easeTo({ zoom: 7.5, duration: 45000 })
           }, delay)
         }
 
@@ -137,7 +137,7 @@ export function LandingHero() {
              </div>
              <div className="hero-spec-divider" />
              <div className="hero-spec">
-               <span className="hero-spec-value">360 checks/day</span>
+               <span className="hero-spec-value">100&apos;s checks/day</span>
                <span className="hero-spec-label">Per campground, every day</span>
              </div>
              <div className="hero-spec-divider" />
