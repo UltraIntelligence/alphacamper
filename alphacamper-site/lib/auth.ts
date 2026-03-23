@@ -1,5 +1,3 @@
-import { getSupabase } from './supabase'
-
 export function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
@@ -23,12 +21,17 @@ export function getBearerToken(authHeader: string | null): string | null {
  * Send magic link email for account activation.
  * Watch creation completes after the caller returns with a verified session.
  */
-export async function sendMagicLink(email: string, origin: string): Promise<{ error: string | null }> {
-  const supabase = getSupabase()
+export async function sendMagicLink(
+  email: string,
+  origin: string,
+  campgroundName?: string
+): Promise<{ error: string | null }> {
   const redirectTo = getRedirectUrl(origin)
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: redirectTo },
+  const res = await fetch('/api/auth/send-magic-link', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, redirectTo, campgroundName }),
   })
-  return { error: error?.message ?? null }
+  const data = await res.json() as { error: string | null }
+  return { error: data.error ?? null }
 }

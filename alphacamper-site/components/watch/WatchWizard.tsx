@@ -124,7 +124,7 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
         }))
       }
 
-      const { error } = await sendMagicLink(data.email, window.location.origin)
+      const { error } = await sendMagicLink(data.email, window.location.origin, data.campgroundName)
       if (error) {
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem(PENDING_WATCH_STORAGE_KEY)
