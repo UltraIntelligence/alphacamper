@@ -124,11 +124,14 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
             }
           }}
           onKeyDown={(e) => {
+            const dropdownVisible = !isSelected && query.trim().length > 0 && !isDismissed && results.length > 0
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
               e.preventDefault()
-              setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, Math.min(results.length, 10)))
+              if (dropdownVisible) {
+                setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, Math.min(results.length, 10)))
+              }
             } else if (e.key === 'Enter') {
-              if (highlightedIndex >= 0 && results[highlightedIndex] != null) {
+              if (dropdownVisible && highlightedIndex >= 0 && results[highlightedIndex] != null) {
                 handleSelect(results[highlightedIndex])
               }
             } else if (e.key === 'Escape') {
