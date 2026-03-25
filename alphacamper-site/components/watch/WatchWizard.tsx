@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { sendMagicLink } from '@/lib/auth'
+import { sendMagicLink, storeMagicLinkEmail } from '@/lib/auth'
 import { getCampground } from '@/lib/parks'
 import { StepSummary } from './StepSummary'
 import { StepSearch } from './StepSearch'
@@ -122,6 +122,8 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
     setSubmitError(null)
 
     try {
+      storeMagicLinkEmail(data.email)
+
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(PENDING_WATCH_STORAGE_KEY, JSON.stringify({
           platform: data.platform,
@@ -133,7 +135,9 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
         }))
       }
 
-      const { error } = await sendMagicLink(data.email, window.location.origin, data.campgroundName)
+      const { error } = await sendMagicLink(data.email, window.location.origin, {
+        campgroundName: data.campgroundName,
+      })
       if (error) {
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem(PENDING_WATCH_STORAGE_KEY)
@@ -155,6 +159,7 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
     setMagicLinkError(null)
     setMagicLinkSent(false)
     try {
+      storeMagicLinkEmail(data.email)
       const { error } = await sendMagicLink(data.email, window.location.origin)
       if (error) {
         setMagicLinkError(error)

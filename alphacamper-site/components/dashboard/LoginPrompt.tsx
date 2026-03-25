@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { validateEmail } from '@/lib/auth'
+import { storeMagicLinkEmail, validateEmail } from '@/lib/auth'
 import { getSupabase } from '@/lib/supabase'
 
 export function LoginPrompt() {
@@ -17,6 +17,7 @@ export function LoginPrompt() {
 
     const supabase = getSupabase()
     try {
+      storeMagicLinkEmail(email)
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },

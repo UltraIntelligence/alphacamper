@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { clearMagicLinkEmail, readMagicLinkEmail, sendMagicLink } from '@/lib/auth'
 import { getSupabase } from '@/lib/supabase'
 
 const PENDING_WATCH_STORAGE_KEY = 'alphacamper.pendingWatch'
@@ -89,7 +90,10 @@ function AuthConfirmContent() {
   const router = useRouter()
   const [status, setStatus] = useState<'verifying' | 'creating' | 'success' | 'error'>('verifying')
   const [errorMessage, setErrorMessage] = useState('This magic link has expired or was already used.')
-  const [hasPendingWatch, setHasPendingWatch] = useState(false)
+  const [hasPendingWatch] = useState(() => Boolean(readPendingWatchDraft()))
+  const [magicLinkEmail] = useState<string | null>(() => readMagicLinkEmail())
+  const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [resendError, setResendError] = useState<string | null>(null)
   const isExtensionFlow = Boolean(searchParams.get('extensionId'))
 
   useEffect(() => {
@@ -99,6 +103,7 @@ function AuthConfirmContent() {
     const tokenHash = searchParams.get('token_hash')
     const type = searchParams.get('type')
     const extensionId = searchParams.get('extensionId')
+    const draft = readPendingWatchDraft()
 
     if (!tokenHash || !type || !VALID_OTP_TYPES.includes(type as ValidOtpType)) {
       queueMicrotask(() => { if (isMounted) setStatus('error') })
@@ -121,10 +126,8 @@ function AuthConfirmContent() {
         }
 
         const authHeaders = { Authorization: `Bearer ${session.access_token}` }
-        const draft = readPendingWatchDraft()
         if (!isMounted) return
 
-        setHasPendingWatch(Boolean(draft))
         setStatus('creating')
 
         const registerRes = await fetch('/api/register', {
@@ -182,6 +185,7 @@ function AuthConfirmContent() {
         }
 
         if (!isMounted) return
+        clearMagicLinkEmail()
         setStatus('success')
         redirectTimer = setTimeout(() => { if (isMounted) router.push('/dashboard') }, 1500)
       })
@@ -196,6 +200,30 @@ function AuthConfirmContent() {
       clearTimeout(redirectTimer)
     }
   }, [searchParams, router])
+
+  const handleResendMagicLink = async () => {
+    if (!magicLinkEmail || resendState === 'sending') return
+
+    setResendState('sending')
+    setResendError(null)
+
+    const { error } = await sendMagicLink(magicLinkEmail, window.location.origin, {
+      campgroundName: readPendingWatchDraft()?.campgroundName,
+      extensionId: searchParams.get('extensionId'),
+      flow: searchParams.get('flow'),
+    })
+
+    if (error) {
+      setResendError(error)
+      setResendState('error')
+      return
+    }
+
+    setResendState('sent')
+  }
+
+  const fallbackHref = hasPendingWatch ? '/watch/new' : '/dashboard'
+  const fallbackLabel = hasPendingWatch ? 'Start over with a new watch' : 'Back to sign in'
 
   return (
     <main className="wizard-container" style={{ textAlign: 'center', paddingTop: '80px' }}>
@@ -227,11 +255,29 @@ function AuthConfirmContent() {
       {status === 'error' && (
         <>
           <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>We couldn&apos;t finish sign-in</h1>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: magicLinkEmail ? '16px' : '24px' }}>
             {errorMessage}
           </p>
-          <Link href="/watch/new" className="btn-bold btn-bold-primary" style={{ textDecoration: 'none' }}>
-            Create a new watch
+
+          {magicLinkEmail && (
+            <>
+              <button
+                type="button"
+                className="btn-bold btn-bold-primary"
+                onClick={handleResendMagicLink}
+                disabled={resendState === 'sending'}
+              >
+                {resendState === 'sending' ? 'Sending a new link...' : 'Email me a new link'}
+              </button>
+              <p style={{ color: resendState === 'error' ? 'var(--color-error, #c0392b)' : 'var(--color-text-muted)', marginTop: '12px', marginBottom: '20px' }}>
+                {resendState === 'sent' && `We sent a fresh link to ${magicLinkEmail}.`}
+                {resendState === 'error' && resendError}
+              </p>
+            </>
+          )}
+
+          <Link href={fallbackHref} style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
+            {fallbackLabel}
           </Link>
         </>
       )}

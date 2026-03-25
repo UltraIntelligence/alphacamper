@@ -19,6 +19,15 @@ describe('getRedirectUrl', () => {
     const url = getRedirectUrl('http://localhost:3000')
     expect(url).toBe('http://localhost:3000/auth/confirm')
   })
+
+  it('preserves extra redirect params when provided', () => {
+    const url = getRedirectUrl('http://localhost:3000/', {
+      extensionId: 'abc123',
+      flow: 'extension',
+    })
+
+    expect(url).toBe('http://localhost:3000/auth/confirm?extensionId=abc123&flow=extension')
+  })
 })
 
 describe('getBearerToken', () => {
