@@ -1,3 +1,5 @@
+import "./env.js";
+
 export const DOMAINS: Record<string, string> = {
   bc_parks: "camping.bcparks.ca",
   ontario_parks: "reservations.ontarioparks.ca",
@@ -19,6 +21,7 @@ export const REQUEST_DELAY_MS = 2000;
 export const MAX_CAMPGROUNDS_PER_CYCLE = 500;
 
 export const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || "";
+export const CAMPFLARE_API_KEY = process.env.CAMPFLARE_API_KEY || "";
 
 export function getDisabledPlatforms(): Set<string> {
   const raw = process.env.DISABLED_PLATFORMS || "";

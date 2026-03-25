@@ -1,3 +1,5 @@
+import "./env.js";
+
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const LEVELS = { debug: 0, info: 1, warn: 2, error: 3, critical: 4 } as const;
 type Level = keyof typeof LEVELS;

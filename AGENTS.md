@@ -58,6 +58,7 @@ This is a development shortcut and must **never** reach production.
 
 ### Worker
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`
+- `CAMPFLARE_API_KEY` — Campflare API access for Campflare platform integration
 - `SLACK_WEBHOOK_URL` — operator alerts
 - `RESEND_API_KEY` — Resend email service (alert notifications)
 - `RESEND_FROM_EMAIL` — verified sender address (e.g. `alerts@alphacamper.com`); falls back to Resend sandbox domain if unset (dev only)
