@@ -114,18 +114,17 @@ const PLATFORMS = {
     cartTimeoutMinutes: 15,
     hasPublicApi: false,
     popularCampgrounds: [
-      { id: "-2504", name: "Rathtrevor Beach", province: "BC" },
-      { id: "-2493", name: "Golden Ears - Alouette", province: "BC" },
-      { id: "-2471", name: "Cultus Lake", province: "BC" },
-      { id: "-2443", name: "Birkenhead Lake", province: "BC" },
-      { id: "-2532", name: "Shuswap Lake", province: "BC" },
-      { id: "-2457", name: "Englishman River Falls", province: "BC" },
-      { id: "-2499", name: "Joffre Lakes", province: "BC" },
-      { id: "-2472", name: "Cypress Provincial Park", province: "BC" },
-      { id: "-2503", name: "Porteau Cove", province: "BC" },
-      { id: "-2430", name: "Alice Lake", province: "BC" },
-      { id: "-2521", name: "Okanagan Lake South", province: "BC" },
-      { id: "-2497", name: "Haynes Point", province: "BC" },
+      { id: "-2147483545", mapId: "-2147483437", name: "Rathtrevor Beach", province: "BC" },
+      { id: "-2147483606", mapId: "-2147483576", name: "Golden Ears - Alouette", province: "BC" },
+      { id: "-2147483623", mapId: "-2147483610", name: "Cultus Lake", province: "BC" },
+      { id: "-2147483640", mapId: "-2147483631", name: "Birkenhead Lake", province: "BC" },
+      { id: "-2147483536", mapId: "-2147483414", name: "Shuswap Lake", province: "BC" },
+      { id: "-2147483614", mapId: "-2147483589", name: "Englishman River Falls", province: "BC" },
+      { id: "-2147483597", mapId: "-2147483548", name: "Joffre Lakes", province: "BC" },
+      { id: "-2147483550", mapId: "-2147483449", name: "Porteau Cove", province: "BC" },
+      { id: "-2147483647", mapId: "-2147483648", name: "Alice Lake", province: "BC" },
+      { id: "-2147483560", mapId: "-2147483463", name: "Okanagan Lake South", province: "BC" },
+      { id: "-2147483523", mapId: "-2147483558", name: "sẁiẁs (Haynes Point)", province: "BC" },
     ]
   },
   ontario_parks: {
@@ -225,3 +224,5 @@ const PLATFORMS = {
     ]
   },
 };
+
+globalThis.PLATFORMS = PLATFORMS;

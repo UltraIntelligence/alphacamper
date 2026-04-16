@@ -1,0 +1,64 @@
+name: Test Suite
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  app-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - alphacamper-site
+          - alphacamper-worker
+          - alphacamper-extension
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  smoke-check:
+    runs-on: ubuntu-latest
+    needs: app-tests
+    defaults:
+      run:
+        working-directory: alphacamper-site
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: alphacamper-site/package-lock.json
+
+      - name: Install site deps
+        run: npm ci
+
+      - name: Run customer smoke check
+        run: npm run test:smoke

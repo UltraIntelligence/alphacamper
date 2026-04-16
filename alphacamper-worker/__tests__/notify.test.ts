@@ -2,10 +2,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the Resend SDK before importing the module under test
 const mockSend = vi.fn();
+const mockSentDmSend = vi.fn();
 
 vi.mock("resend", () => ({
   Resend: class MockResend {
     emails = { send: mockSend };
+  },
+}));
+
+vi.mock("@sentdm/sentdm", () => ({
+  default: class MockSentDm {
+    messages = { send: mockSentDmSend };
   },
 }));
 
@@ -162,45 +169,47 @@ describe("sendAlertSMS", () => {
     ],
   };
 
-  let mockFetch: ReturnType<typeof vi.fn>;
-
   beforeEach(() => {
-    process.env.TELNYX_API_KEY = "KEY_test_123";
-    process.env.TELNYX_FROM_NUMBER = "+18005551234";
-    mockFetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
-    vi.stubGlobal("fetch", mockFetch);
+    process.env.SENTDM_API_KEY = "sentdm_test_123";
+    process.env.SENTDM_TEMPLATE_NAME = "campsite_alert";
+    mockSentDmSend.mockResolvedValue({
+      success: true,
+      data: {
+        recipients: [{ message_id: "msg_123" }],
+      },
+    });
   });
 
-  it("calls Telnyx API with correct params", async () => {
+  it("calls Sent.dm with the expected template payload", async () => {
     const result = await sendAlertSMS(baseSMSParams);
 
     expect(result).toBe(true);
-    expect(mockFetch).toHaveBeenCalledOnce();
-
-    const [url, options] = mockFetch.mock.calls[0];
-    expect(url).toBe("https://api.telnyx.com/v2/messages");
-    expect(options.method).toBe("POST");
-    expect(options.headers.Authorization).toBe("Bearer KEY_test_123");
-
-    const body = JSON.parse(options.body);
-    expect(body.from).toBe("+18005551234");
-    expect(body.to).toBe("+16045551234");
-    expect(body.text).toContain("Alice Lake");
-    expect(body.text).toContain("2 spots");
+    expect(mockSentDmSend).toHaveBeenCalledOnce();
+    expect(mockSentDmSend).toHaveBeenCalledWith({
+      channel: ["sms", "whatsapp"],
+      to: ["+16045551234"],
+      template: {
+        name: "campsite_alert",
+        parameters: {
+          campground_name: "Alice Lake",
+          site_count: "2",
+          booking_url: "https://camping.bcparks.ca/create-booking/results?resourceLocationId=-2430",
+        },
+      },
+    });
   });
 
   it("returns false when env vars not set", async () => {
-    delete process.env.TELNYX_API_KEY;
-    delete process.env.TELNYX_FROM_NUMBER;
+    delete process.env.SENTDM_API_KEY;
 
     const result = await sendAlertSMS(baseSMSParams);
 
     expect(result).toBe(false);
-    expect(mockFetch).not.toHaveBeenCalled();
+    expect(mockSentDmSend).not.toHaveBeenCalled();
   });
 
   it("returns false on API error", async () => {
-    mockFetch.mockResolvedValue({ ok: false, status: 400, text: async () => "Bad request" });
+    mockSentDmSend.mockResolvedValue({ success: false, error: "Bad request" });
 
     const result = await sendAlertSMS(baseSMSParams);
 
@@ -208,22 +217,20 @@ describe("sendAlertSMS", () => {
   });
 
   it("returns false on network exception", async () => {
-    mockFetch.mockRejectedValue(new Error("Network timeout"));
+    mockSentDmSend.mockRejectedValue(new Error("Network timeout"));
 
     const result = await sendAlertSMS(baseSMSParams);
 
     expect(result).toBe(false);
   });
 
-  it("handles single site correctly", async () => {
+  it("sends the correct single-site count", async () => {
     const result = await sendAlertSMS({
       ...baseSMSParams,
       sites: [{ siteId: "101", siteName: "A1" }],
     });
 
     expect(result).toBe(true);
-    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-    expect(body.text).toContain("1 spot");
-    expect(body.text).not.toContain("1 spots");
+    expect(mockSentDmSend.mock.calls[0][0].template.parameters.site_count).toBe("1");
   });
 });

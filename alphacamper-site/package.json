@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:smoke": "vitest run __tests__/watch-wizard.test.tsx __tests__/auth-confirm-page.test.tsx __tests__/billing-upgrade.test.tsx"
   },
   "dependencies": {
     "@react-email/components": "^1.0.10",
@@ -22,12 +23,15 @@
     "resend": "^6.9.4"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.0",
+    "jsdom": "^26.1.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.0"

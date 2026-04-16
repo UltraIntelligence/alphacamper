@@ -232,6 +232,7 @@ export async function sendAlertSMS(params: AlertSMSParams): Promise<boolean> {
 /** Reset singleton — for testing only */
 export function _resetResend(): void {
   _resend = null;
+  _sentdm = null;
 }
 
 // Exported for testing

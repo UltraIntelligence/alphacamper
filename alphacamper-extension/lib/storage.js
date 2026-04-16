@@ -5,6 +5,12 @@ const Storage = {
       lastName: '',
       email: '',
       phone: '',
+      addressLine1: '',
+      city: '',
+      stateProvince: '',
+      postalCode: '',
+      country: 'CA',
+      residency: '',
       vehiclePlate: '',
       vehicleLength: '',
       equipmentType: 'tent',
@@ -15,13 +21,14 @@ const Storage = {
     missions: [],
     settings: {
       countdownAudio: false,
-      notifyBefore: 5
+      notifyBefore: 5,
+      aggressiveAssist: true
     }
   },
 
   async getProfile() {
     const result = await chrome.storage.local.get('profile');
-    return result.profile || { ...this._defaults.profile };
+    return { ...this._defaults.profile, ...(result.profile || {}) };
   },
 
   async setProfile(profile) {
@@ -67,7 +74,7 @@ const Storage = {
 
   async getSettings() {
     const result = await chrome.storage.local.get('settings');
-    return result.settings || { ...this._defaults.settings };
+    return { ...this._defaults.settings, ...(result.settings || {}) };
   },
 
   async setSettings(settings) {
@@ -79,3 +86,5 @@ const Storage = {
     await chrome.storage.local.clear();
   }
 };
+
+globalThis.Storage = Storage;

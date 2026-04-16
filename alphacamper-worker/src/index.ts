@@ -299,6 +299,9 @@ async function runCycle(): Promise<void> {
     watches_checked: totalChecked,
     alerts_created: totalAlerts,
     consecutive_403: consecutive403,
+    platforms_healthy: Object.fromEntries(
+      Object.entries(DOMAINS).map(([platform, domain]) => [platform, (consecutive403[domain] || 0) < 3])
+    ),
   });
 
   // Step 6: Check for persistent 403s — alert operator

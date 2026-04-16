@@ -87,7 +87,7 @@ export async function createAlert(
 
   // Dedup: check if an unclaimed alert already exists for this watch
   const { data: existing, error: checkError } = await supabase
-    .from("alerts")
+    .from("availability_alerts")
     .select("id")
     .eq("watched_target_id", watchId)
     .eq("claimed", false)
@@ -103,10 +103,10 @@ export async function createAlert(
     return false;
   }
 
-  const { error: insertError } = await supabase.from("alerts").insert({
+  const { error: insertError } = await supabase.from("availability_alerts").insert({
     watched_target_id: watchId,
     user_id: userId,
-    available_sites: sites,
+    site_details: { sites },
     claimed: false,
   });
 
@@ -157,10 +157,10 @@ export async function expireStaleAlerts(): Promise<number> {
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
   const { data, error } = await getClient()
-    .from("alerts")
+    .from("availability_alerts")
     .update({ claimed: true })
     .eq("claimed", false)
-    .lt("created_at", oneHourAgo)
+    .lt("notified_at", oneHourAgo)
     .select("id");
 
   if (error) {
@@ -179,6 +179,7 @@ export async function upsertCampgrounds(
   rows: Array<{
     id: string;
     platform: string;
+    root_map_id: number;
     name: string;
     short_name: string | null;
     province: string | null;
@@ -195,11 +196,30 @@ export async function upsertCampgrounds(
   return true;
 }
 
-export async function updateWorkerStatus(stats: Record<string, unknown>): Promise<void> {
+export async function updateWorkerStatus(stats: {
+  last_cycle_at?: string;
+  watches_checked?: number;
+  alerts_created?: number;
+  consecutive_403?: Record<string, number>;
+  platforms_healthy?: Record<string, boolean>;
+}): Promise<void> {
+  const lastCycleAt = stats.last_cycle_at ?? new Date().toISOString();
+  const consecutive403Counts = Object.values(stats.consecutive_403 ?? {}).map((value) => Number(value) || 0);
   const { error } = await getClient()
     .from("worker_status")
     .upsert(
-      { id: 1, ...stats, updated_at: new Date().toISOString() },
+      {
+        id: "singleton",
+        last_cycle_at: lastCycleAt,
+        last_successful_poll_at: lastCycleAt,
+        consecutive_403_count: consecutive403Counts.length > 0 ? Math.max(...consecutive403Counts) : 0,
+        platforms_healthy: stats.platforms_healthy ?? {},
+        cycle_stats: {
+          watches_checked: stats.watches_checked ?? 0,
+          alerts_created: stats.alerts_created ?? 0,
+          consecutive_403: stats.consecutive_403 ?? {},
+        },
+      },
       { onConflict: "id" }
     );
 
