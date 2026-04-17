@@ -1,6 +1,31 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { getUserIdFromRequest } from "@/lib/auth.server";
+import { getCampground } from "@/lib/parks";
+
+async function resolveCanonicalCampgroundName(
+  platform: string,
+  campgroundId: string,
+): Promise<string | null> {
+  const { data, error } = await getSupabase()
+    .from("campgrounds")
+    .select("id, platform, name")
+    .eq("id", campgroundId)
+    .eq("platform", platform)
+    .limit(1)
+    .single();
+
+  if (!error && data?.id === campgroundId && data?.platform === platform && data?.name) {
+    return data.name;
+  }
+
+  const staticCampground = getCampground(campgroundId);
+  if (staticCampground && staticCampground.platform === platform) {
+    return staticCampground.name;
+  }
+
+  return null;
+}
 
 // POST — Add a new watch target
 export async function POST(request: Request) {
@@ -17,13 +42,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const canonicalCampgroundName = await resolveCanonicalCampgroundName(platform, campgroundId);
+    if (!canonicalCampgroundName) {
+      return NextResponse.json({ error: "Invalid campground selection" }, { status: 400 });
+    }
+
     const { data, error } = await getSupabase()
       .from("watched_targets")
       .insert({
         user_id: userId,
         platform,
         campground_id: campgroundId,
-        campground_name: campgroundName || campgroundId,
+        campground_name: canonicalCampgroundName,
         site_number: siteNumber || null,
         arrival_date: arrivalDate,
         departure_date: departureDate,

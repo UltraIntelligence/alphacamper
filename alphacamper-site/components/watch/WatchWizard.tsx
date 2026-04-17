@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { sendMagicLink, storeMagicLinkEmail } from '@/lib/auth'
 import { getCampground } from '@/lib/parks'
 import { StepSummary } from './StepSummary'
@@ -89,6 +89,7 @@ export function WatchWizard({
   const [isComplete, setIsComplete] = useState(false)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [magicLinkError, setMagicLinkError] = useState<string | null>(null)
+  const userChangedCampgroundRef = useRef(false)
 
   useEffect(() => {
     let isCancelled = false
@@ -119,16 +120,6 @@ export function WatchWizard({
         return
       }
 
-      if (initialParkName && initialPlatform) {
-        applySelectedPark({
-          id: initialParkId,
-          name: initialParkName,
-          platform: initialPlatform,
-          province: initialProvince ?? '',
-        })
-        return
-      }
-
       try {
         const params = new URLSearchParams({ id: initialParkId })
         if (initialPlatform) params.set('platform', initialPlatform)
@@ -137,7 +128,13 @@ export function WatchWizard({
         if (response.ok) {
           const body = await response.json()
           const park = body.campgrounds?.[0]
-          if (park?.id && park?.name && park?.platform) {
+          const matchesInitialSelection =
+            park?.id === initialParkId &&
+            Boolean(park?.name) &&
+            Boolean(park?.platform) &&
+            (!initialPlatform || park.platform === initialPlatform)
+
+          if (matchesInitialSelection && !userChangedCampgroundRef.current) {
             applySelectedPark({
               id: park.id,
               name: park.name,
@@ -152,7 +149,7 @@ export function WatchWizard({
       }
 
       const park = getCampground(initialParkId)
-      if (park && (!initialPlatform || park.platform === initialPlatform)) {
+      if (park && (!initialPlatform || park.platform === initialPlatform) && !userChangedCampgroundRef.current) {
         applySelectedPark({
           id: park.id,
           name: park.name,
@@ -172,6 +169,14 @@ export function WatchWizard({
   }, [initialParkId, initialParkName, initialPlatform, initialProvince])
 
   const updateData = useCallback((partial: Partial<WatchData>) => {
+    if (
+      Object.prototype.hasOwnProperty.call(partial, 'campgroundId') ||
+      Object.prototype.hasOwnProperty.call(partial, 'campgroundName') ||
+      Object.prototype.hasOwnProperty.call(partial, 'platform') ||
+      Object.prototype.hasOwnProperty.call(partial, 'province')
+    ) {
+      userChangedCampgroundRef.current = true
+    }
     setData((prev) => ({ ...prev, ...partial }))
   }, [])
 
