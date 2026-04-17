@@ -1,0 +1,8 @@
+{
+  "parks": [
+    {"external_park_id": "falls-reserve", "name": "Falls Reserve Conservation Area", "state_province": "ON", "metadata_json": {"source": "Maitland Valley Conservation Authority camping page"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "falls-reserve-campground", "park_external_id": "falls-reserve", "name": "Falls Reserve Campground", "description": "Curated discovery seed from the official Maitland Valley camping page.", "booking_url": "https://maitlandvalley.goingtocamp.com"}
+  ]
+}

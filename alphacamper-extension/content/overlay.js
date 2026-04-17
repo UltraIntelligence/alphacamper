@@ -5,7 +5,9 @@
 
   function detectPageType() {
     var url = window.location.href;
+    var title = document.title || '';
     var body = document.body.textContent || '';
+    if (title.match(/azure waf|service unavailable|temporarily unavailable/i) || body.match(/azure waf|service unavailable|temporarily unavailable|request blocked|access denied|support id|reference #/i)) return 'waf';
     if (body.match(/reservation\s+(complete|confirmed)/i) || url.includes('confirmation')) return 'confirmation';
     if (url.includes('cart') || url.includes('checkout') || body.match(/review.*reservation/i)) return 'cart';
     if (document.querySelectorAll('input[name="firstName"], input[name="email"], input[type="email"]').length > 0) return 'form';
@@ -70,20 +72,26 @@
     }
 
     // Step
-    var stepText, infoText, showFill = false, hint = null;
-    if (pageType === 'grid') {
+    var stepText, infoText, showFill = false, showAssist = false, hint = null;
+    if (pageType === 'waf') {
+      stepText = 'Warming secure session';
+      infoText = 'This booking site is guarding the front door. Keep this tab open and Alphacamper will retry safely.';
+      hint = 'You do not need to refresh manually';
+    } else if (pageType === 'grid') {
       var avail = detectAvailability();
-      stepText = 'Step 1: Pick an available site';
+      stepText = 'Available sites are on screen';
       infoText = avail.total > 0 ? avail.available + ' of ' + avail.total + ' sites available' : 'Scanning for available sites...';
-      hint = 'Click an available site to continue';
+      showAssist = true;
+      hint = 'Pick a site yourself or tap Assist Next Step';
     } else if (pageType === 'form') {
       stepText = 'Step 2: Forms ready to fill';
-      infoText = 'Click below to auto-fill your details';
+      infoText = 'Use Alphacamper to fill your details, then review the official page carefully.';
       showFill = true;
+      showAssist = true;
       hint = 'Or press Ctrl+Shift+F';
     } else if (pageType === 'cart') {
-      stepText = 'Step 3: Confirm and pay';
-      infoText = 'Almost there! Review your reservation and click Checkout.';
+      stepText = 'Final review is ready';
+      infoText = 'Review everything carefully. Final confirm stays with you.';
     } else {
       stepText = 'Alphacamper is ready';
       infoText = 'Navigate to a campsite page to get started';
@@ -128,6 +136,27 @@
         btn.disabled = false;
       });
       content.appendChild(btn);
+    }
+
+    if (showAssist) {
+      var assistBtn = document.createElement('button');
+      assistBtn.className = 'ac-btn';
+      assistBtn.style.marginTop = showFill ? '8px' : '0';
+      assistBtn.textContent = 'Assist Next Step';
+      assistBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        assistBtn.textContent = 'Working...';
+        assistBtn.disabled = true;
+        chrome.runtime.sendMessage({ action: 'assist_active_tab', plan: { source: 'overlay_manual' } }, function(response) {
+          var resultEl = document.createElement('div');
+          resultEl.className = 'ac-result';
+          resultEl.textContent = response?.message || (response?.success ? 'Moved you forward safely' : (response?.error || 'Could not assist on this step'));
+          content.appendChild(resultEl);
+          assistBtn.textContent = 'Assist Next Step';
+          assistBtn.disabled = false;
+        });
+      });
+      content.appendChild(assistBtn);
     }
 
     if (hint) {

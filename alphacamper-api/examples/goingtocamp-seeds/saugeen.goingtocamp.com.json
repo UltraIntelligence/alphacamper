@@ -1,0 +1,16 @@
+{
+  "parks": [
+    {"external_park_id": "brucedale", "name": "Brucedale Conservation Area", "state_province": "ON", "metadata_json": {"source": "Saugeen Valley Conservation Authority camping pages"}},
+    {"external_park_id": "durham", "name": "Durham Conservation Area", "state_province": "ON", "metadata_json": {"source": "Saugeen Valley Conservation Authority camping pages"}},
+    {"external_park_id": "mcbeath", "name": "McBeath Conservation Area", "state_province": "ON", "metadata_json": {"source": "Saugeen Valley Conservation Authority camping pages"}},
+    {"external_park_id": "saugeen-bluffs", "name": "Saugeen Bluffs Conservation Area", "state_province": "ON", "metadata_json": {"source": "Saugeen Valley Conservation Authority camping pages"}},
+    {"external_park_id": "dennys-dam", "name": "Denny's Dam Conservation Area", "state_province": "ON", "metadata_json": {"source": "Saugeen Valley Conservation Authority conservation area references"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "brucedale-campground", "park_external_id": "brucedale", "name": "Brucedale Campground", "description": "Curated discovery seed from official Saugeen Valley camping references.", "booking_url": "https://saugeen.goingtocamp.com"},
+    {"external_facility_id": "durham-campground", "park_external_id": "durham", "name": "Durham Campground", "description": "Curated discovery seed from official Saugeen Valley camping references.", "booking_url": "https://saugeen.goingtocamp.com"},
+    {"external_facility_id": "mcbeath-campground", "park_external_id": "mcbeath", "name": "McBeath Campground", "description": "Curated discovery seed from official Saugeen Valley camping references.", "booking_url": "https://saugeen.goingtocamp.com"},
+    {"external_facility_id": "saugeen-bluffs-campground", "park_external_id": "saugeen-bluffs", "name": "Saugeen Bluffs Campground", "description": "Curated discovery seed from official Saugeen Valley camping references.", "booking_url": "https://saugeen.goingtocamp.com"},
+    {"external_facility_id": "dennys-dam-campground", "park_external_id": "dennys-dam", "name": "Denny's Dam Campground", "description": "Curated discovery seed from official Saugeen Valley camping references.", "booking_url": "https://saugeen.goingtocamp.com"}
+  ]
+}

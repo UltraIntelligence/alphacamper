@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import { UpgradeLink, hasStripePaymentLink } from '@/components/billing/UpgradeLink'
 
 export function TwoProducts() {
+  const hasPaymentLink = hasStripePaymentLink()
+
   return (
     <section id="pricing" className="pricing-v2">
       <div className="container">
@@ -56,9 +59,12 @@ export function TwoProducts() {
               <li><span className="v2-check pro">✔</span> Alphacamper Browser Extension (Checkout Assist)</li>
             </ul>
 
-            <Link href="/watch/new" className="pricing-v2-button-primary">
-              Get Started
-            </Link>
+            <UpgradeLink
+              className="pricing-v2-button-primary"
+              fallbackHref="/watch/new"
+            >
+              {hasPaymentLink ? 'Unlock Pro' : 'Start free for now'}
+            </UpgradeLink>
           </div>
         </div>
 

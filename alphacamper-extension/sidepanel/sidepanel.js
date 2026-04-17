@@ -28,6 +28,97 @@ function switchView(viewName) {
   if (viewName === 'planner') loadPlanner();
 }
 
+function getAssistStatusMeta(status, target) {
+  switch (status?.code) {
+    case 'booking_open':
+      return 'The booking window is live, but Alphacamper may still be warming, searching, or lining up the right page.';
+    case 'warming':
+      return 'Keep this tab open while Alphacamper gently warms the official booking session.';
+    case 'targeting':
+      return 'We are opening the exact booking flow for this park, site, and date range.';
+    case 'searching':
+      return 'Dates, equipment, and live inventory are being checked now.';
+    case 'selecting':
+      return 'Alphacamper is narrowing down the best matching live site for you.';
+    case 'forms_filled':
+      return 'Good time to glance over driver, camper, and trip details before review.';
+    case 'ready':
+      return 'You should be close to the official review step now. Final confirm stays with you.';
+    case 'profile_needed':
+      return 'Open Profile and save your booking details so Alphacamper can keep moving for you.';
+    case 'manual_takeover':
+      return 'The safe retry limit was reached. You can stay on this page, refresh carefully, or continue by hand.';
+    case 'completed':
+      return 'The booking site says this reservation flow reached confirmation.';
+    default:
+      return target === 'launch'
+        ? 'Alphacamper moves through safe steps first, then leaves the final confirm to you.'
+        : 'Open an alert and this panel will show each step Alphacamper is taking for you.';
+  }
+}
+
+function getAssistStatusKicker(status, target) {
+  const platformName = status?.platform && PLATFORMS?.[status.platform]?.name
+    ? PLATFORMS[status.platform].name
+    : null;
+
+  if (status?.code === 'warming' && platformName) return platformName + ' Session';
+  if (status?.code === 'booking_open') return 'Booking Window Live';
+  if (status?.code === 'ready') return 'Review Ready';
+  if (status?.code === 'profile_needed') return 'Profile Needed';
+  if (status?.code === 'manual_takeover') return 'Manual Check';
+  if (status?.code === 'completed') return 'Reservation Complete';
+  if (status?.code === 'forms_filled') return 'Details Filled';
+  if (platformName) return platformName + ' Assist';
+  return target === 'launch' ? 'Assist Live' : 'Booking Assist';
+}
+
+function setAssistStatusMessage(target, status) {
+  const isLaunch = target === 'launch';
+  const panel = document.getElementById(isLaunch ? 'launch-assist-status' : 'watch-assist-status');
+  if (!panel) return;
+
+  const messageEl = isLaunch
+    ? document.getElementById('launch-status-text')
+    : panel.querySelector('.assist-status-message');
+  const metaEl = isLaunch
+    ? document.getElementById('launch-status-meta')
+    : panel.querySelector('.assist-status-meta');
+  const kickerEl = panel.querySelector('.assist-status-kicker');
+
+  if (!status?.message) {
+    if (isLaunch) {
+      if (messageEl) messageEl.textContent = 'Waiting for booking window...';
+      if (metaEl) metaEl.textContent = getAssistStatusMeta(null, 'launch');
+      if (kickerEl) kickerEl.textContent = 'Assist Live';
+      panel.className = 'assist-status assist-status-inline assist-status-muted';
+    } else {
+      panel.style.display = 'none';
+      if (messageEl) messageEl.textContent = '';
+      if (metaEl) metaEl.textContent = '';
+      if (kickerEl) kickerEl.textContent = 'Booking Assist';
+      panel.className = 'assist-status assist-status-muted';
+    }
+    return;
+  }
+
+  if (!isLaunch) panel.style.display = 'block';
+  if (kickerEl) kickerEl.textContent = getAssistStatusKicker(status, target);
+  if (messageEl) messageEl.textContent = status.message;
+  if (metaEl) metaEl.textContent = getAssistStatusMeta(status, target);
+  panel.className = 'assist-status'
+    + (isLaunch ? ' assist-status-inline' : '')
+    + ' assist-status-' + (status.tone || 'muted');
+}
+
+function refreshActiveAssistStatus() {
+  chrome.runtime.sendMessage({ action: 'get_assist_status' }, (response) => {
+    const status = response?.status || null;
+    if (currentView === 'launch') setAssistStatusMessage('launch', status);
+    if (currentView === 'watching') setAssistStatusMessage('watch', status);
+  });
+}
+
 function clearCountdowns() {
   countdownIntervals.forEach(id => clearInterval(id));
   countdownIntervals = [];
@@ -46,11 +137,11 @@ async function loadDashboard() {
   const profile = await Storage.getProfile();
   const profileDone = profile.firstName && profile.email;
   const profilePill = document.getElementById('profile-status');
-  profilePill.textContent = profileDone ? 'Profile: \u2713 Complete' : 'Profile: Set up \u2192';
-  profilePill.onclick = () => { if (!profileDone) switchView('profile'); };
+  profilePill.textContent = profileDone ? 'Booking Details: Saved' : 'Booking Details: Add Yours';
+  profilePill.onclick = () => { switchView('profile'); };
 
   const missions = await Storage.getMissions();
-  document.getElementById('missions-count').textContent = 'Missions: ' + missions.length;
+  document.getElementById('missions-count').textContent = 'Booking Plans: ' + missions.length;
 
   const nextCard = document.getElementById('next-mission-card');
   const noMsg = document.getElementById('no-missions-msg');
@@ -108,8 +199,21 @@ function openMission(id) {
 }
 
 document.getElementById('create-mission-btn').addEventListener('click', async () => {
-  const mission = await Missions.create('New Mission');
+  const mission = await Missions.create('New Booking Plan');
   openMission(mission.id);
+});
+
+document.getElementById('hero-start-plan-btn').addEventListener('click', async () => {
+  const mission = await Missions.create('New Booking Plan');
+  openMission(mission.id);
+});
+
+document.getElementById('hero-watch-btn').addEventListener('click', () => {
+  switchView('watching');
+});
+
+document.getElementById('hero-profile-btn').addEventListener('click', () => {
+  switchView('profile');
 });
 
 async function loadMissionDetail() {
@@ -134,13 +238,13 @@ async function loadMissionDetail() {
     const ms = Countdown.getMs(mission.bookingWindow.date, mission.bookingWindow.time, mission.bookingWindow.timezone);
     if (ms !== null && ms < 30 * 60 * 1000) {
       document.getElementById('launch-btn').disabled = false;
-      document.getElementById('launch-hint').textContent = 'Ready to launch!';
+      document.getElementById('launch-hint').textContent = 'Launch mode is ready when you are.';
     } else {
       document.getElementById('launch-btn').disabled = true;
-      document.getElementById('launch-hint').textContent = 'Available 30 min before your booking window';
+      document.getElementById('launch-hint').textContent = 'You can start this 30 minutes before the booking window opens.';
     }
   } else {
-    cdEl.textContent = 'Set a date and time above';
+    cdEl.textContent = 'Set the opening date and time above';
     document.getElementById('launch-btn').disabled = true;
   }
 
@@ -151,8 +255,8 @@ async function loadMissionDetail() {
   const rp = document.createElement('p');
   const r = mission.rehearsalResults;
   rp.textContent = r.bestTime !== null
-    ? 'Best time: ' + r.bestTime.toFixed(1) + 's \u00b7 ' + r.attempts + ' attempt' + (r.attempts !== 1 ? 's' : '')
-    : 'Not yet practiced';
+    ? 'Best practice run: ' + r.bestTime.toFixed(1) + 's \u00b7 ' + r.attempts + ' attempt' + (r.attempts !== 1 ? 's' : '')
+    : 'No practice runs yet';
   statsEl.appendChild(rp);
 
   document.getElementById('target-form').style.display = 'none';
@@ -200,6 +304,20 @@ function renderTargets(mission) {
   });
 }
 
+function extractCampgroundIdFromDeepLink(platform, deepLink) {
+  if (!deepLink) return '';
+  try {
+    const url = new URL(deepLink);
+    if (platform === 'recreation_gov') {
+      const parts = url.pathname.split('/').filter(Boolean);
+      return parts[parts.length - 1] || '';
+    }
+    return url.searchParams.get('resourceLocationId') || '';
+  } catch {
+    return '';
+  }
+}
+
 document.getElementById('add-target-btn').addEventListener('click', () => {
   document.getElementById('target-form').style.display = 'block';
   populateCampgroundDropdown();
@@ -229,27 +347,37 @@ function populateCampgroundDropdown() {
 }
 
 document.getElementById('tf-campground').addEventListener('change', function() {
-  const platform = document.getElementById('tf-platform').value;
-  const p = PLATFORMS[platform];
-  if (!p) return;
-  const cg = p.popularCampgrounds.find(c => c.id === this.value);
-  if (cg) {
-    document.getElementById('tf-park').value = cg.park || '';
-    document.getElementById('tf-campground-name').value = cg.name;
-    document.getElementById('tf-link').value = Missions.generateDeepLink(platform, cg.id);
-  }
+  void (async () => {
+    const platform = document.getElementById('tf-platform').value;
+    const p = PLATFORMS[platform];
+    if (!p) return;
+    const cg = p.popularCampgrounds.find(c => c.id === this.value);
+    if (cg) {
+      document.getElementById('tf-park').value = cg.park || '';
+      document.getElementById('tf-campground-name').value = cg.name;
+      document.getElementById('tf-link').value = await Missions.generateDeepLink(platform, cg.id, cg.name);
+    }
+  })();
 });
 
 document.getElementById('tf-save').addEventListener('click', async () => {
   if (!currentMissionId) return;
+  const platform = document.getElementById('tf-platform').value;
+  const campgroundId = document.getElementById('tf-campground').value;
+  const campgroundName = document.getElementById('tf-campground-name').value;
+  let deepLink = document.getElementById('tf-link').value.trim();
+  if (!deepLink) {
+    deepLink = await Missions.generateDeepLink(platform, campgroundId, campgroundName);
+  }
   await Missions.addTarget(currentMissionId, {
-    platform: document.getElementById('tf-platform').value,
+    platform,
+    campgroundId,
     parkName: document.getElementById('tf-park').value,
-    campgroundName: document.getElementById('tf-campground-name').value,
+    campgroundName,
     siteNumber: document.getElementById('tf-site').value || null,
     arrivalDate: document.getElementById('tf-arrival').value,
     departureDate: document.getElementById('tf-departure').value,
-    deepLink: document.getElementById('tf-link').value,
+    deepLink,
   });
   document.getElementById('target-form').style.display = 'none';
   ['tf-park','tf-campground-name','tf-site','tf-arrival','tf-departure','tf-link'].forEach(id => {
@@ -305,9 +433,28 @@ document.getElementById('launch-btn').addEventListener('click', async () => {
   const launchTabs = [];
 
   for (const target of sorted) {
-    if (target.deepLink) {
-      const tab = await chrome.tabs.create({ url: target.deepLink, active: false });
+    const deepLink = target.deepLink || await Missions.generateDeepLink(
+      target.platform,
+      target.campgroundId || '',
+      target.campgroundName || ''
+    );
+    if (deepLink) {
+      const tab = await chrome.tabs.create({ url: deepLink, active: false });
       launchTabs.push({ tabId: tab.id, targetId: target.id, rank: target.rank, name: target.campgroundName || target.parkName || 'Target' });
+      const targetCampgroundId = target.campgroundId || extractCampgroundIdFromDeepLink(target.platform, deepLink);
+      chrome.runtime.sendMessage({
+        action: 'schedule_booking_assist',
+        tabId: tab.id,
+        plan: {
+          source: 'launch_mission',
+          platform: target.platform,
+          campgroundId: targetCampgroundId,
+          arrivalDate: target.arrivalDate || '',
+          departureDate: target.departureDate || '',
+          exactSiteNumber: target.siteNumber || '',
+          preferredSiteNumbers: target.siteNumber ? [target.siteNumber] : [],
+        }
+      });
     }
     const el = document.createElement('div');
     el.className = 'launch-tab-item';
@@ -322,15 +469,45 @@ document.getElementById('launch-btn').addEventListener('click', async () => {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-launch').classList.add('active');
   document.body.classList.add('launch-hud-active');
+  currentView = 'launch';
+  setAssistStatusMessage('launch', {
+    code: 'targeting',
+    tone: 'info',
+    message: 'Opening backup tabs and preparing assist.',
+  });
   const cdEl = document.getElementById('launch-countdown');
-  const statusEl = document.getElementById('launch-status-text');
   if (mission.bookingWindow.date && mission.bookingWindow.time) {
     countdownIntervals.push(Countdown.start(cdEl, mission.bookingWindow.date, mission.bookingWindow.time, mission.bookingWindow.timezone, () => {
-      statusEl.textContent = 'GO \u2014 Pick your site and add to cart!';
-      statusEl.style.fontWeight = '700';
-      statusEl.style.color = 'var(--green)';
+      setAssistStatusMessage('launch', {
+        code: 'booking_open',
+        tone: 'info',
+        message: 'Booking window is open. Alphacamper is still working the best tab.',
+      });
     }));
   }
+});
+
+document.getElementById('assist-step-btn').addEventListener('click', async () => {
+  chrome.runtime.sendMessage({ action: 'assist_active_tab', plan: { source: 'launch_manual' } }, (response) => {
+    const result = document.getElementById('fill-result');
+    result.style.display = 'block';
+    if (response?.success) {
+      result.textContent = response.message || 'Moved through the next safe step';
+      result.style.color = 'var(--green)';
+    } else {
+      result.textContent = response?.error || 'Could not assist on this page yet.';
+      result.style.color = '#dc2626';
+    }
+    if (response?.message) {
+      setAssistStatusMessage('launch', {
+        code: response?.stage || null,
+        message: response.message,
+        tone: response?.success ? 'success' : 'info',
+        platform: response?.platform || null,
+      });
+    }
+    setTimeout(() => { result.style.display = 'none'; }, 4000);
+  });
 });
 
 // Fill Forms button
@@ -400,6 +577,12 @@ async function loadProfile() {
   document.getElementById('p-last').value = profile.lastName;
   document.getElementById('p-email').value = profile.email;
   document.getElementById('p-phone').value = profile.phone;
+  document.getElementById('p-address1').value = profile.addressLine1;
+  document.getElementById('p-city').value = profile.city;
+  document.getElementById('p-state').value = profile.stateProvince;
+  document.getElementById('p-postal').value = profile.postalCode;
+  document.getElementById('p-country').value = profile.country || 'CA';
+  document.getElementById('p-residency').value = profile.residency;
   document.getElementById('p-plate').value = profile.vehiclePlate;
   document.getElementById('p-length').value = profile.vehicleLength;
   document.getElementById('p-equipment').value = profile.equipmentType;
@@ -413,6 +596,12 @@ document.getElementById('save-profile-btn').addEventListener('click', async () =
     lastName: document.getElementById('p-last').value,
     email: document.getElementById('p-email').value,
     phone: document.getElementById('p-phone').value,
+    addressLine1: document.getElementById('p-address1').value,
+    city: document.getElementById('p-city').value,
+    stateProvince: document.getElementById('p-state').value,
+    postalCode: document.getElementById('p-postal').value,
+    country: document.getElementById('p-country').value,
+    residency: document.getElementById('p-residency').value,
     vehiclePlate: document.getElementById('p-plate').value,
     vehicleLength: document.getElementById('p-length').value,
     equipmentType: document.getElementById('p-equipment').value,
@@ -427,6 +616,7 @@ async function loadSettings() {
   const s = await Storage.getSettings();
   document.getElementById('s-audio').checked = s.countdownAudio;
   document.getElementById('s-notify').value = s.notifyBefore;
+  document.getElementById('s-aggressive-assist').checked = s.aggressiveAssist !== false;
   document.getElementById('confirm-clear').style.display = 'none';
 }
 
@@ -438,6 +628,11 @@ document.getElementById('s-audio').addEventListener('change', async function() {
 document.getElementById('s-notify').addEventListener('change', async function() {
   const s = await Storage.getSettings();
   s.notifyBefore = parseInt(this.value) || 5;
+  await Storage.setSettings(s);
+});
+document.getElementById('s-aggressive-assist').addEventListener('change', async function() {
+  const s = await Storage.getSettings();
+  s.aggressiveAssist = this.checked;
   await Storage.setSettings(s);
 });
 document.getElementById('clear-data-btn').addEventListener('click', () => {
@@ -453,7 +648,7 @@ document.getElementById('confirm-clear-yes').addEventListener('click', async () 
 });
 
 // ── AI Trip Planner ──
-const API_BASE = 'https://alphacamper.com'; // Production API
+const SIDEPANEL_API_BASE = 'https://alphacamper.com'; // Production API
 
 function loadPlanner() {}
 
@@ -472,7 +667,7 @@ document.getElementById('planner-send-btn').addEventListener('click', async () =
   errorEl.style.display = 'none';
 
   try {
-    const base = API_BASE || 'http://localhost:3000';
+    const base = SIDEPANEL_API_BASE || 'http://localhost:3000';
     const res = await fetch(base + '/api/plan-trip', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -551,6 +746,7 @@ function renderPlannerResults(data) {
       }
       await Missions.addTarget(mId, {
         platform: target.platform || 'recreation_gov',
+        campgroundId: extractCampgroundIdFromDeepLink(target.platform || 'recreation_gov', target.deepLink || ''),
         parkName: target.parkName || '',
         campgroundName: target.campgroundName || '',
         siteNumber: null,
@@ -588,6 +784,7 @@ async function loadWatching() {
   const result = await chrome.storage.local.get('extensionAuthToken');
   extensionAuthToken = result.extensionAuthToken || null;
   if (!extensionAuthToken) {
+    setAssistStatusMessage('watch', null);
     document.getElementById('watch-register').style.display = 'block';
     document.getElementById('watch-list').textContent = '';
     document.getElementById('watch-alerts').textContent = '';
@@ -597,8 +794,10 @@ async function loadWatching() {
   }
   document.getElementById('watch-register').style.display = 'none';
   setWatchRegisterStatus('', '');
+  setAssistStatusMessage('watch', null);
   await refreshWatches();
   await refreshAlerts();
+  refreshActiveAssistStatus();
 }
 
 document.getElementById('watch-register-btn').addEventListener('click', async () => {
@@ -609,7 +808,7 @@ document.getElementById('watch-register-btn').addEventListener('click', async ()
   }
   const btn = document.getElementById('watch-register-btn');
   try {
-    const base = API_BASE || 'http://localhost:3000';
+    const base = SIDEPANEL_API_BASE || 'http://localhost:3000';
     setWatchRegisterStatus('Sending your login link...', 'var(--text-light)');
     btn.textContent = 'Sending...';
     btn.disabled = true;
@@ -643,7 +842,7 @@ async function refreshWatches() {
   const listEl = document.getElementById('watch-list');
   const noEl = document.getElementById('no-watches');
   try {
-    const base = API_BASE || 'http://localhost:3000';
+    const base = SIDEPANEL_API_BASE || 'http://localhost:3000';
     const res = await fetch(base + '/api/watch', {
       headers: { Authorization: 'Bearer ' + extensionAuthToken }
     });
@@ -666,7 +865,7 @@ async function refreshWatches() {
       removeBtn.className = 'watch-remove';
       removeBtn.textContent = '\u2715';
       removeBtn.addEventListener('click', async function() {
-        const base2 = API_BASE || 'http://localhost:3000';
+        const base2 = SIDEPANEL_API_BASE || 'http://localhost:3000';
         await fetch(base2 + '/api/watch?id=' + w.id, {
           method: 'DELETE',
           headers: { Authorization: 'Bearer ' + extensionAuthToken }
@@ -684,7 +883,7 @@ async function refreshAlerts() {
   const alertsEl = document.getElementById('watch-alerts');
   alertsEl.textContent = '';
   try {
-    const base = API_BASE || 'http://localhost:3000';
+    const base = SIDEPANEL_API_BASE || 'http://localhost:3000';
     const res = await fetch(base + '/api/alerts', {
       headers: { Authorization: 'Bearer ' + extensionAuthToken }
     });
@@ -695,22 +894,45 @@ async function refreshAlerts() {
       const h4 = document.createElement('h4');
       const target = alert.watched_targets;
       const sites = alert.site_details?.sites || [];
-      h4.textContent = '\uD83D\uDFE2 ' + (target?.campground_name || 'Campground') + ' has openings!';
+      h4.textContent = (target?.campground_name || 'Campground') + ' has openings!';
       const p = document.createElement('p');
       p.textContent = sites.length + ' site' + (sites.length !== 1 ? 's' : '') + ' available for ' + (target?.arrival_date || '') + ' \u2192 ' + (target?.departure_date || '');
       const btn = document.createElement('button');
       btn.className = 'btn btn-primary';
-      btn.textContent = 'Book Now';
+      btn.textContent = 'Open with Assist';
       btn.addEventListener('click', async function() {
         const platform = target?.platform || 'recreation_gov';
         const cgId = target?.campground_id || '';
-        const link = Missions.generateDeepLink(platform, cgId);
+        const link = await Missions.generateDeepLink(platform, cgId, target?.campground_name || '');
+        const exactSiteNumber = target?.site_number || '';
+        const preferredSiteNumbers = [
+          exactSiteNumber,
+          ...sites.map((site) => site.siteName),
+        ].filter(Boolean);
         if (link) {
-          chrome.tabs.create({ url: link, active: true }).then((tab) => {
-            chrome.runtime.sendMessage({ action: 'schedule_tab_fill', tabId: tab.id });
+          chrome.runtime.sendMessage({
+            action: 'open_booking_assist_tab',
+            deepLink: link,
+            active: true,
+            plan: {
+              source: 'watch_alert',
+              platform,
+              campgroundId: cgId,
+              campgroundName: target?.campground_name || '',
+              arrivalDate: target?.arrival_date || '',
+              departureDate: target?.departure_date || '',
+              exactSiteNumber: exactSiteNumber,
+              preferredSiteNumbers,
+              preferredSiteIds: sites.map((site) => site.siteId).filter(Boolean),
+            }
+          }, (response) => {
+            setAssistStatusMessage('watch', response?.status || {
+              message: 'Opening the booking page now.',
+              tone: 'info',
+            });
           });
         }
-        const base2 = API_BASE || 'http://localhost:3000';
+        const base2 = SIDEPANEL_API_BASE || 'http://localhost:3000';
         await fetch(base2 + '/api/alerts', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + extensionAuthToken },
@@ -772,7 +994,7 @@ document.getElementById('wf-save').addEventListener('click', async () => {
   const campgroundName = document.getElementById('wf-campground-name').value;
   if (!campgroundId || !campgroundName) return;
   try {
-    const base = API_BASE || 'http://localhost:3000';
+    const base = SIDEPANEL_API_BASE || 'http://localhost:3000';
     await fetch(base + '/api/watch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + extensionAuthToken },
@@ -794,6 +1016,12 @@ document.getElementById('wf-save').addEventListener('click', async () => {
 setInterval(function() {
   if (currentView === 'watching' && extensionAuthToken) refreshAlerts();
 }, 30000);
+
+setInterval(function() {
+  if (currentView === 'watching' || currentView === 'launch') {
+    refreshActiveAssistStatus();
+  }
+}, 2000);
 
 chrome.storage.onChanged.addListener(function(changes) {
   if (changes.extensionAuthToken) {

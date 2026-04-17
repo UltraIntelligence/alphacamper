@@ -33,6 +33,7 @@ export async function syncDirectoryForDomain(
     rows.push({
       id: String(entry.resourceLocationId),
       platform,
+      root_map_id: entry.rootMapId,
       name: entry.fullName || entry.shortName,
       short_name: entry.shortName || null,
       province: PLATFORM_PROVINCE[platform] ?? null,

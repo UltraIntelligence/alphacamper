@@ -1,0 +1,2 @@
+"""Alphacamper availability API package."""
+

@@ -1,0 +1,14 @@
+.env
+.env.*
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+tests
+data_imports
+examples
+scripts
+alphacamper_api.egg-info

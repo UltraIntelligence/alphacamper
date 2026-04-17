@@ -5,6 +5,7 @@ import { DayPicker } from 'react-day-picker'
 import type { DateRange } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import type { WatchData } from './WatchWizard'
+import { UpgradeLink } from '@/components/billing/UpgradeLink'
 
 interface StepDatesProps {
   data: WatchData
@@ -124,9 +125,12 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
           <p style={{ color: 'var(--color-text-muted)', maxWidth: '320px', margin: '0 auto 32px auto', fontSize: '0.95rem', lineHeight: 1.5 }}>
             Don't have specific dates? Give Alpha an entire season to track and we'll instantly grab the absolute first cancellation. 
           </p>
-          <button className="btn-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', padding: '16px 32px' }}>
+          <UpgradeLink
+            className="btn-bold"
+            style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', padding: '16px 32px', textDecoration: 'none' }}
+          >
             Upgrade to Alpha Pro
-          </button>
+          </UpgradeLink>
         </div>
       ) : (
         <>

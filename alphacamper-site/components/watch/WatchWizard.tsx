@@ -24,9 +24,6 @@ export interface WatchData {
   nights: number
   isAnyOpening: boolean
   siteNumber: string
-  siteType: 'rv' | 'tent' | 'any'
-  amenities: string[]
-  loops: string[]
   email: string
 }
 
@@ -40,16 +37,13 @@ const INITIAL_DATA: WatchData = {
   nights: 1,
   isAnyOpening: false,
   siteNumber: '',
-  siteType: 'any',
-  amenities: [],
-  loops: [],
   email: '',
 }
 
 const STEPS: { key: WizardStep; number: number; title: string }[] = [
   { key: 'search', number: 1, title: 'Find your campground' },
   { key: 'dates', number: 2, title: 'Pick your dates' },
-  { key: 'site', number: 3, title: 'Preferences' },
+  { key: 'site', number: 3, title: 'Site preference' },
   { key: 'email', number: 4, title: 'Get notified' },
 ]
 

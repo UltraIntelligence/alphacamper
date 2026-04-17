@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { UpgradeLink } from '@/components/billing/UpgradeLink'
 
 export function UpgradeCTA() {
   return (
@@ -14,13 +14,12 @@ export function UpgradeCTA() {
       <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '16px' }}>
         $6/mo or $29/yr
       </p>
-      <Link
-        href="/#pricing"
+      <UpgradeLink
         className="btn-bold btn-bold-inverse"
         style={{ textDecoration: 'none' }}
       >
         See Pro features →
-      </Link>
+      </UpgradeLink>
     </div>
   )
 }

@@ -1,0 +1,32 @@
+{
+  "parks": [
+    {"external_park_id": "barachois-pond", "name": "Barachois Pond Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "butter-pot", "name": "Butter Pot Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "frenchmans-cove", "name": "Frenchman's Cove Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "jt-cheeseman", "name": "J.T. Cheeseman Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "la-manche", "name": "La Manche Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "lockston-path", "name": "Lockston Path Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "notre-dame", "name": "Notre Dame Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "sir-richard-squires-memorial", "name": "Sir Richard Squires Memorial Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "sandbanks", "name": "Sandbanks Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "blow-me-down", "name": "Blow Me Down Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "dildo-run", "name": "Dildo Run Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "pinware-river", "name": "Pinware River Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}},
+    {"external_park_id": "pistolet-bay", "name": "Pistolet Bay Provincial Park", "state_province": "NL", "metadata_json": {"source": "ParksNL camping season launch 2025"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "barachois-pond-campground", "park_external_id": "barachois-pond", "name": "Barachois Pond Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "butter-pot-campground", "park_external_id": "butter-pot", "name": "Butter Pot Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "frenchmans-cove-campground", "park_external_id": "frenchmans-cove", "name": "Frenchman's Cove Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "jt-cheeseman-campground", "park_external_id": "jt-cheeseman", "name": "J.T. Cheeseman Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "la-manche-campground", "park_external_id": "la-manche", "name": "La Manche Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "lockston-path-campground", "park_external_id": "lockston-path", "name": "Lockston Path Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "notre-dame-campground", "park_external_id": "notre-dame", "name": "Notre Dame Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "sir-richard-squires-memorial-campground", "park_external_id": "sir-richard-squires-memorial", "name": "Sir Richard Squires Memorial Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "sandbanks-campground", "park_external_id": "sandbanks", "name": "Sandbanks Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "blow-me-down-campground", "park_external_id": "blow-me-down", "name": "Blow Me Down Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "dildo-run-campground", "park_external_id": "dildo-run", "name": "Dildo Run Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "pinware-river-campground", "park_external_id": "pinware-river", "name": "Pinware River Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"},
+    {"external_facility_id": "pistolet-bay-campground", "park_external_id": "pistolet-bay", "name": "Pistolet Bay Campground", "description": "Curated discovery seed from ParksNL 2025 launch backgrounder.", "booking_url": "https://nlcamping.ca"}
+  ]
+}

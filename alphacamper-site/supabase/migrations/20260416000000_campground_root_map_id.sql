@@ -1,0 +1,2 @@
+ALTER TABLE campgrounds
+ADD COLUMN IF NOT EXISTS root_map_id BIGINT;

@@ -1,4 +1,4 @@
-importScripts('lib/platforms.js');
+importScripts('lib/platforms.js', 'lib/missions.js');
 
 // Alphacamper Background Service Worker
 
@@ -7,6 +7,93 @@ chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 // Persist launched mission tabs because MV3 service workers are ephemeral.
 const LAUNCHED_TABS_KEY = 'launchedTabs';
 const PENDING_AUTOFILL_TABS_KEY = 'pendingAutofillTabIds';
+const PENDING_ASSIST_PLANS_KEY = 'pendingAssistPlans';
+
+function describeAssistState(plan) {
+  const stage = plan?.assistStage || plan?.lastStage || 'idle';
+  if (stage === 'booking_open') {
+    return {
+      code: 'booking_open',
+      tone: 'info',
+      message: 'Booking window is open. Alphacamper is still working the best tab.',
+    };
+  }
+  if (stage === 'warming') {
+    return {
+      code: 'warming',
+      tone: 'info',
+      message: `Warming ${PLATFORMS?.[plan?.platform]?.name || 'booking'} session. Keep this tab open.`,
+    };
+  }
+  if (stage === 'targeting') {
+    return {
+      code: 'targeting',
+      tone: 'info',
+      message: 'Opening the booking page now.',
+    };
+  }
+  if (stage === 'waf_detected') {
+    return {
+      code: 'warming',
+      tone: 'info',
+      message: 'Protected page detected. Alphacamper is retrying safely.',
+    };
+  }
+  if (stage === 'search_submitted' || stage === 'search_complete') {
+    return {
+      code: 'searching',
+      tone: 'info',
+      message: 'Checking your dates and equipment now.',
+    };
+  }
+  if (stage === 'grid_waiting' || stage === 'site_selected') {
+    return {
+      code: 'selecting',
+      tone: 'info',
+      message: 'Looking for the best matching site.',
+    };
+  }
+  if (stage === 'forms_filled') {
+    return {
+      code: 'forms_filled',
+      tone: 'success',
+      message: 'Forms are filled. Moving toward review.',
+    };
+  }
+  if (stage === 'handoff_ready') {
+    return {
+      code: 'ready',
+      tone: 'success',
+      message: 'Review page is ready. Final confirm stays with you.',
+    };
+  }
+  if (stage === 'profile_needed') {
+    return {
+      code: 'profile_needed',
+      tone: 'muted',
+      message: 'Your profile is needed before Alphacamper can keep helping.',
+    };
+  }
+  if (stage === 'manual_takeover') {
+    return {
+      code: 'manual_takeover',
+      tone: 'muted',
+      message: 'Automatic retries paused. Stay on this page or take over manually.',
+    };
+  }
+  if (stage === 'completed') {
+    return {
+      code: 'completed',
+      tone: 'success',
+      message: 'The booking site says this reservation reached confirmation.',
+    };
+  }
+  return {
+    code: 'idle',
+    tone: 'muted',
+    message: 'Standing by to help with the next step.',
+  };
+}
 
 function getSessionStorageArea() {
   return chrome.storage.session || chrome.storage.local;
@@ -50,6 +137,155 @@ async function scheduleTabAutofill(tabId) {
 async function clearPendingAutofillTab(tabId) {
   const tabIds = await getPendingAutofillTabIds();
   await setPendingAutofillTabIds(tabIds.filter((id) => id !== tabId));
+}
+
+async function getPendingAssistPlans() {
+  const storage = getSessionStorageArea();
+  const result = await storage.get(PENDING_ASSIST_PLANS_KEY);
+  return result[PENDING_ASSIST_PLANS_KEY] || {};
+}
+
+async function setPendingAssistPlans(plans) {
+  const storage = getSessionStorageArea();
+  await storage.set({ [PENDING_ASSIST_PLANS_KEY]: plans || {} });
+}
+
+function applyAssistStatus(plan) {
+  const status = describeAssistState(plan);
+  return {
+    ...plan,
+    statusCode: status.code,
+    statusTone: status.tone,
+    statusMessage: status.message,
+  };
+}
+
+async function updatePendingAssistPlan(tabId, updates) {
+  const plans = await getPendingAssistPlans();
+  const key = String(tabId);
+  if (!plans[key]) return null;
+  plans[key] = applyAssistStatus({
+    ...plans[key],
+    ...updates,
+    lastUpdatedAt: new Date().toISOString(),
+  });
+  await setPendingAssistPlans(plans);
+  return plans[key];
+}
+
+async function scheduleBookingAssist(tabId, plan) {
+  const plans = await getPendingAssistPlans();
+  plans[String(tabId)] = applyAssistStatus({
+    source: plan?.source || 'manual',
+    platform: plan?.platform || null,
+    campgroundName: plan?.campgroundName || '',
+    campgroundId: plan?.campgroundId || null,
+    arrivalDate: plan?.arrivalDate || null,
+    departureDate: plan?.departureDate || null,
+    exactSiteNumber: plan?.exactSiteNumber || null,
+    preferredSiteNumbers: Array.isArray(plan?.preferredSiteNumbers) ? plan.preferredSiteNumbers : [],
+    preferredSiteIds: Array.isArray(plan?.preferredSiteIds) ? plan.preferredSiteIds : [],
+    targetUrl: plan?.targetUrl || null,
+    warmupUrl: plan?.warmupUrl || null,
+    assistStage: plan?.assistStage || 'direct',
+    lastStage: plan?.lastStage || null,
+    aggressiveAssist: plan?.aggressiveAssist !== false,
+    createdAt: new Date().toISOString(),
+    lastUpdatedAt: new Date().toISOString(),
+    attempts: Number(plan?.attempts || 0),
+  });
+  await setPendingAssistPlans(plans);
+}
+
+async function clearPendingAssistPlan(tabId) {
+  const plans = await getPendingAssistPlans();
+  delete plans[String(tabId)];
+  await setPendingAssistPlans(plans);
+}
+
+async function buildDeepLink(platform, campgroundId, campgroundName = '') {
+  if (!platform || !campgroundId) return '';
+  return Missions.generateDeepLink(platform, campgroundId, campgroundName);
+}
+
+function shouldWarmAssistSession(platform) {
+  return ['ontario_parks', 'parks_canada', 'bc_parks'].includes(platform);
+}
+
+function getWarmupUrl(platform) {
+  return PLATFORMS?.[platform]?.searchUrl || null;
+}
+
+async function openBookingAssistTab({ deepLink, active = true, plan = {} }) {
+  if (!deepLink) return null;
+
+  const warmupUrl = shouldWarmAssistSession(plan.platform) ? getWarmupUrl(plan.platform) : null;
+  const initialUrl = warmupUrl || deepLink;
+  const tab = await chrome.tabs.create({ url: initialUrl, active });
+
+  await scheduleBookingAssist(tab.id, {
+    ...plan,
+    targetUrl: deepLink,
+    warmupUrl,
+    assistStage: warmupUrl ? 'warming' : 'targeting',
+  });
+
+  return tab;
+}
+
+async function sendAssistToTab(tabId, plan) {
+  const { profile, settings } = await chrome.storage.local.get(['profile', 'settings']);
+  if (!profile) {
+    await scheduleBookingAssist(tabId, {
+      ...plan,
+      assistStage: 'profile_needed',
+      lastStage: 'profile_needed',
+    });
+    return {
+      success: false,
+      error: 'Set up your profile first',
+      keepArmed: true,
+      stage: 'profile_needed',
+      platform: plan?.platform || null,
+    };
+  }
+
+  const mergedPlan = {
+    ...plan,
+    aggressiveAssist: settings?.aggressiveAssist !== false && plan?.aggressiveAssist !== false,
+  };
+
+  const MAX_RETRIES = 4;
+  const RETRY_DELAY_MS = 700;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+    }
+    const response = await new Promise(resolve => {
+      chrome.tabs.sendMessage(tabId, { action: 'run_booking_assist', profile, plan: mergedPlan }, (message) => {
+        if (chrome.runtime.lastError) {
+          resolve({ success: false, error: chrome.runtime.lastError.message, keepArmed: true });
+        } else {
+          resolve(message || { success: false, keepArmed: true });
+        }
+      });
+    });
+
+    if (response?.success || attempt === MAX_RETRIES - 1) {
+      if (!response?.keepArmed) {
+        await clearPendingAssistPlan(tabId);
+      } else {
+        await scheduleBookingAssist(tabId, {
+          ...mergedPlan,
+          attempts: Number(plan?.attempts || 0) + 1,
+        });
+      }
+      return response;
+    }
+  }
+
+  return { success: false, keepArmed: true };
 }
 
 // Alarm notifications
@@ -147,6 +383,87 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
       await scheduleTabAutofill(message.tabId);
       sendResponse({ success: true });
+    })();
+    return true;
+  }
+
+  if (message.action === 'schedule_booking_assist') {
+    void (async () => {
+      if (typeof message.tabId !== 'number') {
+        sendResponse({ success: false, error: 'tabId required' });
+        return;
+      }
+      await scheduleBookingAssist(message.tabId, message.plan || {});
+      sendResponse({ success: true });
+    })();
+    return true;
+  }
+
+  if (message.action === 'open_booking_assist_tab') {
+    void (async () => {
+      const tab = await openBookingAssistTab({
+        deepLink: message.deepLink || '',
+        active: message.active !== false,
+        plan: message.plan || {},
+      });
+      const plans = await getPendingAssistPlans();
+      const statusPlan = tab?.id ? plans[String(tab.id)] || null : null;
+      sendResponse({
+        success: Boolean(tab?.id),
+        tabId: tab?.id || null,
+        status: statusPlan ? {
+          code: statusPlan.statusCode,
+          tone: statusPlan.statusTone,
+          message: statusPlan.statusMessage,
+          platform: statusPlan.platform || null,
+          stage: statusPlan.assistStage || statusPlan.lastStage || null,
+        } : null,
+      });
+    })();
+    return true;
+  }
+
+  if (message.action === 'assist_active_tab') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0]?.id;
+      if (!tabId) {
+        sendResponse({ success: false, error: 'No active tab' });
+        return;
+      }
+      void (async () => {
+        const plans = await getPendingAssistPlans();
+        const existingPlan = plans[String(tabId)] || {};
+        const response = await sendAssistToTab(tabId, {
+          ...existingPlan,
+          ...(message.plan || {}),
+          source: message?.plan?.source || existingPlan.source || 'manual_active_tab',
+        });
+        sendResponse(response);
+      })();
+    });
+    return true;
+  }
+
+  if (message.action === 'get_assist_status') {
+    void (async () => {
+      const plans = await getPendingAssistPlans();
+      let tabId = typeof message.tabId === 'number' ? message.tabId : null;
+      if (!tabId) {
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        tabId = tabs[0]?.id || null;
+      }
+      const plan = tabId ? plans[String(tabId)] || null : null;
+      sendResponse({
+        success: true,
+        tabId,
+        status: plan ? {
+          code: plan.statusCode || 'idle',
+          tone: plan.statusTone || 'muted',
+          message: plan.statusMessage || describeAssistState(plan).message,
+          platform: plan.platform || null,
+          stage: plan.assistStage || plan.lastStage || null,
+        } : null,
+      });
     })();
     return true;
   }
@@ -249,7 +566,13 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         alertId: alert.id,
         platform,
         campgroundId,
+        campgroundName,
         watchId: alert.watched_target_id,
+        arrivalDate: alert.watched_targets?.arrival_date || null,
+        departureDate: alert.watched_targets?.departure_date || null,
+        exactSiteNumber: alert.watched_targets?.site_number || null,
+        siteNames: (alert.site_details?.sites || []).map((site) => site.siteName).filter(Boolean).slice(0, 5),
+        siteIds: (alert.site_details?.sites || []).map((site) => site.siteId).filter(Boolean).slice(0, 5),
       });
 
       chrome.notifications.create(notifId, {
@@ -287,6 +610,67 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
   if (info.status !== 'complete') return;
 
   void (async () => {
+    const assistPlans = await getPendingAssistPlans();
+    const assistPlan = assistPlans[String(tabId)];
+    if (assistPlan) {
+      const tab = await chrome.tabs.get(tabId).catch(() => null);
+      const currentUrl = String(tab?.url || '');
+      const attempts = Number(assistPlan.attempts || 0);
+      if (attempts >= 8) {
+        await updatePendingAssistPlan(tabId, {
+          assistStage: 'manual_takeover',
+          lastStage: 'manual_takeover',
+          attempts,
+        });
+      } else {
+        if (
+          assistPlan.assistStage === 'warming' &&
+          assistPlan.targetUrl &&
+          currentUrl &&
+          !currentUrl.startsWith(String(assistPlan.targetUrl))
+        ) {
+          await updatePendingAssistPlan(tabId, {
+            assistStage: 'targeting',
+            lastStage: 'targeting',
+          });
+          await chrome.tabs.update(tabId, { url: assistPlan.targetUrl });
+          return;
+        }
+
+        const response = await sendAssistToTab(tabId, assistPlan);
+        if (response?.stage) {
+          await updatePendingAssistPlan(tabId, {
+            assistStage: response.keepArmed ? response.stage : assistPlan.assistStage,
+            lastStage: response.stage,
+          });
+        }
+        if (
+          (
+            response?.stage === 'waf_detected' ||
+            (
+              response?.success === false &&
+              assistPlan.warmupUrl &&
+              assistPlan.targetUrl &&
+              currentUrl &&
+              currentUrl.startsWith(String(assistPlan.targetUrl))
+            )
+          ) &&
+          assistPlan.warmupUrl &&
+          assistPlan.targetUrl &&
+          attempts < 8
+        ) {
+          await scheduleBookingAssist(tabId, {
+            ...assistPlan,
+            assistStage: 'warming',
+            lastStage: response?.stage || 'waf_detected',
+            attempts: attempts + 1,
+          });
+          await chrome.tabs.update(tabId, { url: assistPlan.warmupUrl });
+        }
+      }
+      return;
+    }
+
     const pendingTabIds = await getPendingAutofillTabIds();
     if (!pendingTabIds.includes(tabId)) return;
 
@@ -335,20 +719,26 @@ chrome.notifications.onClicked.addListener(async (notificationId) => {
 
   if (!data.platform || !data.campgroundId) return;
 
-  const p = PLATFORMS[data.platform];
   let deepLink = '';
-  if (p?.deepLinkTemplate) {
-    deepLink = p.deepLinkTemplate
-      .replace('{campgroundId}', data.campgroundId)
-      .replace('{locationId}', data.campgroundId)
-      .replace('{parkSlug}', data.campgroundId.split('/')[0] || data.campgroundId)
-      .replace('{campgroundSlug}', data.campgroundId.split('/')[1] || data.campgroundId);
-  }
+  deepLink = await buildDeepLink(data.platform, data.campgroundId, data.campgroundName || '');
 
   if (!deepLink) return;
 
-  const tab = await chrome.tabs.create({ url: deepLink, active: true });
-  await scheduleTabAutofill(tab.id);
+  await openBookingAssistTab({
+    deepLink,
+    active: true,
+    plan: {
+    source: 'alert_notification',
+    platform: data.platform,
+    campgroundId: data.campgroundId,
+    campgroundName: data.campgroundName || '',
+    arrivalDate: data.arrivalDate || null,
+    departureDate: data.departureDate || null,
+    exactSiteNumber: data.exactSiteNumber || null,
+    preferredSiteNumbers: [data.exactSiteNumber, ...(Array.isArray(data.siteNames) ? data.siteNames : [])].filter(Boolean),
+    preferredSiteIds: Array.isArray(data.siteIds) ? data.siteIds : [],
+    },
+  });
 
   if (data.alertId) {
     const { extensionAuthToken } = await chrome.storage.local.get('extensionAuthToken');
@@ -369,5 +759,6 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     const launchedTabs = await getLaunchedTabs();
     await setLaunchedTabs(launchedTabs.filter(t => t.tabId !== tabId));
     await clearPendingAutofillTab(tabId);
+    await clearPendingAssistPlan(tabId);
   })();
 });

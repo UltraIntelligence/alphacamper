@@ -1,0 +1,31 @@
+{
+  "parks": [
+    {
+      "external_park_id": "kejimkujik-national-park",
+      "name": "Kejimkujik National Park",
+      "state_province": "NS",
+      "region": "South Shore",
+      "lat": 44.3981,
+      "lon": -65.2192,
+      "metadata_json": {
+        "source": "manual_seed"
+      }
+    }
+  ],
+  "campgrounds": [
+    {
+      "external_facility_id": "12345",
+      "park_external_id": "kejimkujik-national-park",
+      "name": "Jeremy's Bay Campground",
+      "description": "Example curated seed row for a GoingToCamp-backed domain.",
+      "lat": 44.401,
+      "lon": -65.229,
+      "booking_url": "https://example.goingtocamp.com",
+      "amenities": {
+        "source": "manual_seed",
+        "map_id": 98765
+      },
+      "photos": []
+    }
+  ]
+}

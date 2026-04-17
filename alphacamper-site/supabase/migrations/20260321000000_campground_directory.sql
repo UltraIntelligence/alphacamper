@@ -6,6 +6,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE TABLE IF NOT EXISTS campgrounds (
   id          TEXT NOT NULL,
   platform    TEXT NOT NULL,
+  root_map_id BIGINT,
   name        TEXT NOT NULL,
   short_name  TEXT,
   province    TEXT,         -- 'BC' | 'ON' | null (Parks Canada spans multiple provinces)

@@ -1,0 +1,12 @@
+{
+  "parks": [
+    {"external_park_id": "algonquin-highlands-backcountry", "name": "Algonquin Highlands Backcountry Camping", "state_province": "ON", "metadata_json": {"source": "Algonquin Highlands Reserve a Backcountry Campsite"}},
+    {"external_park_id": "haliburton-highlands-water-trails", "name": "Haliburton Highlands Water Trails", "state_province": "ON", "metadata_json": {"source": "Algonquin Highlands canoe route guide"}},
+    {"external_park_id": "algonquin-highlands-hiking-trails", "name": "Algonquin Highlands Hiking Trails", "state_province": "ON", "metadata_json": {"source": "Algonquin Highlands Reserve a Backcountry Campsite"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "algonquin-highlands-canoe-sites", "park_external_id": "algonquin-highlands-backcountry", "name": "Algonquin Highlands Canoe Route Campsites", "description": "Curated discovery seed for backcountry canoe route reservations.", "booking_url": "https://algonquinhighlands.goingtocamp.com"},
+    {"external_facility_id": "algonquin-highlands-hike-sites", "park_external_id": "algonquin-highlands-hiking-trails", "name": "Algonquin Highlands Hiking Trail Campsites", "description": "Curated discovery seed for backpacking reservations.", "booking_url": "https://algonquinhighlands.goingtocamp.com"},
+    {"external_facility_id": "haliburton-highlands-water-trails-sites", "park_external_id": "haliburton-highlands-water-trails", "name": "Haliburton Highlands Water Trails Campsites", "description": "Curated discovery seed for Haliburton Highlands Water Trails group and route-based reservations.", "booking_url": "https://algonquinhighlands.goingtocamp.com"}
+  ]
+}

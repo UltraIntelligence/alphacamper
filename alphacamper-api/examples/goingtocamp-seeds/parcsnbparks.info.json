@@ -1,0 +1,24 @@
+{
+  "parks": [
+    {"external_park_id": "sugarloaf", "name": "Sugarloaf Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "mactaquac", "name": "Mactaquac Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "de-la-republique", "name": "de la République Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "herring-cove", "name": "Herring Cove Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "murray-beach", "name": "Murray Beach Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "new-river-beach", "name": "New River Beach Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "the-anchorage", "name": "The Anchorage Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}},
+    {"external_park_id": "mount-carleton", "name": "Mount Carleton Provincial Park", "state_province": "NB", "metadata_json": {"source": "New Brunswick Parks Act fee schedule"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "sugarloaf-campground", "park_external_id": "sugarloaf", "name": "Sugarloaf Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "mactaquac-campground", "park_external_id": "mactaquac", "name": "Mactaquac Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "de-la-republique-campground", "park_external_id": "de-la-republique", "name": "de la République Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "herring-cove-campground", "park_external_id": "herring-cove", "name": "Herring Cove Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "murray-beach-campground", "park_external_id": "murray-beach", "name": "Murray Beach Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "new-river-beach-campground", "park_external_id": "new-river-beach", "name": "New River Beach Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "the-anchorage-campground", "park_external_id": "the-anchorage", "name": "The Anchorage Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "armstrong-brook-campground", "park_external_id": "mount-carleton", "name": "Mount Carleton - Armstrong Brook Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "williams-brook-campground", "park_external_id": "mount-carleton", "name": "Mount Carleton - Williams Brook Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"},
+    {"external_facility_id": "franquelin-point-campground", "park_external_id": "mount-carleton", "name": "Mount Carleton - Franquelin Point Campground", "description": "Curated discovery seed from New Brunswick provincial park fee schedule.", "booking_url": "https://parcsnbparks.info"}
+  ]
+}

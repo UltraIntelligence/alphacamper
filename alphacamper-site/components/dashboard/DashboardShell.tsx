@@ -6,6 +6,7 @@ import { LoginPrompt } from './LoginPrompt'
 import { WatchList } from './WatchList'
 import { AlertList } from './AlertList'
 import { UpgradeCTA } from './UpgradeCTA'
+import { ProviderQualityPanel } from './ProviderQualityPanel'
 import Link from 'next/link'
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated' | 'error'
@@ -107,6 +108,7 @@ export function DashboardShell() {
 
       <WatchList token={token!} />
       <AlertList token={token!} />
+      <ProviderQualityPanel token={token!} />
       <UpgradeCTA />
     </div>
   )

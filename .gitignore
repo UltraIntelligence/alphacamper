@@ -5,8 +5,15 @@ node_modules/
 .vercel
 *.tsbuildinfo
 alphacamper-site/supabase/.temp/
+alphacamper-api/.env
+alphacamper-api/data_imports/
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
 
 # screenshots and browser automation
 *.png
 !alphacamper-site/public/**/*.png
 .playwright-mcp/
+.playwright-cli/

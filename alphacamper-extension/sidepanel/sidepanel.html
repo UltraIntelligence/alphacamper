@@ -20,17 +20,28 @@
   <main id="main-content">
     <!-- Dashboard View -->
     <div id="view-dashboard" class="view active">
+      <section class="dashboard-hero">
+        <div class="hero-kicker">Checkout Assist</div>
+        <h1 class="hero-title">Camp faster with fewer taps.</h1>
+        <p class="hero-copy">Pick one clear next step. Alphacamper will guide you from there.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-full" id="hero-start-plan-btn">Start a Booking Plan</button>
+          <button class="btn btn-outline btn-full" id="hero-watch-btn">Watch for Openings</button>
+          <button class="btn btn-outline btn-full" id="hero-profile-btn">Save My Booking Details</button>
+        </div>
+      </section>
+
       <div class="time-display" id="current-time">--:--:--</div>
 
       <div id="next-mission-card" class="card" style="display:none">
-        <p class="card-label">Next Mission</p>
+        <p class="card-label">Next Booking Plan</p>
         <h3 id="next-mission-name" class="card-title"></h3>
         <div class="countdown-display" id="next-mission-countdown">--:--:--</div>
       </div>
 
       <div id="no-missions-msg" class="empty-state">
-        <p>No missions yet</p>
-        <p class="text-muted">Create your first booking mission to get started.</p>
+        <p>No booking plans yet</p>
+        <p class="text-muted">Start one above, then tell Alphacamper which parks and dates matter most.</p>
       </div>
 
       <div class="status-pills" id="status-pills">
@@ -38,7 +49,7 @@
         <span class="pill" id="missions-count">Missions: 0</span>
       </div>
 
-      <button class="btn btn-primary btn-full" id="create-mission-btn">Create Mission</button>
+      <button class="btn btn-primary btn-full" id="create-mission-btn">Start a Booking Plan</button>
 
       <div id="mission-list" class="mission-list"></div>
     </div>
@@ -48,35 +59,47 @@
       <button class="btn-back" id="back-to-dashboard">← Back</button>
 
       <div class="mission-header">
-        <input type="text" id="mission-name-input" class="mission-name-input" placeholder="Mission Name">
+        <input type="text" id="mission-name-input" class="mission-name-input" placeholder="Booking Plan Name">
         <span id="mission-status-badge" class="status-badge">planning</span>
       </div>
+      <p class="section-help">Tell Alphacamper where you want to camp, then set the opening time.</p>
 
       <div class="section">
         <h4 class="section-title">Booking Window</h4>
         <div class="form-row">
-          <input type="date" id="bw-date" class="input">
-          <input type="time" id="bw-time" class="input">
+          <div class="field-block">
+            <label class="field-label" for="bw-date">Opening Date</label>
+            <input type="date" id="bw-date" class="input">
+          </div>
+          <div class="field-block">
+            <label class="field-label" for="bw-time">Opening Time</label>
+            <input type="time" id="bw-time" class="input">
+          </div>
         </div>
-        <select id="bw-timezone" class="input">
-          <option value="America/New_York">Eastern (ET)</option>
-          <option value="America/Chicago">Central (CT)</option>
-          <option value="America/Denver">Mountain (MT)</option>
-          <option value="America/Los_Angeles" selected>Pacific (PT)</option>
-          <option value="America/Vancouver">Vancouver (PT)</option>
-        </select>
+        <div class="field-block">
+          <label class="field-label" for="bw-timezone">Time Zone</label>
+          <select id="bw-timezone" class="input">
+            <option value="America/New_York">Eastern (ET)</option>
+            <option value="America/Chicago">Central (CT)</option>
+            <option value="America/Denver">Mountain (MT)</option>
+            <option value="America/Los_Angeles" selected>Pacific (PT)</option>
+            <option value="America/Vancouver">Vancouver (PT)</option>
+          </select>
+        </div>
         <div class="countdown-display" id="mission-countdown">--:--:--</div>
       </div>
 
       <div class="section">
-        <h4 class="section-title">Targets</h4>
+        <h4 class="section-title">Places to Try</h4>
+        <p class="section-help">Put your favorite campground first. Add backups underneath it.</p>
         <div id="target-list" class="target-list"></div>
-        <button class="btn btn-outline btn-full" id="add-target-btn">+ Add Target</button>
+        <button class="btn btn-outline btn-full" id="add-target-btn">Add a Campground</button>
       </div>
 
       <!-- Add Target Form (hidden by default) -->
       <div id="target-form" class="section" style="display:none">
-        <h4 class="section-title">New Target</h4>
+        <h4 class="section-title">Add a Campground</h4>
+        <p class="section-help">Choose a park, dates, and optional site number.</p>
         <select id="tf-platform" class="input">
           <option value="recreation_gov">Recreation.gov</option>
           <option value="bc_parks">BC Parks</option>
@@ -102,16 +125,17 @@
 
       <div class="section">
         <h4 class="section-title">Rehearsal</h4>
+        <p class="section-help">Practice the booking flow before the real opening time.</p>
         <div class="rehearsal-stats" id="rehearsal-stats">
           <p>Not yet practiced</p>
         </div>
-        <button class="btn btn-outline btn-full" id="start-rehearsal-btn">Start Rehearsal</button>
+        <button class="btn btn-outline btn-full" id="start-rehearsal-btn">Practice This Flow</button>
       </div>
 
       <button class="btn btn-primary btn-full btn-launch" id="launch-btn" disabled>
-        Launch
+        Start Launch Mode
       </button>
-      <p class="text-muted text-center" id="launch-hint">Available 30 min before your booking window</p>
+      <p class="text-muted text-center" id="launch-hint">You can start this 30 minutes before the booking window opens.</p>
     </div>
 
     <!-- Launch Active View -->
@@ -121,49 +145,116 @@
         LAUNCH ACTIVE
       </div>
       <div class="countdown-display countdown-large" id="launch-countdown">--:--:--</div>
-      <p id="launch-status-text" class="text-center">Waiting for booking window...</p>
+      <div id="launch-assist-status" class="assist-status assist-status-inline assist-status-muted">
+        <div class="assist-status-kicker">Assist Live</div>
+        <div id="launch-status-text" class="assist-status-message">Waiting for booking window...</div>
+        <div id="launch-status-meta" class="assist-status-meta">Alphacamper moves through safe steps first, then leaves the final confirm to you.</div>
+      </div>
 
-      <button class="btn btn-primary btn-full" id="fill-forms-btn" style="margin-bottom:8px">Fill Forms</button>
-      <p class="text-muted text-center" style="margin-bottom:12px">or press Ctrl+Shift+F</p>
-      <div id="fill-result" class="text-center" style="display:none"></div>
+      <button class="btn btn-primary btn-full" id="assist-step-btn" style="margin-bottom:8px">Guide Me Forward</button>
+      <p class="text-muted text-center" style="margin-bottom:12px">Alphacamper will handle safe steps first, then stop at the final review step.</p>
+
+      <button class="btn btn-primary btn-full" id="fill-forms-btn" style="margin-bottom:8px">Fill My Details</button>
+      <p class="text-muted text-center" style="margin-bottom:12px">Shortcut: Ctrl+Shift+F</p>
+      <div id="fill-result" class="text-center" style="display:none" role="status" aria-live="polite"></div>
 
       <div id="launch-tabs-list" class="launch-tabs"></div>
 
-      <button class="btn btn-outline btn-full" id="next-fallback-btn" style="margin-bottom:8px">Next Fallback →</button>
-      <p class="text-muted text-center">Ctrl+Shift+Space to switch tabs</p>
+      <button class="btn btn-outline btn-full" id="next-fallback-btn" style="margin-bottom:8px">Try the Next Backup Tab</button>
+      <p class="text-muted text-center">Shortcut: Ctrl+Shift+Space</p>
 
-      <button class="btn btn-outline btn-full" id="end-launch-btn" style="margin-top:12px">End Launch</button>
+      <button class="btn btn-outline btn-full" id="end-launch-btn" style="margin-top:12px">Stop Launch Mode</button>
     </div>
 
     <!-- Profile View -->
     <div id="view-profile" class="view">
       <h2 class="view-title">Profile</h2>
+      <p class="section-help">Save these once so Alphacamper can fill them quickly later.</p>
       <div class="form-stack">
         <div class="form-row">
-          <input type="text" id="p-first" class="input" placeholder="First name">
-          <input type="text" id="p-last" class="input" placeholder="Last name">
+          <div class="field-block">
+            <label class="field-label" for="p-first">First Name</label>
+            <input type="text" id="p-first" name="firstName" autocomplete="given-name" class="input" placeholder="First name">
+          </div>
+          <div class="field-block">
+            <label class="field-label" for="p-last">Last Name</label>
+            <input type="text" id="p-last" name="lastName" autocomplete="family-name" class="input" placeholder="Last name">
+          </div>
         </div>
-        <input type="email" id="p-email" class="input" placeholder="Email">
-        <input type="tel" id="p-phone" class="input" placeholder="Phone">
-        <input type="text" id="p-plate" class="input" placeholder="Vehicle license plate">
-        <input type="text" id="p-length" class="input" placeholder="Vehicle length (ft)">
-        <select id="p-equipment" class="input">
-          <option value="tent">Tent</option>
-          <option value="rv">RV</option>
-          <option value="trailer">Trailer</option>
-          <option value="van">Van</option>
-        </select>
-        <input type="number" id="p-party" class="input" placeholder="Party size" min="1" max="20" value="2">
-        <button class="btn btn-primary btn-full" id="save-profile-btn">Save Profile</button>
-        <div id="profile-toast" class="toast" style="display:none">Profile saved ✓</div>
+        <div class="field-block">
+          <label class="field-label" for="p-email">Email</label>
+          <input type="email" id="p-email" name="email" autocomplete="email" spellcheck="false" class="input" placeholder="Email">
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-phone">Phone</label>
+          <input type="tel" id="p-phone" name="phone" autocomplete="tel" class="input" placeholder="Phone">
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-address1">Street Address</label>
+          <input type="text" id="p-address1" name="address1" autocomplete="street-address" class="input" placeholder="Address line 1">
+        </div>
+        <div class="form-row">
+          <div class="field-block">
+            <label class="field-label" for="p-city">City</label>
+            <input type="text" id="p-city" name="city" autocomplete="address-level2" class="input" placeholder="City">
+          </div>
+          <div class="field-block">
+            <label class="field-label" for="p-state">Province / State</label>
+            <input type="text" id="p-state" name="stateProvince" autocomplete="address-level1" class="input" placeholder="Province / State">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field-block">
+            <label class="field-label" for="p-postal">Postal / ZIP Code</label>
+            <input type="text" id="p-postal" name="postalCode" autocomplete="postal-code" class="input" placeholder="Postal / ZIP code">
+          </div>
+          <div class="field-block">
+            <label class="field-label" for="p-country">Country</label>
+            <select id="p-country" name="country" autocomplete="country" class="input">
+              <option value="CA">Canada</option>
+              <option value="US">United States</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-residency">Resident Status</label>
+          <select id="p-residency" class="input">
+            <option value="">Resident status (optional)</option>
+            <option value="resident">Resident</option>
+            <option value="non_resident">Non-resident</option>
+          </select>
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-plate">Vehicle Plate</label>
+          <input type="text" id="p-plate" class="input" placeholder="Vehicle license plate">
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-length">Vehicle Length</label>
+          <input type="text" id="p-length" class="input" placeholder="Vehicle length (ft)">
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-equipment">What You Camp In</label>
+          <select id="p-equipment" class="input">
+            <option value="tent">Tent</option>
+            <option value="rv">RV</option>
+            <option value="trailer">Trailer</option>
+            <option value="van">Van</option>
+          </select>
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="p-party">Party Size</label>
+          <input type="number" id="p-party" class="input" placeholder="Party size" min="1" max="20" value="2">
+        </div>
+        <button class="btn btn-primary btn-full" id="save-profile-btn">Save My Booking Details</button>
+        <div id="profile-toast" class="toast" style="display:none" role="status" aria-live="polite">Profile saved ✓</div>
       </div>
-      <p class="privacy-note">🔒 This info is stored only on your computer. We never send it anywhere.</p>
+      <p class="privacy-note">Stored only on this computer. Alphacamper does not send it anywhere.</p>
     </div>
 
     <!-- AI Trip Planner View -->
     <div id="view-planner" class="view">
       <h2 class="view-title">Plan a Trip</h2>
-      <p class="text-muted" style="margin-bottom:12px">Describe your ideal camping trip and AI will find the best campgrounds with backup options.</p>
+      <p class="section-help">Describe the trip you want. Alphacamper will suggest parks and backup options.</p>
 
       <div id="planner-results" style="display:none">
         <div id="planner-advice" class="card" style="display:none;margin-bottom:12px"></div>
@@ -171,23 +262,30 @@
       </div>
 
       <div id="planner-loading" class="empty-state" style="display:none">
-        <p>Planning your trip...</p>
+        <p>Planning your trip…</p>
         <p class="text-muted">Finding the best campgrounds and backup options</p>
       </div>
 
       <div id="planner-error" class="text-center" style="display:none;color:#dc2626;margin-bottom:12px"></div>
 
       <div class="planner-input-area">
-        <textarea id="planner-input" class="input" rows="3" placeholder="e.g. 3 night family tent camping near Yosemite in July, lakeside preferred"></textarea>
+        <label class="field-label" for="planner-input">Describe Your Trip</label>
+        <textarea id="planner-input" class="input" rows="3" placeholder="Example: 3 night family tent camping near Yosemite in July, lakeside preferred"></textarea>
         <div class="form-row" style="margin-top:8px">
-          <select id="planner-platform" class="input">
-            <option value="">Any platform</option>
-            <option value="recreation_gov">Recreation.gov</option>
-            <option value="bc_parks">BC Parks</option>
-            <option value="ontario_parks">Ontario Parks</option>
-            <option value="parks_canada">Parks Canada</option>
-          </select>
-          <button class="btn btn-primary" id="planner-send-btn">Plan Trip</button>
+          <div class="field-block">
+            <label class="field-label" for="planner-platform">Platform</label>
+            <select id="planner-platform" class="input">
+              <option value="">Any platform</option>
+              <option value="recreation_gov">Recreation.gov</option>
+              <option value="bc_parks">BC Parks</option>
+              <option value="ontario_parks">Ontario Parks</option>
+              <option value="parks_canada">Parks Canada</option>
+            </select>
+          </div>
+          <div class="field-block field-block-action">
+            <label class="field-label field-label-hidden" for="planner-send-btn">Ask Alphacamper</label>
+            <button class="btn btn-primary" id="planner-send-btn">Ask Alphacamper</button>
+          </div>
         </div>
       </div>
     </div>
@@ -195,7 +293,12 @@
     <!-- Watching View -->
     <div id="view-watching" class="view">
       <h2 class="view-title">Watching</h2>
-      <p class="text-muted" style="margin-bottom:12px">We check for cancellation openings at your watched campgrounds.</p>
+      <p class="section-help">Set a campground and dates. Alphacamper will watch for cancellation openings.</p>
+      <div id="watch-assist-status" class="assist-status assist-status-muted" style="display:none">
+        <div class="assist-status-kicker">Booking Assist</div>
+        <div class="assist-status-message"></div>
+        <div class="assist-status-meta"></div>
+      </div>
 
       <div id="watch-alerts"></div>
 
@@ -203,13 +306,14 @@
 
       <div id="no-watches" class="empty-state">
         <p>No active watches</p>
-        <p class="text-muted">Add a campground to monitor for cancellations.</p>
+        <p class="text-muted">Start one below and Alphacamper will keep checking for you.</p>
       </div>
 
-      <button class="btn btn-outline btn-full" id="add-watch-btn" style="margin-top:12px">+ Add Watch</button>
+      <button class="btn btn-outline btn-full" id="add-watch-btn" style="margin-top:12px">Start a New Watch</button>
 
       <div id="watch-form" class="section" style="display:none;margin-top:12px">
         <h4 class="section-title">New Watch</h4>
+        <p class="section-help">Choose a campground, dates, and optional site number.</p>
         <select id="wf-platform" class="input">
           <option value="recreation_gov">Recreation.gov</option>
           <option value="bc_parks">BC Parks</option>
@@ -232,18 +336,19 @@
       </div>
 
       <div id="watch-register" class="section" style="display:none;margin-top:16px">
-        <p class="text-muted" style="margin-bottom:8px">Enter your email to enable cancellation monitoring:</p>
+        <p class="section-help" style="margin-bottom:8px">Enter your email to turn on cancellation watching.</p>
         <div class="form-row">
-          <input type="email" id="watch-email" class="input" placeholder="your@email.com">
-          <button class="btn btn-primary" id="watch-register-btn">Connect</button>
+          <input type="email" id="watch-email" name="watchEmail" autocomplete="email" spellcheck="false" class="input" placeholder="your@email.com">
+          <button class="btn btn-primary" id="watch-register-btn">Connect My Email</button>
         </div>
-        <div id="watch-register-status" class="text-muted" style="margin-top:8px;display:none"></div>
+        <div id="watch-register-status" class="text-muted" style="margin-top:8px;display:none" role="status" aria-live="polite"></div>
       </div>
     </div>
 
     <!-- Settings View -->
     <div id="view-settings" class="view">
       <h2 class="view-title">Settings</h2>
+      <p class="section-help">Fine-tune alerts and how assertive Alphacamper should be.</p>
       <div class="setting-row">
         <span>Countdown audio</span>
         <label class="toggle">
@@ -258,6 +363,16 @@
           <span class="text-muted">min</span>
         </div>
       </div>
+      <div class="setting-row">
+        <span>Aggressive assist</span>
+        <label class="toggle">
+          <input type="checkbox" id="s-aggressive-assist">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <p class="text-muted" style="margin-top:12px">
+        Aggressive assist opens the right page, tries the right site, moves through safe steps, and fills forms. Final review stays with you.
+      </p>
       <hr class="divider">
       <button class="btn btn-danger btn-full" id="clear-data-btn">Clear All Data</button>
       <div id="confirm-clear" class="confirm-dialog" style="display:none">

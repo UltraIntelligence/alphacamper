@@ -1,0 +1,12 @@
+{
+  "parks": [
+    {"external_park_id": "aw-campbell", "name": "A.W. Campbell Conservation Area", "state_province": "ON", "metadata_json": {"source": "St. Clair Region Conservation Authority conservation lands page"}},
+    {"external_park_id": "lorne-c-henderson", "name": "Lorne C. Henderson Conservation Area", "state_province": "ON", "metadata_json": {"source": "St. Clair Region Conservation Authority conservation lands page"}},
+    {"external_park_id": "warwick", "name": "Warwick Conservation Area", "state_province": "ON", "metadata_json": {"source": "St. Clair Region Conservation Authority conservation lands page"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "aw-campbell-campground", "park_external_id": "aw-campbell", "name": "A.W. Campbell Campground", "description": "Curated discovery seed from the official St. Clair conservation lands page.", "booking_url": "https://stclair.goingtocamp.com"},
+    {"external_facility_id": "lorne-c-henderson-campground", "park_external_id": "lorne-c-henderson", "name": "Lorne C. Henderson Campground", "description": "Curated discovery seed from the official St. Clair conservation lands page.", "booking_url": "https://stclair.goingtocamp.com"},
+    {"external_facility_id": "warwick-campground", "park_external_id": "warwick", "name": "Warwick Campground", "description": "Curated discovery seed from the official St. Clair conservation lands page.", "booking_url": "https://stclair.goingtocamp.com"}
+  ]
+}

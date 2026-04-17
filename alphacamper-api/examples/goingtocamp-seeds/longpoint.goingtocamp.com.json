@@ -1,0 +1,16 @@
+{
+  "parks": [
+    {"external_park_id": "backus-heritage", "name": "Backus Heritage Conservation Area", "state_province": "ON", "metadata_json": {"source": "Long Point Region Conservation Authority camping page"}},
+    {"external_park_id": "deer-creek", "name": "Deer Creek Conservation Area", "state_province": "ON", "metadata_json": {"source": "Long Point Region Conservation Authority camping page"}},
+    {"external_park_id": "haldimand", "name": "Haldimand Conservation Area", "state_province": "ON", "metadata_json": {"source": "Long Point Region Conservation Authority camping page"}},
+    {"external_park_id": "norfolk", "name": "Norfolk Conservation Area", "state_province": "ON", "metadata_json": {"source": "Long Point Region Conservation Authority camping page"}},
+    {"external_park_id": "waterford-north", "name": "Waterford North Conservation Area", "state_province": "ON", "metadata_json": {"source": "Long Point Region Conservation Authority camping page"}}
+  ],
+  "campgrounds": [
+    {"external_facility_id": "backus-heritage-campground", "park_external_id": "backus-heritage", "name": "Backus Heritage Campground", "description": "Curated discovery seed from the official Long Point Region camping page.", "booking_url": "https://longpoint.goingtocamp.com"},
+    {"external_facility_id": "deer-creek-campground", "park_external_id": "deer-creek", "name": "Deer Creek Campground", "description": "Curated discovery seed from the official Long Point Region camping page.", "booking_url": "https://longpoint.goingtocamp.com"},
+    {"external_facility_id": "haldimand-campground", "park_external_id": "haldimand", "name": "Haldimand Campground", "description": "Curated discovery seed from the official Long Point Region camping page.", "booking_url": "https://longpoint.goingtocamp.com"},
+    {"external_facility_id": "norfolk-campground", "park_external_id": "norfolk", "name": "Norfolk Campground", "description": "Curated discovery seed from the official Long Point Region camping page.", "booking_url": "https://longpoint.goingtocamp.com"},
+    {"external_facility_id": "waterford-north-campground", "park_external_id": "waterford-north", "name": "Waterford North Campground", "description": "Curated discovery seed from the official Long Point Region camping page.", "booking_url": "https://longpoint.goingtocamp.com"}
+  ]
+}
