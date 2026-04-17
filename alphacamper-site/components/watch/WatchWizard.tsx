@@ -68,11 +68,19 @@ function getStepSummary(step: WizardStep, data: WatchData): string | null {
 
 interface WatchWizardProps {
   initialParkId?: string
+  initialParkName?: string
+  initialProvince?: string
   initialQuery?: string
   initialPlatform?: WatchData['platform']
 }
 
-export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' }: WatchWizardProps) {
+export function WatchWizard({
+  initialParkId,
+  initialParkName,
+  initialProvince,
+  initialQuery,
+  initialPlatform = '',
+}: WatchWizardProps) {
   const [activeStep, setActiveStep] = useState<WizardStep>('search')
   const [data, setData] = useState<WatchData>(INITIAL_DATA)
   const [completedSteps, setCompletedSteps] = useState<Set<WizardStep>>(new Set())
@@ -83,23 +91,85 @@ export function WatchWizard({ initialParkId, initialQuery, initialPlatform = '' 
   const [magicLinkError, setMagicLinkError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (initialParkId) {
+    let isCancelled = false
+
+    const applySelectedPark = (park: {
+      id: string
+      name: string
+      platform: WatchData['platform']
+      province: string | null
+    }) => {
+      if (isCancelled) return
+      setData((prev) => ({
+        ...prev,
+        campgroundId: park.id,
+        campgroundName: park.name,
+        platform: park.platform,
+        province: park.province ?? '',
+      }))
+      setCompletedSteps((prev) => new Set([...prev, 'search']))
+      setActiveStep('dates')
+    }
+
+    const hydrateSelectedPark = async () => {
+      if (!initialParkId) {
+        if (initialPlatform) {
+          setData((prev) => ({ ...prev, platform: initialPlatform }))
+        }
+        return
+      }
+
+      if (initialParkName && initialPlatform) {
+        applySelectedPark({
+          id: initialParkId,
+          name: initialParkName,
+          platform: initialPlatform,
+          province: initialProvince ?? '',
+        })
+        return
+      }
+
+      try {
+        const params = new URLSearchParams({ id: initialParkId })
+        if (initialPlatform) params.set('platform', initialPlatform)
+
+        const response = await fetch(`/api/campgrounds?${params.toString()}`)
+        if (response.ok) {
+          const body = await response.json()
+          const park = body.campgrounds?.[0]
+          if (park?.id && park?.name && park?.platform) {
+            applySelectedPark({
+              id: park.id,
+              name: park.name,
+              platform: park.platform,
+              province: park.province ?? '',
+            })
+            return
+          }
+        }
+      } catch {
+        // Fall through to the static backup list.
+      }
+
       const park = getCampground(initialParkId)
-      if (park) {
-        setData((prev) => ({
-          ...prev,
-          campgroundId: park.id,
-          campgroundName: park.name,
+      if (park && (!initialPlatform || park.platform === initialPlatform)) {
+        applySelectedPark({
+          id: park.id,
+          name: park.name,
           platform: park.platform,
           province: park.province,
-        }))
-        setCompletedSteps((prev) => new Set([...prev, 'search']))
-        setActiveStep('dates')
+        })
+      } else if (initialPlatform && !isCancelled) {
+        setData((prev) => ({ ...prev, platform: initialPlatform }))
       }
-    } else if (initialPlatform) {
-      setData((prev) => ({ ...prev, platform: initialPlatform }))
     }
-  }, [initialParkId, initialPlatform])
+
+    void hydrateSelectedPark()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [initialParkId, initialParkName, initialPlatform, initialProvince])
 
   const updateData = useCallback((partial: Partial<WatchData>) => {
     setData((prev) => ({ ...prev, ...partial }))

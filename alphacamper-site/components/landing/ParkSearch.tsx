@@ -60,7 +60,15 @@ export function ParkSearch() {
     setQuery(park.name)
     setIsOpen(false)
     setHighlightedIndex(-1)
-    router.push(`/watch/new?park=${park.id}`)
+    const params = new URLSearchParams({
+      park: park.id,
+      platform: park.platform,
+      name: park.name,
+    })
+    if (park.province) {
+      params.set('province', park.province)
+    }
+    router.push(`/watch/new?${params.toString()}`)
   }
 
   async function handleSubmit() {

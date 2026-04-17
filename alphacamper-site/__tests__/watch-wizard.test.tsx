@@ -156,4 +156,36 @@ describe('WatchWizard', () => {
     expect(await screen.findByText('Email service is down')).toBeTruthy()
     expect(window.localStorage.getItem('alphacamper.pendingWatch')).toBeNull()
   })
+
+  it('uses the exact park details passed from live search results', async () => {
+    const user = userEvent.setup()
+    mockSendMagicLink.mockResolvedValue({ error: null })
+
+    render(
+      <WatchWizard
+        initialParkId="-2147483647"
+        initialParkName="Alice Lake Provincial Park"
+        initialPlatform="bc_parks"
+        initialProvince="BC"
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Choose dates' }))
+    await user.click(screen.getByRole('button', { name: 'Save site' }))
+    await user.type(screen.getByLabelText('email'), 'camper@example.com')
+    await user.click(screen.getByRole('button', { name: 'Start watching' }))
+
+    expect(mockSendMagicLink).toHaveBeenCalledWith('camper@example.com', window.location.origin, {
+      campgroundName: 'Alice Lake Provincial Park',
+    })
+
+    expect(JSON.parse(window.localStorage.getItem('alphacamper.pendingWatch') || '{}')).toEqual({
+      platform: 'bc_parks',
+      campgroundId: '-2147483647',
+      campgroundName: 'Alice Lake Provincial Park',
+      siteNumber: 'A12',
+      arrivalDate: '2026-07-10',
+      departureDate: '2026-07-12',
+    })
+  })
 })
