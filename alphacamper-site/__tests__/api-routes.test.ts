@@ -85,11 +85,17 @@ describe('watch routes', () => {
 
   it('creates a watch with exact dates and optional site number', async () => {
     mockGetUserIdFromRequest.mockResolvedValue('user-123')
+    const campgroundQueryChain = buildSelectChain({
+      data: { id: 'camp-1', platform: 'bc_parks', name: 'Alice Lake Provincial Park' },
+      error: null,
+    })
     const insertChain = buildInsertChain({
       data: { id: 'watch-1', site_number: 'A12' },
       error: null,
     })
-    mockFrom.mockReturnValue(insertChain)
+    mockFrom.mockImplementation((table: string) => (
+      table === 'campgrounds' ? campgroundQueryChain : insertChain
+    ))
 
     const response = await watchRoute.POST(new Request('https://alphacamper.test/api/watch', {
       method: 'POST',
@@ -108,7 +114,7 @@ describe('watch routes', () => {
       user_id: 'user-123',
       platform: 'bc_parks',
       campground_id: 'camp-1',
-      campground_name: 'Alice Lake',
+      campground_name: 'Alice Lake Provincial Park',
       site_number: 'A12',
       arrival_date: '2026-07-10',
       departure_date: '2026-07-12',
@@ -117,6 +123,32 @@ describe('watch routes', () => {
       success: true,
       watch: { id: 'watch-1', site_number: 'A12' },
     })
+  })
+
+  it('rejects a watch when the campground id and platform are not valid', async () => {
+    mockGetUserIdFromRequest.mockResolvedValue('user-123')
+    const campgroundQueryChain = buildSelectChain({
+      data: null,
+      error: { message: 'not found' },
+    })
+    mockFrom.mockImplementation((table: string) => (
+      table === 'campgrounds' ? campgroundQueryChain : buildInsertChain({ data: null, error: null })
+    ))
+
+    const response = await watchRoute.POST(new Request('https://alphacamper.test/api/watch', {
+      method: 'POST',
+      body: JSON.stringify({
+        platform: 'bc_parks',
+        campgroundId: 'unknown-camp',
+        campgroundName: 'Fake Camp',
+        siteNumber: 'A12',
+        arrivalDate: '2026-07-10',
+        departureDate: '2026-07-12',
+      }),
+    }))
+
+    expect(response.status).toBe(400)
+    await expect(response.json()).resolves.toEqual({ error: 'Invalid campground selection' })
   })
 
   it('lists only active watches for the signed-in customer', async () => {

@@ -8,6 +8,7 @@ router = APIRouter()
 
 
 @router.get("/health")
+@router.get("/v1/health")
 def health_check() -> dict[str, str]:
     return {
         "status": "ok",
@@ -15,4 +16,3 @@ def health_check() -> dict[str, str]:
         "environment": settings.environment,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
-
