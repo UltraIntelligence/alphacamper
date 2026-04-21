@@ -1,16 +1,49 @@
 let currentView = 'dashboard';
 let currentMissionId = null;
 let countdownIntervals = [];
+const BETA_HIDE_MISSIONS = true;
+const BETA_HIDE_TRIP_PLANNER = true;
+
+function setElementHidden(target, hidden) {
+  if (!target) return;
+  target.style.display = hidden ? 'none' : '';
+}
+
+function applyBetaSurfaceHides() {
+  if (BETA_HIDE_MISSIONS) {
+    [
+      'hero-start-plan-btn',
+      'next-mission-card',
+      'no-missions-msg',
+      'missions-count',
+      'create-mission-btn',
+      'mission-list',
+      'view-mission',
+    ].forEach((id) => {
+      setElementHidden(document.getElementById(id), true);
+    });
+  }
+
+  if (BETA_HIDE_TRIP_PLANNER) {
+    setElementHidden(document.getElementById('view-planner'), true);
+    setElementHidden(document.querySelector('.tab[data-view="planner"]'), true);
+  }
+}
+
+applyBetaSurfaceHides();
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const view = tab.dataset.view;
+    if (BETA_HIDE_TRIP_PLANNER && view === 'planner') { switchView('dashboard'); return; }
     if (view === 'mission' && !currentMissionId) { switchView('dashboard'); return; }
     switchView(view);
   });
 });
 
 function switchView(viewName) {
+  if (BETA_HIDE_MISSIONS && viewName === 'mission') viewName = 'dashboard';
+  if (BETA_HIDE_TRIP_PLANNER && viewName === 'planner') viewName = 'dashboard';
   clearCountdowns();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -140,6 +173,10 @@ async function loadDashboard() {
   profilePill.textContent = profileDone ? 'Booking Details: Saved' : 'Booking Details: Add Yours';
   profilePill.onclick = () => { switchView('profile'); };
 
+  if (BETA_HIDE_MISSIONS) {
+    return;
+  }
+
   const missions = await Storage.getMissions();
   document.getElementById('missions-count').textContent = 'Booking Plans: ' + missions.length;
 
@@ -194,19 +231,22 @@ async function loadDashboard() {
 }
 
 function openMission(id) {
+  if (BETA_HIDE_MISSIONS) return;
   currentMissionId = id;
   switchView('mission');
 }
 
-document.getElementById('create-mission-btn').addEventListener('click', async () => {
-  const mission = await Missions.create('New Booking Plan');
-  openMission(mission.id);
-});
+if (!BETA_HIDE_MISSIONS) {
+  document.getElementById('create-mission-btn').addEventListener('click', async () => {
+    const mission = await Missions.create('New Booking Plan');
+    openMission(mission.id);
+  });
 
-document.getElementById('hero-start-plan-btn').addEventListener('click', async () => {
-  const mission = await Missions.create('New Booking Plan');
-  openMission(mission.id);
-});
+  document.getElementById('hero-start-plan-btn').addEventListener('click', async () => {
+    const mission = await Missions.create('New Booking Plan');
+    openMission(mission.id);
+  });
+}
 
 document.getElementById('hero-watch-btn').addEventListener('click', () => {
   switchView('watching');
@@ -217,6 +257,7 @@ document.getElementById('hero-profile-btn').addEventListener('click', () => {
 });
 
 async function loadMissionDetail() {
+  if (BETA_HIDE_MISSIONS) { switchView('dashboard'); return; }
   if (!currentMissionId) { switchView('dashboard'); return; }
   const mission = await Storage.getMission(currentMissionId);
   if (!mission) { switchView('dashboard'); return; }
@@ -650,9 +691,14 @@ document.getElementById('confirm-clear-yes').addEventListener('click', async () 
 // ── AI Trip Planner ──
 const SIDEPANEL_API_BASE = 'https://alphacamper.com'; // Production API
 
-function loadPlanner() {}
+function loadPlanner() {
+  if (BETA_HIDE_TRIP_PLANNER) {
+    switchView('dashboard');
+  }
+}
 
 document.getElementById('planner-send-btn').addEventListener('click', async () => {
+  if (BETA_HIDE_TRIP_PLANNER) return;
   const input = document.getElementById('planner-input');
   const query = input.value.trim();
   if (!query) return;
