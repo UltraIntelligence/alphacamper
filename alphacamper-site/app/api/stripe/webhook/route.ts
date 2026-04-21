@@ -31,6 +31,20 @@ function toIsoDate(unixSeconds: number | null | undefined): string | null {
   return new Date(unixSeconds * 1000).toISOString();
 }
 
+function getSubscriptionPeriodEnd(
+  subscription: Stripe.Subscription | Stripe.Response<Stripe.Subscription>,
+): number | null {
+  const legacyPeriodEnd = (subscription as Stripe.Subscription & {
+    current_period_end?: number | null;
+  }).current_period_end;
+
+  if (typeof legacyPeriodEnd === "number") {
+    return legacyPeriodEnd;
+  }
+
+  return subscription.items.data[0]?.current_period_end ?? null;
+}
+
 function resolveProductKey(metadata: Record<string, string> | null | undefined): ProductKey | null {
   const rawValue = metadata?.product_key;
   return isProductKey(rawValue) ? rawValue : null;
@@ -64,7 +78,7 @@ async function processCheckoutCompleted(event: Stripe.CheckoutSessionCompletedEv
       stripe_subscription_id: subscription.id,
       product_key: productKey,
       status: mapSubscriptionStatus(subscription.status),
-      current_period_end: toIsoDate(subscription.current_period_end),
+      current_period_end: toIsoDate(getSubscriptionPeriodEnd(subscription)),
       updated_at: new Date().toISOString(),
     }, {
       onConflict: "user_id",
@@ -105,7 +119,7 @@ async function processSubscriptionChange(subscription: Stripe.Subscription) {
       stripe_subscription_id: subscription.id,
       product_key: productKey,
       status: mapSubscriptionStatus(subscription.status),
-      current_period_end: toIsoDate(subscription.current_period_end),
+      current_period_end: toIsoDate(getSubscriptionPeriodEnd(subscription)),
       updated_at: new Date().toISOString(),
     }, {
       onConflict: "user_id",
