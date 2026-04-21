@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 
 const CACHE_HEADERS = { 'Cache-Control': 'no-store' }
-const DEV_FALLBACK_API_URL = 'http://127.0.0.1:8000'
 
 export interface ProviderQualityPanelResponse {
+  status?: 'admin_api_offline'
   available: boolean
   reason: string | null
   fetchedFrom: string | null
@@ -51,9 +51,7 @@ export function resolveAlphacamperApiBaseUrl() {
     process.env.ALPHACAMPER_API_URL?.trim() ||
     process.env.NEXT_PUBLIC_ALPHACAMPER_API_URL?.trim()
 
-  if (explicit) return explicit.replace(/\/$/, '')
-  if (process.env.NODE_ENV !== 'production') return DEV_FALLBACK_API_URL
-  return ''
+  return explicit ? explicit.replace(/\/$/, '') : ''
 }
 
 export async function GET() {
@@ -61,8 +59,9 @@ export async function GET() {
 
   if (!baseUrl) {
     return json({
+      status: 'admin_api_offline',
       available: false,
-      reason: 'Set ALPHACAMPER_API_URL to show the operator network view.',
+      reason: 'The admin API is offline for beta.',
       fetchedFrom: null,
       providerQuality: null,
       alertDelivery: null,
@@ -81,8 +80,9 @@ export async function GET() {
 
     if (!response.ok) {
       return json({
+        status: 'admin_api_offline',
         available: false,
-        reason: `The operator backend answered with ${response.status}.`,
+        reason: 'The admin API is offline for beta.',
         fetchedFrom: endpoint,
         providerQuality: null,
         alertDelivery: null,
@@ -101,10 +101,10 @@ export async function GET() {
       providers: Array.isArray(data.providers) ? data.providers : [],
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unable to reach the operator backend.'
     return json({
+      status: 'admin_api_offline',
       available: false,
-      reason: message,
+      reason: 'The admin API is offline for beta.',
       fetchedFrom: endpoint,
       providerQuality: null,
       alertDelivery: null,

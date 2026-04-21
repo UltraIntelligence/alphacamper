@@ -19,6 +19,7 @@ export interface CatalogRefreshJobRecord {
 }
 
 export interface CatalogRefreshJobsResponse {
+  status?: 'admin_api_offline'
   available: boolean
   canManage: boolean
   reason: string | null
@@ -63,9 +64,10 @@ async function proxyList(request: Request) {
 
   if (!baseUrl || !adminApiKey) {
     return json({
+      status: 'admin_api_offline',
       available: false,
       canManage: false,
-      reason: 'The operator refresh controls are not configured yet.',
+      reason: 'The admin API is offline for beta.',
       operatorEmail: null,
       fetchedFrom: null,
       jobs: [],
@@ -98,13 +100,14 @@ async function proxyList(request: Request) {
 
     if (!response.ok) {
       return json({
+        status: 'admin_api_offline',
         available: false,
-        canManage: true,
-        reason: `The refresh backend answered with ${response.status}.`,
+        canManage: false,
+        reason: 'The admin API is offline for beta.',
         operatorEmail,
         fetchedFrom: endpoint,
         jobs: [],
-      }, response.status)
+      })
     }
 
     const jobs = await response.json() as CatalogRefreshJobRecord[]
@@ -118,13 +121,14 @@ async function proxyList(request: Request) {
     })
   } catch (error) {
     return json({
+      status: 'admin_api_offline',
       available: false,
-      canManage: true,
-      reason: error instanceof Error ? error.message : 'Could not reach the refresh backend.',
+      canManage: false,
+      reason: 'The admin API is offline for beta.',
       operatorEmail,
       fetchedFrom: endpoint,
       jobs: [],
-    }, 502)
+    })
   }
 }
 
@@ -138,13 +142,14 @@ export async function POST(request: Request) {
 
   if (!baseUrl || !adminApiKey) {
     return json({
+      status: 'admin_api_offline',
       available: false,
       canManage: false,
-      reason: 'The operator refresh controls are not configured yet.',
+      reason: 'The admin API is offline for beta.',
       operatorEmail: null,
       fetchedFrom: null,
       jobs: [],
-    }, 503)
+    })
   }
 
   const operatorEmail = await getOperatorEmail(request)
@@ -193,11 +198,14 @@ export async function POST(request: Request) {
       headers: CACHE_HEADERS,
     })
   } catch (error) {
-    return NextResponse.json({
-      detail: error instanceof Error ? error.message : 'Could not queue the refresh job.',
-    }, {
-      status: 502,
-      headers: CACHE_HEADERS,
+    return json({
+      status: 'admin_api_offline',
+      available: false,
+      canManage: false,
+      reason: 'The admin API is offline for beta.',
+      operatorEmail,
+      fetchedFrom: endpoint,
+      jobs: [],
     })
   }
 }

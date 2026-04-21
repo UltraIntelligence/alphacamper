@@ -24,8 +24,35 @@ describe('catalog refresh jobs route', () => {
 
     expect(response.status).toBe(200)
     expect(body).toMatchObject({
+      status: 'admin_api_offline',
       available: false,
       canManage: false,
+      jobs: [],
+    })
+  })
+
+  it('returns admin_api_offline when the backend cannot be reached', async () => {
+    process.env.ALPHACAMPER_API_URL = 'https://api.alphacamper.test'
+    process.env.ALPHACAMPER_API_ADMIN_KEY = 'secret-admin-key'
+    process.env.OPERATOR_EMAIL_ALLOWLIST = 'ops@alphacamper.com'
+
+    const { getVerifiedEmailFromRequest } = await import('@/lib/auth.server')
+    vi.mocked(getVerifiedEmailFromRequest).mockResolvedValue('ops@alphacamper.com')
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('connect ECONNREFUSED')))
+
+    const { GET } = await import('@/app/api/admin/catalog-refresh-jobs/route')
+    const response = await GET(new Request('https://alphacamper.test/api/admin/catalog-refresh-jobs', {
+      headers: { Authorization: 'Bearer site-token' },
+    }))
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body).toMatchObject({
+      status: 'admin_api_offline',
+      available: false,
+      canManage: false,
+      operatorEmail: 'ops@alphacamper.com',
+      fetchedFrom: 'https://api.alphacamper.test/v1/admin/catalog-refresh-jobs',
       jobs: [],
     })
   })

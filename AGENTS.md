@@ -10,6 +10,10 @@ Three independent apps, one git repo. No shared package manager workspace.
 | Worker | `alphacamper-worker/` | Node.js, Playwright 1.50, Supabase | Railway (Docker) |
 | Extension | `alphacamper-extension/` | Chrome MV3, vanilla JS | Chrome Web Store |
 
+## Deployment Status
+
+- `alphacamper-api` (Python): source in repo, NOT deployed during beta. Re-enable post-beta if operator tooling is needed.
+
 ## Data Flow
 
 Extension registers watches → Site API → Supabase → Worker polls park APIs → availability found → alert created in Supabase → user notified

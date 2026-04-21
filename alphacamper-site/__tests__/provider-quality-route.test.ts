@@ -17,8 +17,25 @@ describe('provider quality route', () => {
 
     expect(response.status).toBe(200)
     await expect(response.json()).resolves.toMatchObject({
+      status: 'admin_api_offline',
       available: false,
       fetchedFrom: null,
+      providers: [],
+    })
+  })
+
+  it('returns admin_api_offline when the backend cannot be reached', async () => {
+    process.env.ALPHACAMPER_API_URL = 'https://api.alphacamper.test'
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('connect ECONNREFUSED')))
+
+    const { GET } = await import('@/app/api/admin/provider-quality/route')
+    const response = await GET()
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({
+      status: 'admin_api_offline',
+      available: false,
+      fetchedFrom: 'https://api.alphacamper.test/v1/admin/overview',
       providers: [],
     })
   })

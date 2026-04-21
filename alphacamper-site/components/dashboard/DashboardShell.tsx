@@ -6,7 +6,6 @@ import { LoginPrompt } from './LoginPrompt'
 import { WatchList } from './WatchList'
 import { AlertList } from './AlertList'
 import { UpgradeCTA } from './UpgradeCTA'
-import { ProviderQualityPanel } from './ProviderQualityPanel'
 import Link from 'next/link'
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated' | 'error'
@@ -108,7 +107,8 @@ export function DashboardShell() {
 
       <WatchList token={token!} />
       <AlertList token={token!} />
-      <ProviderQualityPanel token={token!} />
+      {/* Beta hides the operator-only Python backend panel. Keep the component in repo for post-beta reuse. */}
+      {/* <ProviderQualityPanel token={token!} /> */}
       <UpgradeCTA />
     </div>
   )
