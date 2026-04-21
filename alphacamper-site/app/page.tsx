@@ -1,4 +1,4 @@
-import { LandingHero } from '@/components/landing/LandingHero' 
+import { LandingHero } from '@/components/landing/LandingHero'
 import { HowAlphaWorks } from '@/components/landing/HowAlphaWorks'
 import { Reviews } from '@/components/landing/Reviews'
 import { Capabilities } from '@/components/landing/Capabilities'
@@ -9,8 +9,15 @@ import { ParkDirectory } from '@/components/landing/ParkDirectory'
 import { FAQ } from '@/components/landing/FAQ'
 import { LandingCTA } from '@/components/landing/LandingCTA'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+import { NewLandingHero } from '@/components/landing/NewLandingHero'
 
 export default function Home() {
+  const showNewLanding = process.env.NEW_LANDING_2026 === 'true'
+
+  if (showNewLanding) {
+    return <NewLandingHero />
+  }
+
   return (
     <>
       <LandingHero />
