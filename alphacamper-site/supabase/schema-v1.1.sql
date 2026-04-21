@@ -33,6 +33,24 @@ CREATE TABLE IF NOT EXISTS availability_alerts (
   claimed BOOLEAN DEFAULT false
 );
 
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+  stripe_customer_id TEXT,
+  stripe_subscription_id TEXT NOT NULL UNIQUE,
+  product_key TEXT NOT NULL CHECK (product_key IN ('summer_pass_2026', 'year_pass_2026')),
+  status TEXT NOT NULL CHECK (status IN ('active', 'canceled', 'past_due')),
+  current_period_end TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS stripe_webhook_events (
+  id TEXT PRIMARY KEY,
+  event_type TEXT NOT NULL,
+  processed_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE watched_targets ENABLE ROW LEVEL SECURITY;
