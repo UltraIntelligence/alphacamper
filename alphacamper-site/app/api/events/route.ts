@@ -18,6 +18,71 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+export async function GET(request: Request) {
+  try {
+    const identity = await getVerifiedIdentityFromRequest(request);
+    if (!identity) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const searchParams = new URL(request.url).searchParams;
+    const requestedWindowDays = Number(searchParams.get("window_days")) || 30;
+    const windowDays = Math.min(Math.max(requestedWindowDays, 1), 90);
+    const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000).toISOString();
+
+    const supabase = getServiceRoleSupabase();
+    const { data: events, error: eventsError } = await supabase
+      .from("funnel_events")
+      .select("id, watch_id, event_name, metadata, created_at")
+      .eq("user_id", identity.userId)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false });
+
+    if (eventsError) {
+      return NextResponse.json({ error: eventsError.message }, { status: 500 });
+    }
+
+    const { count: watchesCreated, error: watchesError } = await supabase
+      .from("watched_targets")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", identity.userId)
+      .gte("created_at", since);
+
+    if (watchesError) {
+      return NextResponse.json({ error: watchesError.message }, { status: 500 });
+    }
+
+    const { count: alertsSent, error: alertsError } = await supabase
+      .from("availability_alerts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", identity.userId)
+      .gte("notified_at", since);
+
+    if (alertsError) {
+      return NextResponse.json({ error: alertsError.message }, { status: 500 });
+    }
+
+    const safeEvents = Array.isArray(events) ? events : [];
+
+    return NextResponse.json({
+      events: safeEvents,
+      summary: {
+        watches_created: watchesCreated ?? 0,
+        sms_fired: alertsSent ?? 0,
+        sms_tapped: safeEvents.filter((event) => event.event_name === "sms_tapped").length,
+        booking_confirmed: safeEvents.filter((event) => event.event_name === "booking_confirmed").length,
+        booking_failed: safeEvents.filter((event) => event.event_name === "booking_failed").length,
+        autofill_started: safeEvents.filter((event) => event.event_name === "autofill_started").length,
+        autofill_field_not_found: safeEvents.filter((event) => event.event_name === "autofill_field_not_found").length,
+        booking_submitted: safeEvents.filter((event) => event.event_name === "booking_submitted").length,
+      },
+      window_days: windowDays,
+    });
+  } catch {
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const identity = await getVerifiedIdentityFromRequest(request);
