@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 import { getUserIdFromRequest } from "@/lib/auth.server";
+import { getSupabaseForRequest } from "@/lib/supabase.server";
 
 // GET — Fetch alerts for the authenticated user
 export async function GET(request: Request) {
@@ -9,8 +9,9 @@ export async function GET(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const supabase = getSupabaseForRequest(request);
 
-    const { data, error } = await getSupabase()
+    const { data, error } = await supabase
       .from("availability_alerts")
       .select("*, watched_targets(*)")
       .eq("user_id", userId)
@@ -34,6 +35,7 @@ export async function PATCH(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const supabase = getSupabaseForRequest(request);
 
     const { id } = await request.json();
 
@@ -41,7 +43,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "id required" }, { status: 400 });
     }
 
-    const { error } = await getSupabase()
+    const { error } = await supabase
       .from("availability_alerts")
       .update({ claimed: true })
       .eq("id", id)

@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
-import { getVerifiedEmailFromRequest } from "@/lib/auth.server";
+import { getVerifiedIdentityFromRequest } from "@/lib/auth.server";
+import { getSupabaseForRequest } from "@/lib/supabase.server";
 
 // POST — Resolve (or create) the users-table record for the caller.
 // Email is always sourced from a verified Supabase JWT.
 export async function POST(request: Request) {
   try {
-    const email = await getVerifiedEmailFromRequest(request);
-    if (!email) {
+    const identity = await getVerifiedIdentityFromRequest(request);
+    if (!identity || identity.authKind !== "supabase") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = getSupabase();
+    const supabase = getSupabaseForRequest(request);
 
     // INSERT is safe even for existing users — on conflict the row is untouched.
     // This avoids relying on an UPDATE RLS policy, which doesn't exist for `users`.
     const { error: insertError } = await supabase
       .from("users")
-      .insert({ email });
+      .insert({ id: identity.userId, email: identity.email });
 
     // 23505 = unique_violation (expected for existing users) — anything else is unexpected
     if (insertError && insertError.code !== "23505") {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from("users")
       .select()
-      .eq("email", email)
+      .eq("id", identity.userId)
       .single();
 
     if (error) {
@@ -39,4 +39,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
-

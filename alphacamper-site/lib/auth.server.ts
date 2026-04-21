@@ -5,9 +5,10 @@ import { getBearerToken } from './auth'
 const EXTENSION_TOKEN_PREFIX = 'ext_'
 const EXTENSION_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000
 
-interface AuthIdentity {
-  email: string | null
-  userId: string | null
+export interface VerifiedIdentity {
+  authKind: 'extension' | 'supabase'
+  email: string
+  userId: string
 }
 
 function getExtensionAuthSecret(): string {
@@ -34,7 +35,7 @@ export function issueExtensionAuthToken(userId: string, email: string): string {
   return `${EXTENSION_TOKEN_PREFIX}${encodedPayload}.${signExtensionPayload(encodedPayload)}`
 }
 
-function verifyExtensionAuthToken(token: string): AuthIdentity | null {
+function verifyExtensionAuthToken(token: string): VerifiedIdentity | null {
   if (!token.startsWith(EXTENSION_TOKEN_PREFIX)) return null
 
   const rawToken = token.slice(EXTENSION_TOKEN_PREFIX.length)
@@ -59,6 +60,7 @@ function verifyExtensionAuthToken(token: string): AuthIdentity | null {
     }
 
     return {
+      authKind: 'extension',
       userId: payload.userId,
       email: payload.email,
     }
@@ -67,7 +69,7 @@ function verifyExtensionAuthToken(token: string): AuthIdentity | null {
   }
 }
 
-async function getVerifiedIdentity(request: Request): Promise<AuthIdentity | null> {
+async function getVerifiedIdentity(request: Request): Promise<VerifiedIdentity | null> {
   const token = getBearerToken(request.headers.get('Authorization'))
   if (!token) return null
 
@@ -75,34 +77,22 @@ async function getVerifiedIdentity(request: Request): Promise<AuthIdentity | nul
   if (extensionIdentity) return extensionIdentity
 
   const { data: { user } } = await getSupabase().auth.getUser(token)
-  if (!user?.email) return null
+  if (!user?.email || !user.id) return null
 
   return {
+    authKind: 'supabase',
     email: user.email,
-    userId: null,
+    userId: user.id,
   }
+}
+
+export async function getVerifiedIdentityFromRequest(request: Request): Promise<VerifiedIdentity | null> {
+  return getVerifiedIdentity(request)
 }
 
 export async function getUserIdFromRequest(request: Request): Promise<string | null> {
   const identity = await getVerifiedIdentity(request)
-  if (!identity) return null
-  if (identity.userId) return identity.userId
-
-  const { data, error } = await getSupabase()
-    .from('users')
-    .select('id')
-    .eq('email', identity.email)
-    .maybeSingle()
-
-  if (error) {
-    console.error('[auth] Failed users.select(id) lookup', {
-      email: identity.email,
-      error: error.message,
-    })
-    throw new Error('Failed to load authenticated user')
-  }
-
-  return data?.id ?? null
+  return identity?.userId ?? null
 }
 
 /**

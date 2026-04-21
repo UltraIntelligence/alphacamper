@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 import { getPoller, SUPPORTED_PLATFORMS } from "@/lib/platforms";
 import type { WatchedTarget, AvailabilityResult } from "@/lib/platforms";
+import { getServiceRoleSupabase } from "@/lib/supabase.server";
 
 async function checkAvailability(request: Request) {
   try {
@@ -12,7 +12,7 @@ async function checkAvailability(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = getSupabase();
+    const supabase = getServiceRoleSupabase();
 
     const { data: watches, error: watchError } = await supabase
       .from("watched_targets")

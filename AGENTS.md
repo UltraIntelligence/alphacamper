@@ -42,8 +42,11 @@ Three tables:
 Schema: `alphacamper-site/supabase/schema-v1.1.sql`
 RLS: **DEV/TEST ONLY** — all policies currently set to `true` (permissive).
 This is a development shortcut and must **never** reach production.
-- Must be gated behind a `NEXT_PUBLIC_RLS_DEV_OVERRIDE=true` env var (dev/preview only)
-- Before any production release: search for `NEXT_PUBLIC_RLS_DEV_OVERRIDE` and remove it, then replace all `true` RLS policies with real auth-based rules (user_id checks, service-role guards, etc.)
+- Real RLS now exists for `users`, `watched_targets`, and `availability_alerts`
+- `users.id` must match the Supabase Auth user id (`auth.uid()`); do not generate a separate public user UUID
+- Dev override remains available only when `NEXT_PUBLIC_RLS_DEV_OVERRIDE=true`
+- When that env var is on, site/server Supabase clients send `x-rls-dev-override: true`, and SQL policies temporarily allow permissive reads/writes for local/dev work
+- Before any production release: search for `NEXT_PUBLIC_RLS_DEV_OVERRIDE` and remove it, then ensure no dev override is enabled in deployed env vars
 
 ## Environment Variables
 

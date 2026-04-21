@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
-import { getBearerToken } from "@/lib/auth";
-import { issueExtensionAuthToken } from "@/lib/auth.server";
+import { getVerifiedIdentityFromRequest, issueExtensionAuthToken } from "@/lib/auth.server";
+import { getSupabaseForRequest } from "@/lib/supabase.server";
 
 /**
  * POST /api/extension-auth/session
@@ -13,27 +12,16 @@ import { issueExtensionAuthToken } from "@/lib/auth.server";
  */
 export async function POST(request: Request) {
   try {
-    const token = getBearerToken(request.headers.get("Authorization"));
-    if (!token) {
+    const identity = await getVerifiedIdentityFromRequest(request);
+    if (!identity || identity.authKind !== "supabase") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    // Reject extension tokens — only Supabase JWTs can mint new extension tokens
-    if (token.startsWith("ext_")) {
-      return NextResponse.json({ error: "Re-authentication required" }, { status: 401 });
-    }
-
-    const { data: { user } } = await getSupabase().auth.getUser(token);
-    if (!user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const email = user.email;
 
     // Ensure user row exists (INSERT if new, ignore conflict if existing)
-    const supabase = getSupabase();
+    const supabase = getSupabaseForRequest(request);
     const { error: insertError } = await supabase
       .from("users")
-      .insert({ email });
+      .insert({ id: identity.userId, email: identity.email });
 
     // 23505 = unique_violation (expected for existing users) — anything else is unexpected
     if (insertError && insertError.code !== "23505") {
@@ -43,7 +31,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from("users")
       .select("id, email")
-      .eq("email", email)
+      .eq("id", identity.userId)
       .single();
 
     if (error || !data?.id || !data?.email) {

@@ -4,22 +4,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
   mockGetUserIdFromRequest,
-  mockGetVerifiedEmailFromRequest,
+  mockGetVerifiedIdentityFromRequest,
   mockFrom,
 } = vi.hoisted(() => ({
   mockGetUserIdFromRequest: vi.fn(),
-  mockGetVerifiedEmailFromRequest: vi.fn(),
+  mockGetVerifiedIdentityFromRequest: vi.fn(),
   mockFrom: vi.fn(),
 }))
 const mockSupabase = { from: mockFrom }
 
 vi.mock('@/lib/auth.server', () => ({
   getUserIdFromRequest: mockGetUserIdFromRequest,
-  getVerifiedEmailFromRequest: mockGetVerifiedEmailFromRequest,
+  getVerifiedIdentityFromRequest: mockGetVerifiedIdentityFromRequest,
 }))
 
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: () => mockSupabase,
+vi.mock('@/lib/supabase.server', () => ({
+  getSupabaseForRequest: () => mockSupabase,
 }))
 
 import * as watchRoute from '@/app/api/watch/route'
@@ -66,7 +66,7 @@ function buildUpdateChain(error: { message: string } | null = null) {
 
 beforeEach(() => {
   mockGetUserIdFromRequest.mockReset()
-  mockGetVerifiedEmailFromRequest.mockReset()
+  mockGetVerifiedIdentityFromRequest.mockReset()
   mockFrom.mockReset()
 })
 
@@ -224,7 +224,7 @@ describe('alerts routes', () => {
 
 describe('register route', () => {
   it('requires a verified email before creating the user row', async () => {
-    mockGetVerifiedEmailFromRequest.mockResolvedValue(null)
+    mockGetVerifiedIdentityFromRequest.mockResolvedValue(null)
 
     const response = await registerRoute.POST(new Request('https://alphacamper.test/api/register', {
       method: 'POST',
@@ -235,7 +235,11 @@ describe('register route', () => {
   })
 
   it('treats duplicate user inserts as safe and returns the existing account', async () => {
-    mockGetVerifiedEmailFromRequest.mockResolvedValue('camper@example.com')
+    mockGetVerifiedIdentityFromRequest.mockResolvedValue({
+      authKind: 'supabase',
+      userId: 'user-1',
+      email: 'camper@example.com',
+    })
     const insertChain = {
       insert: vi.fn(async () => ({ error: { code: '23505', message: 'duplicate key value' } })),
     }
@@ -262,7 +266,11 @@ describe('register route', () => {
     }))
 
     expect(response.status).toBe(200)
-    expect(insertChain.insert).toHaveBeenCalledWith({ email: 'camper@example.com' })
+    expect(insertChain.insert).toHaveBeenCalledWith({
+      id: 'user-1',
+      email: 'camper@example.com',
+    })
+    expect(selectChain.eq).toHaveBeenCalledWith('id', 'user-1')
     await expect(response.json()).resolves.toEqual({
       user: { id: 'user-1', email: 'camper@example.com' },
     })

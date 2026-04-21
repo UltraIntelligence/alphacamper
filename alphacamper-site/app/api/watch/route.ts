@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 import { getUserIdFromRequest } from "@/lib/auth.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getCampground } from "@/lib/parks";
+import { getSupabaseForRequest } from "@/lib/supabase.server";
 
 async function resolveCanonicalCampgroundName(
+  supabase: SupabaseClient,
   platform: string,
   campgroundId: string,
 ): Promise<string | null> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from("campgrounds")
     .select("id, platform, name")
     .eq("id", campgroundId)
@@ -34,6 +36,7 @@ export async function POST(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const supabase = getSupabaseForRequest(request);
 
     const body = await request.json();
     const { platform, campgroundId, campgroundName, siteNumber, arrivalDate, departureDate } = body;
@@ -42,12 +45,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const canonicalCampgroundName = await resolveCanonicalCampgroundName(platform, campgroundId);
+    const canonicalCampgroundName = await resolveCanonicalCampgroundName(
+      supabase,
+      platform,
+      campgroundId,
+    );
     if (!canonicalCampgroundName) {
       return NextResponse.json({ error: "Invalid campground selection" }, { status: 400 });
     }
 
-    const { data, error } = await getSupabase()
+    const { data, error } = await supabase
       .from("watched_targets")
       .insert({
         user_id: userId,
@@ -77,8 +84,9 @@ export async function GET(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const supabase = getSupabaseForRequest(request);
 
-    const { data, error } = await getSupabase()
+    const { data, error } = await supabase
       .from("watched_targets")
       .select("*")
       .eq("user_id", userId)
@@ -101,6 +109,7 @@ export async function DELETE(request: Request) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const supabase = getSupabaseForRequest(request);
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -109,7 +118,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "id required" }, { status: 400 });
     }
 
-    const { error } = await getSupabase()
+    const { error } = await supabase
       .from("watched_targets")
       .update({ active: false })
       .eq("id", id)
