@@ -19,6 +19,11 @@ const BILLING_PRODUCTS: Record<CheckoutProduct, BillingProductConfig> = {
   },
 };
 
+const PRODUCT_KEYS = new Set<ProductKey>([
+  "summer_pass_2026",
+  "year_pass_2026",
+]);
+
 let stripeClient: Stripe | null = null;
 
 function getStripeSecretKey(): string {
@@ -38,6 +43,15 @@ export function getStripe(): Stripe {
   return stripeClient;
 }
 
+export function getStripeWebhookSecret(): string {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
+  if (!secret) {
+    throw new Error("Missing STRIPE_WEBHOOK_SECRET");
+  }
+
+  return secret;
+}
+
 export function resolveBillingProduct(product: unknown) {
   if (product !== "summer" && product !== "year") {
     return null;
@@ -55,4 +69,8 @@ export function resolveBillingProduct(product: unknown) {
     productKey: config.productKey,
     priceId,
   };
+}
+
+export function isProductKey(value: unknown): value is ProductKey {
+  return typeof value === "string" && PRODUCT_KEYS.has(value as ProductKey);
 }
