@@ -955,6 +955,14 @@ async function refreshAlerts() {
           exactSiteNumber,
           ...sites.map((site) => site.siteName),
         ].filter(Boolean);
+        void emitEvent('sms_tapped', {
+          watchId: alert.watched_target_id || null,
+          alertId: alert.id,
+          source: 'watch_alert',
+          platform,
+          campgroundId: cgId,
+          campgroundName: target?.campground_name || '',
+        });
         if (link) {
           chrome.runtime.sendMessage({
             action: 'open_booking_assist_tab',
@@ -962,6 +970,7 @@ async function refreshAlerts() {
             active: true,
             plan: {
               source: 'watch_alert',
+              watchId: alert.watched_target_id || null,
               platform,
               campgroundId: cgId,
               campgroundName: target?.campground_name || '',

@@ -1,4 +1,4 @@
-importScripts('lib/platforms.js', 'lib/missions.js');
+importScripts('lib/platforms.js', 'lib/missions.js', 'lib/events.js');
 
 // Alphacamper Background Service Worker
 
@@ -622,6 +622,14 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
           lastStage: 'manual_takeover',
           attempts,
         });
+        void emitEvent('booking_failed', {
+          watchId: assistPlan.watchId || null,
+          source: assistPlan.source || 'background_retry',
+          platform: assistPlan.platform || null,
+          campgroundId: assistPlan.campgroundId || null,
+          reason: 'manual_takeover',
+          attempts,
+        });
       } else {
         if (
           assistPlan.assistStage === 'warming' &&
@@ -728,16 +736,26 @@ chrome.notifications.onClicked.addListener(async (notificationId) => {
     deepLink,
     active: true,
     plan: {
+      source: 'alert_notification',
+      watchId: data.watchId || null,
+      platform: data.platform,
+      campgroundId: data.campgroundId,
+      campgroundName: data.campgroundName || '',
+      arrivalDate: data.arrivalDate || null,
+      departureDate: data.departureDate || null,
+      exactSiteNumber: data.exactSiteNumber || null,
+      preferredSiteNumbers: [data.exactSiteNumber, ...(Array.isArray(data.siteNames) ? data.siteNames : [])].filter(Boolean),
+      preferredSiteIds: Array.isArray(data.siteIds) ? data.siteIds : [],
+    },
+  });
+
+  void emitEvent('sms_tapped', {
+    watchId: data.watchId || null,
+    alertId: data.alertId || null,
     source: 'alert_notification',
     platform: data.platform,
     campgroundId: data.campgroundId,
     campgroundName: data.campgroundName || '',
-    arrivalDate: data.arrivalDate || null,
-    departureDate: data.departureDate || null,
-    exactSiteNumber: data.exactSiteNumber || null,
-    preferredSiteNumbers: [data.exactSiteNumber, ...(Array.isArray(data.siteNames) ? data.siteNames : [])].filter(Boolean),
-    preferredSiteIds: Array.isArray(data.siteIds) ? data.siteIds : [],
-    },
   });
 
   if (data.alertId) {

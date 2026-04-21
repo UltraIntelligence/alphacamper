@@ -64,7 +64,7 @@
         "https://prsp.gov.mb.ca/*",
         "https://camping.saskparks.com/*"
       ],
-      "js": ["content/autofill.js", "content/overlay.js"],
+      "js": ["lib/events.js", "content/autofill.js", "content/overlay.js"],
       "css": ["content/overlay.css"],
       "run_at": "document_idle"
     }

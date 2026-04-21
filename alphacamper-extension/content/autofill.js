@@ -192,6 +192,12 @@ const PLATFORM_ASSIST_CONFIGS = {
   },
 };
 
+let autofillStartedEmitted = false;
+let bookingSubmittedEmitted = false;
+let bookingConfirmedEmitted = false;
+const bookingFailureReasons = new Set();
+let lastMissingFieldSignature = '';
+
 function detectPlatform() {
   const h = window.location.hostname;
   if (h.includes('recreation.gov')) return 'recreation_gov';
@@ -250,6 +256,78 @@ function fillFieldsWithDelay(fields, index, callback) {
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function emitAssistEvent(name, plan, metadata) {
+  if (typeof emitEvent !== 'function') return;
+
+  void emitEvent(name, {
+    watchId: plan?.watchId || null,
+    source: plan?.source || 'content_script',
+    platform: metadata?.platform || plan?.platform || null,
+    campgroundId: plan?.campgroundId || null,
+    campgroundName: plan?.campgroundName || '',
+    ...metadata,
+  });
+}
+
+function emitAutofillStarted(plan, platform, pageType) {
+  if (autofillStartedEmitted) return;
+  autofillStartedEmitted = true;
+  emitAssistEvent('autofill_started', plan, {
+    platform,
+    pageType,
+    url: window.location.href,
+  });
+}
+
+function emitBookingSubmitted(plan, platform, buttonLabel) {
+  if (bookingSubmittedEmitted) return;
+  bookingSubmittedEmitted = true;
+  emitAssistEvent('booking_submitted', plan, {
+    platform,
+    buttonLabel,
+    url: window.location.href,
+  });
+}
+
+function emitBookingConfirmed(plan, platform) {
+  if (bookingConfirmedEmitted) return;
+  bookingConfirmedEmitted = true;
+  emitAssistEvent('booking_confirmed', plan, {
+    platform,
+    url: window.location.href,
+  });
+}
+
+function emitBookingFailed(plan, platform, reason) {
+  const key = `${platform || 'unknown'}:${reason}`;
+  if (bookingFailureReasons.has(key)) return;
+  bookingFailureReasons.add(key);
+  emitAssistEvent('booking_failed', plan, {
+    platform,
+    reason,
+    url: window.location.href,
+  });
+}
+
+function emitFieldNotFound(plan, platform, results, filled, total) {
+  const missingFields = results
+    .filter((field) => field.status === 'not_found')
+    .map((field) => field.name);
+  if (!missingFields.length) return;
+
+  const signature = `${platform}:${missingFields.join(',')}`;
+  if (lastMissingFieldSignature === signature) return;
+  lastMissingFieldSignature = signature;
+
+  emitAssistEvent('autofill_field_not_found', plan, {
+    platform,
+    missingFields,
+    filled,
+    total,
+    url: window.location.href,
+  });
 }
 
 function getPageType() {
@@ -608,16 +686,20 @@ async function runSearchStep(platform, plan, profile) {
 async function runBookingAssist(plan, profile) {
   const platform = detectPlatform();
   if (!platform) {
+    emitBookingFailed(plan, null, 'unsupported_page');
     return { success: false, stage: 'unsupported_page', keepArmed: true };
   }
 
   const pageType = getPageType();
+  emitAutofillStarted(plan, platform, pageType);
 
   if (pageType === 'confirmation') {
+    emitBookingConfirmed(plan, platform);
     return { success: true, stage: 'completed', keepArmed: false, platform };
   }
 
   if (pageType === 'waf') {
+    emitBookingFailed(plan, platform, 'waf_detected');
     return {
       success: false,
       stage: 'waf_detected',
@@ -657,9 +739,10 @@ async function runBookingAssist(plan, profile) {
 
     const nextPageType = getPageType();
     if (nextPageType === 'form') {
-      const fillResult = await fillBookingForms(profile);
+      const fillResult = await fillBookingForms(profile, plan);
       const nextBtn = findSafeContinueButton();
       if (nextBtn) {
+        emitBookingSubmitted(plan, platform, getButtonLabel(nextBtn.el));
         clickElement(nextBtn.el);
         await wait(1200);
       }
@@ -694,9 +777,10 @@ async function runBookingAssist(plan, profile) {
   }
 
   if (pageType === 'form') {
-    const fillResult = await fillBookingForms(profile);
+    const fillResult = await fillBookingForms(profile, plan);
     const nextBtn = plan?.aggressiveAssist ? findSafeContinueButton() : null;
     if (nextBtn) {
+      emitBookingSubmitted(plan, platform, getButtonLabel(nextBtn.el));
       clickElement(nextBtn.el);
       await wait(1200);
     }
@@ -714,9 +798,10 @@ async function runBookingAssist(plan, profile) {
   return { success: false, stage: 'waiting_for_supported_step', keepArmed: true, platform };
 }
 
-function fillBookingForms(profile) {
+function fillBookingForms(profile, plan = {}) {
   const platform = detectPlatform();
   if (!platform) return { filled: 0, total: 0, fields: [] };
+  emitAutofillStarted(plan, platform, 'form');
 
   const fieldMap = FIELD_MAPS[platform];
   const profileMap = {
@@ -758,6 +843,7 @@ function fillBookingForms(profile) {
     fillFieldsWithDelay(toFill, 0, () => {
       const filled = toFill.length;
       const total = Object.keys(fieldMap).length;
+      emitFieldNotFound(plan, platform, results, filled, total);
       console.log(`[Alphacamper] Filled ${filled}/${total} fields on ${platform}`);
       resolve({ filled, total, fields: results, platform });
     });
