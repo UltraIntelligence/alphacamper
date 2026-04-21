@@ -14,6 +14,10 @@ Three independent apps, one git repo. No shared package manager workspace.
 
 - `alphacamper-api` (Python): source in repo, NOT deployed during beta. Re-enable post-beta if operator tooling is needed.
 
+## Checkpoint Reference
+
+- Sprint checkpoint: `~/.gstack/projects/ultraintelligence-alphacamper/checkpoints/20260421-190512-alphacamper-the-closer-strip-and-ship.md`
+
 ## Data Flow
 
 Extension registers watches → Site API → Supabase → Worker polls park APIs → availability found → alert created in Supabase → user notified
@@ -38,18 +42,21 @@ Extension registers watches → Site API → Supabase → Worker polls park APIs
 
 ## Database (Supabase PostgreSQL)
 
-Three tables:
+Core tables:
 - `users` — email, push_subscription (JSONB)
 - `watched_targets` — user_id FK, platform, campground_id/name, dates, active, last_checked_at
 - `availability_alerts` — watched_target_id FK, user_id FK, site_details (JSONB), notified_at, claimed
+- `subscriptions` — one row per user Stripe subscription for beta billing access
+- `stripe_webhook_events` — processed Stripe event IDs for webhook idempotency
+- `funnel_events` — customer funnel telemetry from the extension and dashboard
 
 Schema: `alphacamper-site/supabase/schema-v1.1.sql`
-RLS: **DEV/TEST ONLY** — all policies currently set to `true` (permissive).
-This is a development shortcut and must **never** reach production.
+RLS:
 - Real RLS now exists for `users`, `watched_targets`, and `availability_alerts`
 - `users.id` must match the Supabase Auth user id (`auth.uid()`); do not generate a separate public user UUID
 - Dev override remains available only when `NEXT_PUBLIC_RLS_DEV_OVERRIDE=true`
 - When that env var is on, site/server Supabase clients send `x-rls-dev-override: true`, and SQL policies temporarily allow permissive reads/writes for local/dev work
+- Use this only for local debugging or preview troubleshooting, never for real customer traffic
 - Before any production release: search for `NEXT_PUBLIC_RLS_DEV_OVERRIDE` and remove it, then ensure no dev override is enabled in deployed env vars
 
 ## Environment Variables
@@ -62,6 +69,11 @@ This is a development shortcut and must **never** reach production.
 - `NEXT_PUBLIC_SITE_URL` — canonical site URL used in extension auth redirects; falls back to `VERCEL_URL` then `http://localhost:3000`
 - `NEXT_PUBLIC_ALLOWED_EXTENSION_IDS` — comma-separated Chrome extension IDs permitted to complete the extension auth flow
 - `NEXT_PUBLIC_MAPTILER_KEY` — MapTiler API key for the landing hero map
+- `STRIPE_SECRET_KEY` — Stripe secret key for hosted checkout + webhook lookups
+- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret
+- `STRIPE_PRICE_SUMMER` — Stripe price ID for `summer_pass_2026`
+- `STRIPE_PRICE_YEAR` — Stripe price ID for `year_pass_2026`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — Stripe publishable key for future client-side billing surfaces
 
 ### Worker
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`
@@ -101,6 +113,9 @@ This is a development shortcut and must **never** reach production.
 - `POST/GET/DELETE /api/watch` — CRUD watched_targets
 - `GET /api/check-availability` — cron endpoint (every 15 min via vercel.json)
 - `GET/PATCH /api/alerts` — alert management
+- `GET/POST /api/events` — funnel telemetry read/write for the signed-in user
+- `POST /api/checkout` — create Stripe hosted checkout session for `summer` or `year`
+- `POST /api/stripe/webhook` — Stripe webhook receiver with signature verification and duplicate-event protection
 - `POST /api/plan-trip` — AI trip planning (OpenRouter)
 - `POST /api/register` — user registration
 - `POST /api/waitlist` — waitlist signups
@@ -118,9 +133,10 @@ This is a development shortcut and must **never** reach production.
 
 ## Testing
 
-Vitest 4.1.0 for both site and worker. No extension tests.
+Vitest for site, worker, and extension.
 - `alphacamper-site/__tests__/`
 - `alphacamper-worker/__tests__/`
+- `alphacamper-extension/__tests__/`
 
 ## Conventions
 
