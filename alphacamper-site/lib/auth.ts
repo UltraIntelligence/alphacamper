@@ -55,17 +55,18 @@ export function clearMagicLinkEmail(): void {
 
 /**
  * Send magic link email for account activation.
+ * Watch creation completes after the caller returns with a verified session.
  *
- * Uses supabase.auth.signInWithOtp on the PKCE-configured browser client so
- * the email contains a ?code=<code> link whose completion requires the
- * code_verifier stored in localStorage. This defeats email-client link
- * prefetching (Apple Mail MPP, Outlook, corporate security scanners) that
- * otherwise burns the single-use token before the user can click.
+ * Uses the custom /api/auth/send-magic-link route so we can:
+ *   (a) render our own React Email template (emails/MagicLinkEmail.tsx)
+ *   (b) pass per-link context (campgroundName) into the email body
+ *   (c) send via Resend rather than Supabase's default transport
  *
- * The campgroundName / extensionId / flow options are captured in
- * localStorage via the caller; Supabase's email template does not render
- * per-link context, but /auth/confirm picks up the pending watch draft on
- * its own after session exchange.
+ * Known caveat: admin.generateLink creates non-PKCE magic links. Email
+ * clients that prefetch URLs for safety scanning (Apple Mail's Mail
+ * Privacy Protection, corporate link scrubbers) will consume the
+ * single-use token before the real click. If that bites you, disable
+ * MPP in the mail client OR use a client/provider that does not prefetch.
  */
 export async function sendMagicLink(
   email: string,
@@ -80,22 +81,11 @@ export async function sendMagicLink(
     extensionId: options?.extensionId,
     flow: options?.flow,
   })
-
-  if (typeof window === 'undefined') {
-    return { error: 'Magic link must be sent from the browser' }
-  }
-
-  try {
-    const { getSupabase } = await import('./supabase')
-    const supabase = getSupabase()
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo },
-    })
-    return { error: error?.message ?? null }
-  } catch (err) {
-    return {
-      error: err instanceof Error ? err.message : 'Failed to send magic link',
-    }
-  }
+  const res = await fetch('/api/auth/send-magic-link', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, redirectTo, campgroundName: options?.campgroundName }),
+  })
+  const data = await res.json() as { error: string | null }
+  return { error: data.error ?? null }
 }

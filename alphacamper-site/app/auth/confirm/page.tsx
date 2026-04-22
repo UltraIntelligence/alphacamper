@@ -133,6 +133,14 @@ function AuthConfirmContent() {
       .then(async ({ error }) => {
         if (!isMounted) return
         if (error) {
+          const raw = error.message ?? ''
+          // Surface the underlying Supabase reason so we can diagnose instead of
+          // always blaming expiry.
+          const friendly =
+            /expired|used/i.test(raw)
+              ? 'This magic link has expired or was already used. Many email clients (Apple Mail, Outlook) prefetch links to scan them, which burns the single-use token before you click.'
+              : `Sign-in failed: ${raw || 'Unknown error from auth provider.'}`
+          setErrorMessage(friendly)
           setStatus('error')
           return
         }

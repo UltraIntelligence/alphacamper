@@ -244,7 +244,7 @@ export function WatchWizard({
     return (
       <>
         <WatchMapBackground campgroundName={data.campgroundName} platform={data.platform} isComplete={true} />
-        <div className="wizard-glass-panel">
+        <div className="watch-confirm-shell">
           <WatchConfirmation
             campgroundName={data.campgroundName}
             platform={data.platform}

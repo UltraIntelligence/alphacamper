@@ -1,5 +1,34 @@
 import Link from 'next/link'
-import { Check, MapPin, CalendarDays, Mail } from 'lucide-react'
+
+const PLATFORM_LABELS: Record<string, string> = {
+  bc_parks: 'BC Parks',
+  ontario_parks: 'Ontario Parks',
+  recreation_gov: 'Recreation.gov',
+  parks_canada: 'Parks Canada',
+}
+
+function formatDate(isoDate: string): string {
+  if (!isoDate) return ''
+  const [y, m, d] = isoDate.split('-').map(Number)
+  const date = new Date(y, (m ?? 1) - 1, d ?? 1)
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+function formatDateRange(arrival: string, departure: string): string {
+  if (!arrival || !departure) return ''
+  return `${formatDate(arrival)} → ${formatDate(departure)}`
+}
+
+function nightsBetween(arrival: string, departure: string): number {
+  if (!arrival || !departure) return 0
+  const a = new Date(arrival + 'T00:00:00')
+  const d = new Date(departure + 'T00:00:00')
+  return Math.max(1, Math.round((d.getTime() - a.getTime()) / 86400000))
+}
 
 export function WatchConfirmation({
   campgroundName,
@@ -20,76 +49,97 @@ export function WatchConfirmation({
   magicLinkError?: string | null
   onResend?: () => void
 }) {
-  const platformLabels: Record<string, string> = { bc_parks: 'BC Parks', ontario_parks: 'Ontario Parks', recreation_gov: 'Recreation.gov', parks_canada: 'Parks Canada' }
-  const platformLabel = platformLabels[platform] || platform
+  const platformLabel = PLATFORM_LABELS[platform] ?? platform
+  const nights = nightsBetween(arrivalDate, departureDate)
 
   return (
-    <div style={{ textAlign: 'center', padding: '0 16px' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-        <div style={{ width: '80px', height: '80px', borderRadius: '40px', background: 'rgba(47, 132, 124, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Check size={40} color="var(--paradiso)" strokeWidth={3} />
-        </div>
-      </div>
+    <div className="watch-confirm">
+      <header className="watch-confirm-head">
+        <p className="watch-confirm-kicker">
+          <span className="watch-confirm-kicker-dot" aria-hidden="true" />
+          Watch queued
+        </p>
+        <h1 className="watch-confirm-title">
+          Your watch is set. <em>Check your email.</em>
+        </h1>
+        <p className="watch-confirm-lede">
+          We&apos;ll save it the moment you click the login link we just sent,
+          then start scanning around the clock.
+        </p>
+      </header>
 
-      <p className="field-hint" style={{ fontSize: '1.05rem', marginBottom: '32px', maxWidth: '480px', marginInline: 'auto', lineHeight: 1.5 }}>
-        We&apos;ll save your watch after you confirm your email, then start checking 24/7 for cancellations.
-      </p>
+      <section className="watch-confirm-card" aria-label="Your watch">
+        <header className="watch-confirm-card-head">
+          <p className="watch-confirm-card-label">Watching for you</p>
+          <p className="watch-confirm-card-meta">{platformLabel}</p>
+        </header>
 
-      {/* Summary Card matches Step 3 Specific Loops UI language */}
-      <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', padding: '24px', border: 'var(--border-thin) solid var(--color-border)', textAlign: 'left', marginBottom: '24px',
-        display: 'flex', flexDirection: 'column', gap: '20px' 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-           <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', background: 'rgba(47, 132, 124, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--paradiso)', flexShrink: 0 }}>
-             <MapPin size={22} />
-           </div>
-           <div>
-             <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text)', marginBottom: 2 }}>{campgroundName}</div>
-             <div className="field-hint" style={{ fontSize: '0.85rem', margin: 0 }}>{platformLabel}</div>
-           </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-           <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', background: 'rgba(47, 132, 124, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--paradiso)', flexShrink: 0 }}>
-             <CalendarDays size={22} />
-           </div>
-           <div>
-             <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text)', marginBottom: 2 }}>{arrivalDate} to {departureDate}</div>
-             <div className="field-hint" style={{ fontSize: '0.85rem', margin: 0 }}>Watching 24/7 for openings</div>
-           </div>
-        </div>
-      </div>
+        <h2 className="watch-confirm-card-park">{campgroundName}</h2>
 
-      {/* Inbox Action Box */}
-      <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', padding: '24px', border: 'var(--border-thin) solid var(--color-border)', textAlign: 'left', display: 'flex', gap: '16px', marginBottom: '40px' }}>
-        <Mail size={24} color="var(--color-text)" style={{ flexShrink: 0, marginTop: 2 }} />
-        <div style={{ flexGrow: 1 }}>
-          <h3 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text)', marginBottom: 8 }}>Verify your email</h3>
-          <p className="field-hint" style={{ fontSize: '0.9rem', lineHeight: 1.5, margin: 0, color: 'var(--color-text-muted)' }}>
-             Alerts will go to <strong style={{color: 'var(--color-text)'}}>{email}</strong>. 
-             {!magicLinkError && ' Check your inbox for a link to activate your account. Open that link on this device to finish saving your watch automatically.'}
-          </p>
-          
-          {magicLinkError && (
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-error, #c0392b)', marginTop: '8px', fontWeight: 600 }}>
-              {magicLinkError}{' '}
-              {onResend && (
-                <button onClick={onResend} style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', textDecoration: 'underline', cursor: 'pointer', fontSize: 'inherit' }}>
-                  Resend link
-                </button>
-              )}
+        <div className="watch-confirm-card-rows">
+          <div className="watch-confirm-card-row">
+            <span className="watch-confirm-card-row-label">Dates</span>
+            <span className="watch-confirm-card-row-value">
+              {formatDateRange(arrivalDate, departureDate)}
+            </span>
+          </div>
+          <div className="watch-confirm-card-row">
+            <span className="watch-confirm-card-row-label">Nights</span>
+            <span className="watch-confirm-card-row-value">{nights}</span>
+          </div>
+          <div className="watch-confirm-card-row">
+            <span className="watch-confirm-card-row-label">Alerts to</span>
+            <span className="watch-confirm-card-row-value watch-confirm-card-row-value-email">
+              {email}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={`watch-confirm-inbox${magicLinkError ? ' watch-confirm-inbox-error' : ''}`}
+        aria-labelledby="verify-title"
+      >
+        <div className="watch-confirm-inbox-head">
+          <span className="watch-confirm-inbox-icon" aria-hidden="true">
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+              <rect x="1" y="1" width="16" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M1.5 2.5L9 8L16.5 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+          <div>
+            <h3 id="verify-title" className="watch-confirm-inbox-title">Verify your email</h3>
+            <p className="watch-confirm-inbox-body">
+              Open the link we sent to <strong>{email}</strong> on this device.
+              Once you click it, we save your watch and start scanning.
             </p>
-          )}
-          {magicLinkSent && !magicLinkError && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--paradiso)', marginTop: '12px', fontWeight: 600, background: 'rgba(47, 132, 124, 0.1)', padding: '6px 12px', borderRadius: '100px' }}>
-              <Check size={14} strokeWidth={3} />
-              Login link sent
-            </div>
-          )}
+          </div>
         </div>
-      </div>
 
-      <Link href="/" className="btn-bold btn-bold-primary" style={{ display: 'block', width: '100%', textDecoration: 'none' }}>
+        {magicLinkError && onResend ? (
+          <div className="watch-confirm-inbox-error-row" role="alert">
+            <span>{magicLinkError}</span>
+            <button
+              type="button"
+              className="watch-confirm-inbox-resend"
+              onClick={onResend}
+            >
+              Resend link
+            </button>
+          </div>
+        ) : null}
+
+        {magicLinkSent && !magicLinkError ? (
+          <p className="watch-confirm-inbox-sent">
+            <span className="watch-confirm-inbox-sent-dot" aria-hidden="true" />
+            Login link sent
+          </p>
+        ) : null}
+      </section>
+
+      <Link href="/" className="watch-confirm-cta">
         Back to home
+        <span aria-hidden="true">→</span>
       </Link>
     </div>
   )
