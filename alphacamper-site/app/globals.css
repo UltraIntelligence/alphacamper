@@ -2864,6 +2864,250 @@ a { color: inherit; text-decoration: none; }
   }
 }
 
+/* ═══ Auth (LoginPrompt + /auth/confirm) ═══ */
+
+.login-prompt,
+.auth-confirm-inner {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 56px 32px 48px;
+  background: var(--paper);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 18px 48px -24px rgba(14, 42, 42, 0.18);
+}
+
+.auth-confirm {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% -5%, var(--sprig) 0%, transparent 55%),
+    linear-gradient(180deg, var(--cloud) 0%, var(--paper) 35%, var(--paper) 100%);
+  padding: 48px 24px 120px;
+}
+
+.login-prompt-kicker,
+.auth-confirm-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paradiso);
+  margin-bottom: 18px;
+}
+
+.auth-confirm-kicker-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--paradiso);
+  box-shadow: 0 0 0 4px rgba(47, 132, 124, 0.18);
+}
+
+.auth-confirm-kicker-success {
+  color: var(--sea);
+}
+
+.auth-confirm-kicker-success .auth-confirm-kicker-dot {
+  background: var(--sea);
+  box-shadow: 0 0 0 4px rgba(111, 174, 117, 0.24);
+}
+
+.auth-confirm-kicker-error {
+  color: var(--danger);
+}
+
+.auth-confirm-kicker-error .auth-confirm-kicker-dot {
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(139, 58, 58, 0.22);
+}
+
+.login-prompt-title,
+.auth-confirm-title {
+  font-family: var(--font-momo, var(--font-display));
+  font-weight: 400;
+  font-size: clamp(2rem, 4.6vw, 2.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--forest);
+  margin-bottom: 16px;
+}
+
+.login-prompt-title em,
+.auth-confirm-title em {
+  font-style: italic;
+  color: var(--paradiso);
+}
+
+.login-prompt-body,
+.auth-confirm-body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin-bottom: 28px;
+}
+
+.login-prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.login-prompt-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.login-prompt-input {
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 16px 18px;
+  background: var(--cloud);
+  color: var(--forest);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-swift) var(--ease-swift),
+    background var(--dur-swift) var(--ease-swift);
+}
+
+.login-prompt-input:focus {
+  outline: none;
+  border-color: var(--paradiso);
+  background: var(--paper);
+}
+
+.login-prompt-input-error {
+  border-color: var(--danger);
+}
+
+.login-prompt-error {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--danger);
+  margin: 2px 0 0;
+}
+
+.login-prompt-submit,
+.auth-confirm-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--forest);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--dur-swift) var(--ease-swift),
+    background var(--dur-swift) var(--ease-swift),
+    box-shadow var(--dur-swift) var(--ease-swift);
+  box-shadow: 0 14px 28px -14px rgba(14, 42, 42, 0.42);
+  margin-top: 4px;
+}
+
+.login-prompt-submit span,
+.auth-confirm-primary span {
+  font-family: var(--font-mono);
+  transition: transform var(--dur-swift) var(--ease-swift);
+}
+
+.login-prompt-submit:hover:not(:disabled),
+.auth-confirm-primary:hover:not(:disabled) {
+  background: var(--paradiso);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px -14px rgba(14, 42, 42, 0.5);
+}
+
+.login-prompt-submit:hover:not(:disabled) span,
+.auth-confirm-primary:hover:not(:disabled) span {
+  transform: translateX(3px);
+}
+
+.login-prompt-submit:disabled,
+.auth-confirm-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.login-prompt-footnote {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-subtle);
+  margin-top: 20px;
+}
+
+.login-prompt-footnote-link {
+  color: var(--paradiso);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.login-prompt-footnote-link:hover {
+  color: var(--forest);
+}
+
+.auth-confirm-actions {
+  margin-top: 24px;
+}
+
+.auth-confirm-status {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 14px;
+}
+
+.auth-confirm-status-success {
+  color: var(--sea);
+}
+
+.auth-confirm-status-error {
+  color: var(--danger);
+}
+
+.auth-confirm-fallback {
+  display: inline-block;
+  margin-top: 22px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.auth-confirm-fallback:hover {
+  color: var(--forest);
+}
+
+@media (max-width: 520px) {
+  .login-prompt,
+  .auth-confirm-inner {
+    padding: 40px 22px 36px;
+    border-radius: var(--radius-lg);
+  }
+}
+
 /* ═══ Booking Success ═══ */
 
 .booked-shell {

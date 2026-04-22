@@ -107,7 +107,7 @@ describe('auth confirm page', () => {
 
     render(<AuthConfirmPage />)
 
-    expect(await screen.findByText("You're in!")).toBeTruthy()
+    expect(await screen.findByText('Signed in')).toBeTruthy()
     await waitFor(() => {
       expect(fetch).toHaveBeenCalled()
     })

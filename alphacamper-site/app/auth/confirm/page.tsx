@@ -226,68 +226,102 @@ function AuthConfirmContent() {
   const fallbackLabel = hasPendingWatch ? 'Start over with a new watch' : 'Back to sign in'
 
   return (
-    <main className="wizard-container" style={{ textAlign: 'center', paddingTop: '80px' }}>
-      {status === 'verifying' && (
-        <>
-          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>Verifying your email...</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Hang tight, Alpha&apos;s checking your credentials.</p>
-        </>
-      )}
-      {status === 'creating' && (
-        <>
-          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>
-            {hasPendingWatch ? 'Finishing your watch...' : 'Finishing sign-in...'}
-          </h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>
-            {hasPendingWatch ? 'Alpha&apos;s saving your account and watch now.' : 'Alpha&apos;s setting up your account now.'}
-          </p>
-        </>
-      )}
-      {status === 'success' && (
-        <>
-          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>You&apos;re in!</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>
-            {hasPendingWatch ? 'Your watch is ready. Redirecting to your dashboard...' : 'Your account is ready. Redirecting to your dashboard...'}
-            {isExtensionFlow ? ' Your extension is connected too.' : ''}
-          </p>
-        </>
-      )}
-      {status === 'error' && (
-        <>
-          <h1 style={{ fontFamily: 'var(--font-inter)', fontSize: '2rem', marginBottom: '16px' }}>We couldn&apos;t finish sign-in</h1>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: magicLinkEmail ? '16px' : '24px' }}>
-            {errorMessage}
-          </p>
+    <main className="auth-confirm">
+      <div className="auth-confirm-inner">
+        {status === 'verifying' && (
+          <>
+            <p className="auth-confirm-kicker">
+              <span className="auth-confirm-kicker-dot" aria-hidden="true" />
+              Verifying
+            </p>
+            <h1 className="auth-confirm-title">Checking your email…</h1>
+            <p className="auth-confirm-body">
+              Hang tight — this usually takes a second.
+            </p>
+          </>
+        )}
 
-          {magicLinkEmail && (
-            <>
-              <button
-                type="button"
-                className="btn-bold btn-bold-primary"
-                onClick={handleResendMagicLink}
-                disabled={resendState === 'sending'}
-              >
-                {resendState === 'sending' ? 'Sending a new link...' : 'Email me a new link'}
-              </button>
-              <p style={{ color: resendState === 'error' ? 'var(--color-error, #c0392b)' : 'var(--color-text-muted)', marginTop: '12px', marginBottom: '20px' }}>
-                {resendState === 'sent' && `We sent a fresh link to ${magicLinkEmail}.`}
-                {resendState === 'error' && resendError}
-              </p>
-            </>
-          )}
+        {status === 'creating' && (
+          <>
+            <p className="auth-confirm-kicker">
+              <span className="auth-confirm-kicker-dot" aria-hidden="true" />
+              Almost there
+            </p>
+            <h1 className="auth-confirm-title">
+              {hasPendingWatch ? 'Finishing your watch…' : 'Finishing sign-in…'}
+            </h1>
+            <p className="auth-confirm-body">
+              {hasPendingWatch
+                ? 'Saving your account and setting up the watch now.'
+                : 'Setting up your account now.'}
+            </p>
+          </>
+        )}
 
-          <Link href={fallbackHref} style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
-            {fallbackLabel}
-          </Link>
-        </>
-      )}
+        {status === 'success' && (
+          <>
+            <p className="auth-confirm-kicker auth-confirm-kicker-success">
+              <span className="auth-confirm-kicker-dot" aria-hidden="true" />
+              Signed in
+            </p>
+            <h1 className="auth-confirm-title">
+              You&apos;re <em>in</em>.
+            </h1>
+            <p className="auth-confirm-body">
+              {hasPendingWatch
+                ? 'Your watch is ready. Jumping to the dashboard…'
+                : 'Jumping to the dashboard…'}
+              {isExtensionFlow ? ' Your extension is reconnected too.' : ''}
+            </p>
+          </>
+        )}
+
+        {status === 'error' && (
+          <>
+            <p className="auth-confirm-kicker auth-confirm-kicker-error">
+              <span className="auth-confirm-kicker-dot" aria-hidden="true" />
+              Link didn&apos;t work
+            </p>
+            <h1 className="auth-confirm-title">We couldn&apos;t finish sign-in</h1>
+            <p className="auth-confirm-body">{errorMessage}</p>
+
+            {magicLinkEmail && (
+              <div className="auth-confirm-actions">
+                <button
+                  type="button"
+                  className="auth-confirm-primary"
+                  onClick={handleResendMagicLink}
+                  disabled={resendState === 'sending'}
+                >
+                  {resendState === 'sending' ? 'Sending a new link…' : 'Email me a new link'}
+                  <span aria-hidden="true">→</span>
+                </button>
+                {resendState === 'sent' ? (
+                  <p className="auth-confirm-status auth-confirm-status-success">
+                    We sent a fresh link to {magicLinkEmail}.
+                  </p>
+                ) : null}
+                {resendState === 'error' ? (
+                  <p className="auth-confirm-status auth-confirm-status-error">
+                    {resendError}
+                  </p>
+                ) : null}
+              </div>
+            )}
+
+            <Link href={fallbackHref} className="auth-confirm-fallback">
+              {fallbackLabel}
+            </Link>
+          </>
+        )}
+      </div>
     </main>
   )
 }
 
 export default function AuthConfirmPage() {
   return (
-    <Suspense fallback={<main className="wizard-container" style={{ textAlign: 'center', paddingTop: '80px' }}>Loading...</main>}>
+    <Suspense fallback={<main className="auth-confirm"><div className="auth-confirm-inner"><p className="auth-confirm-body">Loading…</p></div></main>}>
       <AuthConfirmContent />
     </Suspense>
   )
