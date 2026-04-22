@@ -11,6 +11,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Always run commands from the relevant app directory, not the monorepo root
 - Never open PRs unless explicitly asked — just commit and push
 
+## Design System
+
+Before any visual or UI decision (typography, color, spacing, motion, new component), read `DESIGN.md` at the repo root. It is the source of truth. Do not deviate without explicit approval. If an existing surface doesn't match DESIGN.md, the surface is wrong — flag it or fix it.
+
 ## Running a Single Test
 
 ```bash
