@@ -75,7 +75,8 @@ export default async function ParkPage({ params }: ParkPageProps) {
       />
       <ContentLayout
         title={frontmatter.title}
-        subtitle={`${park.region} · ${park.bookingSystem}`}
+        eyebrow={`Field guide · ${park.region}`}
+        subtitle={park.bookingSystem}
         intro={<p>{park.blurb}</p>}
       >
         {content}

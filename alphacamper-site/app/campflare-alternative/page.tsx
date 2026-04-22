@@ -48,6 +48,7 @@ export default async function CampflareAlternativePage() {
   return (
     <ContentLayout
       title={frontmatter.title}
+      eyebrow="Alphacamper vs Campflare"
       subtitle="Comparison guide"
       intro={
         <p>

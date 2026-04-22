@@ -48,6 +48,7 @@ export default async function CampnabAlternativePage() {
   return (
     <ContentLayout
       title={frontmatter.title}
+      eyebrow="Alphacamper vs Campnab"
       subtitle="Comparison guide"
       intro={
         <p>
