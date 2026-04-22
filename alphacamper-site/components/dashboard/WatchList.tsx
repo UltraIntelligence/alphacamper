@@ -78,14 +78,24 @@ export function WatchList({ token }: WatchListProps) {
   if (watches.length === 0) {
     return (
       <div className="dashboard-section">
-        <div className="empty-state">
-          <div className="illustration-placeholder" style={{ maxWidth: '200px', marginInline: 'auto', marginBottom: '16px', minHeight: '120px' }}>
-            Alpha with an empty leash — waiting for a mission
-          </div>
-          <p style={{ marginBottom: '16px' }}>No watches yet. Create your first one.</p>
-          <Link href="/watch/new" className="btn-bold btn-bold-primary" style={{ textDecoration: 'none' }}>
-            Create a watch
+        <div className="dashboard-empty">
+          <p className="dashboard-empty-kicker">No watches yet</p>
+          <h2 className="dashboard-empty-title">
+            Tell us the site.<br />
+            We&apos;ll go get it.
+          </h2>
+          <p className="dashboard-empty-body">
+            Pick a park. Pick your dates. Pick a specific site if you have one.
+            The second it opens, we text you and autofill the booking form in
+            your browser.
+          </p>
+          <Link href="/watch/new" className="dashboard-empty-cta">
+            Create your first watch
+            <span aria-hidden="true">→</span>
           </Link>
+          <p className="dashboard-empty-note">
+            Free to set up. You only pay when you&apos;re ready to let us book for you.
+          </p>
         </div>
       </div>
     )

@@ -77,11 +77,11 @@ export function FunnelStats({ token }: FunnelStatsProps) {
           </button>
         </div>
       ) : summary.watches_created === 0 && summary.sms_fired === 0 && summary.sms_tapped === 0 && summary.booking_confirmed === 0 ? (
-        <div className="empty-state">
-          <div className="illustration-placeholder" style={{ maxWidth: '180px', marginInline: 'auto', marginBottom: '12px', minHeight: '100px' }}>
-            Alpha holding a clipboard with no checkmarks yet
-          </div>
-          <p>No funnel activity yet for the last {windowDays} days. Create a watch and we&apos;ll start tracking the journey.</p>
+        <div className="dashboard-funnel-empty">
+          <p>
+            No activity in the last {windowDays} days. Once you create a watch, every
+            step — alert sent, alert tapped, booking confirmed — lands here.
+          </p>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '12px' }}>

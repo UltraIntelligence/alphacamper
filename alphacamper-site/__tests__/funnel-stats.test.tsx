@@ -26,7 +26,7 @@ describe("FunnelStats", () => {
 
     render(<FunnelStats token="token-123" />);
 
-    expect(await screen.findByText(/No funnel activity yet/i)).toBeTruthy();
-    expect(screen.getByText(/last 30 days/i)).toBeTruthy();
+    expect(await screen.findByText(/No activity in the last/i)).toBeTruthy();
+    expect(screen.getByText(/30/)).toBeTruthy();
   });
 });

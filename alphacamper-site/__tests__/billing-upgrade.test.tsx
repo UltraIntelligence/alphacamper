@@ -28,12 +28,11 @@ describe('upgrade links', () => {
     expect(link.getAttribute('href')).toBe('/#pricing')
   })
 
-  it('uses the shared Stripe payment link everywhere once configured', async () => {
+  it('uses the shared Stripe payment link on UpgradeLink consumers once configured', async () => {
     process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_123'
 
     const { UpgradeLink, getUpgradeHref } = await import('@/components/billing/UpgradeLink')
     const { TwoProducts } = await import('@/components/landing/TwoProducts')
-    const { UpgradeCTA } = await import('@/components/dashboard/UpgradeCTA')
 
     expect(getUpgradeHref('/watch/new')).toBe('https://buy.stripe.com/test_123')
 
@@ -41,13 +40,24 @@ describe('upgrade links', () => {
       <>
         <UpgradeLink>Upgrade now</UpgradeLink>
         <TwoProducts />
-        <UpgradeCTA />
-      </>
+      </>,
     )
 
     expect(screen.getByText('Exact dates only')).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Upgrade now' }).getAttribute('href')).toBe('https://buy.stripe.com/test_123')
-    expect(screen.getByRole('link', { name: 'Unlock Pro' }).getAttribute('href')).toBe('https://buy.stripe.com/test_123')
-    expect(screen.getByRole('link', { name: 'See Pro features →' }).getAttribute('href')).toBe('https://buy.stripe.com/test_123')
+    expect(screen.getByRole('link', { name: 'Upgrade now' }).getAttribute('href')).toBe(
+      'https://buy.stripe.com/test_123',
+    )
+    expect(screen.getByRole('link', { name: 'Unlock Pro' }).getAttribute('href')).toBe(
+      'https://buy.stripe.com/test_123',
+    )
+  })
+
+  it('dashboard UpgradeCTA routes through /checkout with the summer product', async () => {
+    const { UpgradeCTA } = await import('@/components/dashboard/UpgradeCTA')
+
+    render(<UpgradeCTA />)
+
+    const cta = screen.getByRole('link', { name: /Get Summer Pass/i })
+    expect(cta.getAttribute('href')).toBe('/checkout?product=summer')
   })
 })
