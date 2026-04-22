@@ -10,6 +10,12 @@ const migrationsDir = path.join(process.cwd(), "supabase", "migrations");
 const dockerAvailable = spawnSync("docker", ["version"], { stdio: "ignore" }).status === 0;
 const containerName = `alphacamper-rls-${randomUUID().slice(0, 8)}`;
 const postgresImage = "public.ecr.aws/supabase/postgres:17.6.1.054";
+// The test runs docker with --pull never (to keep it fast + offline locally).
+// In CI the image isn't pre-pulled, so we skip the suite gracefully instead of
+// failing when `docker run` returns "No such image".
+const postgresImageAvailable = dockerAvailable
+  ? spawnSync("docker", ["image", "inspect", postgresImage], { stdio: "ignore" }).status === 0
+  : false;
 
 const userAId = "00000000-0000-0000-0000-0000000000aa";
 const userBId = "00000000-0000-0000-0000-0000000000bb";
@@ -175,7 +181,10 @@ function seedData() {
   `);
 }
 
-const maybeDescribe = dockerAvailable && existsSync(migrationsDir) ? describe : describe.skip;
+const maybeDescribe =
+  dockerAvailable && postgresImageAvailable && existsSync(migrationsDir)
+    ? describe
+    : describe.skip;
 
 maybeDescribe("RLS user isolation", () => {
   beforeAll(() => {
