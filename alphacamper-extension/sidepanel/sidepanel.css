@@ -1,31 +1,49 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+/*
+ * Alphacamper extension — DESIGN.md-aligned dark theme.
+ *
+ * Extension stays dark (it overlays dark reservation portals; a light
+ * panel would clash). Colors align with DESIGN.md tokens so the
+ * extension reads as part of the same product: forest for primary
+ * dark, paradiso for brand accent, sea for success, cooler warn/danger.
+ */
 :root {
-  --bg-night: #081118;
-  --bg-deep: #0e1b22;
-  --bg-panel: rgba(10, 18, 24, 0.78);
-  --bg-panel-strong: rgba(14, 25, 32, 0.9);
+  /* Dark surfaces (extension-only — site uses light shell) */
+  --bg-night: #0E2A2A;       /* --forest */
+  --bg-deep: #14303A;        /* --night */
+  --bg-panel: rgba(14, 42, 42, 0.78);
+  --bg-panel-strong: rgba(20, 48, 58, 0.9);
   --bg-soft: rgba(255, 255, 255, 0.04);
   --bg-softer: rgba(255, 255, 255, 0.06);
   --line: rgba(255, 255, 255, 0.12);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --text: #f2f3f4;
-  --text-soft: rgba(242, 243, 244, 0.82);
-  --text-muted: rgba(242, 243, 244, 0.58);
-  --text-faint: rgba(242, 243, 244, 0.38);
-  --accent: #2f847c;
-  --accent-soft: #7cbfbf;
-  --accent-deep: #1d5f63;
+  --line-strong: rgba(255, 255, 255, 0.2);
+
+  /* Text on dark */
+  --text: #FFFFFF;                             /* --paper */
+  --text-soft: rgba(255, 255, 255, 0.82);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-faint: rgba(255, 255, 255, 0.4);
+
+  /* Brand — matches site DESIGN.md exactly */
+  --accent: #2F847C;         /* --paradiso */
+  --accent-soft: #D4E8DC;    /* --sprig */
+  --accent-deep: #1F5952;    /* --paradiso-ink */
   --accent-glow: rgba(47, 132, 124, 0.34);
-  --success: #8fbc8f;
-  --warning: #fbbf24;
-  --danger: #ef4444;
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
-  --font-display: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 26px;
+
+  /* Semantic — cool only, no amber warn */
+  --success: #6FAE75;        /* --sea */
+  --warning: #8B7E3A;        /* muted ochre — still warm-neutral, but the only reasonable "warning" hue */
+  --danger: #B85A5A;         /* softer clay than pure red */
+
+  /* Structure */
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }

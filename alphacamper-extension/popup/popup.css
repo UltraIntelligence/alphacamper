@@ -1,16 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
-  --bg-night: #081118;
-  --bg-deep: #0e1b22;
-  --text: #f2f3f4;
-  --text-soft: rgba(242, 243, 244, 0.8);
-  --text-muted: rgba(242, 243, 244, 0.56);
-  --accent: #2f847c;
-  --accent-soft: #7cbfbf;
+  --bg-night: #0E2A2A;
+  --bg-deep: #14303A;
+  --text: #FFFFFF;
+  --text-soft: rgba(255, 255, 255, 0.82);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent: #2F847C;
+  --accent-soft: #D4E8DC;
   --line: rgba(255, 255, 255, 0.12);
-  --font-display: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -65,12 +65,12 @@ body::after {
 
 h1 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  line-height: 0.95;
-  font-weight: 800;
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: 400;
   color: var(--text);
-  letter-spacing: -0.05em;
-  max-width: 10ch;
+  letter-spacing: -0.02em;
+  max-width: 12ch;
 }
 
 p {
