@@ -100,19 +100,36 @@ function AuthConfirmContent() {
     let isMounted = true
     let redirectTimer: ReturnType<typeof setTimeout> | undefined
 
+    // PKCE flow (client has flowType:'pkce'): Supabase redirects with ?code=<code>.
+    // The code is exchanged for a session using the code_verifier stored in
+    // localStorage by signInWithOtp. This defeats email-client link prefetching
+    // (Apple Mail MPP, Outlook, corporate scanners) because a prefetcher hitting
+    // the link has no code_verifier.
+    //
+    // Legacy OTP flow (admin.generateLink non-PKCE): Supabase redirects with
+    // ?token_hash=<hash>&type=<type>. Kept for the wizard + extension paths
+    // that mint links server-side via the service role.
+    const code = searchParams.get('code')
     const tokenHash = searchParams.get('token_hash')
     const type = searchParams.get('type')
     const extensionId = searchParams.get('extensionId')
     const draft = readPendingWatchDraft()
 
-    if (!tokenHash || !type || !VALID_OTP_TYPES.includes(type as ValidOtpType)) {
+    const hasPkceCode = Boolean(code)
+    const hasLegacyOtp =
+      Boolean(tokenHash) && Boolean(type) && VALID_OTP_TYPES.includes(type as ValidOtpType)
+
+    if (!hasPkceCode && !hasLegacyOtp) {
       queueMicrotask(() => { if (isMounted) setStatus('error') })
       return () => { isMounted = false }
     }
 
     const supabase = getSupabase()
-    supabase.auth
-      .verifyOtp({ token_hash: tokenHash, type: type as ValidOtpType })
+    const verifyPromise = hasPkceCode
+      ? supabase.auth.exchangeCodeForSession(code!).then(({ error }) => ({ error }))
+      : supabase.auth.verifyOtp({ token_hash: tokenHash!, type: type as ValidOtpType })
+
+    verifyPromise
       .then(async ({ error }) => {
         if (!isMounted) return
         if (error) {
