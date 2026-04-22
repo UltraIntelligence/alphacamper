@@ -75,7 +75,15 @@ export class CookieManager {
       const context = await browser.newContext({ userAgent: USER_AGENT });
       const page = await context.newPage();
 
-      await page.goto(`https://${domain}/`, { waitUntil: "networkidle" });
+      // Use `domcontentloaded` + explicit timeout instead of `networkidle`.
+      // Parks Canada (reservation.pc.gc.ca) keeps telemetry/keepalive running
+      // past the 30s default, so `networkidle` times out. DCL fires as soon
+      // as the document is parsed, which is early enough to have the WAF
+      // cookies set but doesn't wait for idle that never comes.
+      await page.goto(`https://${domain}/`, {
+        waitUntil: "domcontentloaded",
+        timeout: 45_000,
+      });
 
       // Check for CAPTCHA
       const captchaSelectors = [

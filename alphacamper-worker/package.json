@@ -8,7 +8,10 @@
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sync:directory": "tsx scripts/sync-directory.ts",
+    "sync:canada": "tsx scripts/sync-directory.ts bc_parks ontario_parks parks_canada",
+    "sync:parks-canada": "tsx scripts/sync-directory.ts parks_canada"
   },
   "dependencies": {
     "@sentdm/sentdm": "^0.17.1",

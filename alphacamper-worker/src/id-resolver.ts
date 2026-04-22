@@ -1,5 +1,5 @@
 import { log } from "./logger.js";
-import { CAMIS_APP_VERSION } from "./config.js";
+import { CAMIS_APP_VERSION, USER_AGENT } from "./config.js";
 
 interface CamisCampground {
   resourceLocationId: number;
@@ -21,9 +21,16 @@ export async function fetchCampgroundMap(
   const res = await fetch(url, {
     headers: {
       Accept: "application/json, text/plain, */*",
+      "Accept-Language": "en-CA,en;q=0.9",
       "Content-Type": "application/json",
       "app-language": "en-CA",
       "app-version": CAMIS_APP_VERSION,
+      // Azure WAF (Parks Canada especially) 403s the default undici UA —
+      // send a real browser UA + Origin/Referer so we look like the Angular
+      // SPA the Camis API expects.
+      "User-Agent": USER_AGENT,
+      Origin: `https://${domain}`,
+      Referer: `https://${domain}/`,
       Cookie: cookieHeader,
     },
   });
