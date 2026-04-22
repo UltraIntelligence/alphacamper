@@ -12,24 +12,28 @@ interface StepSearchProps {
   onComplete: () => void
 }
 
+const PLATFORM_LABEL: Record<string, string> = {
+  bc_parks: 'BC Parks',
+  ontario_parks: 'Ontario Parks',
+  parks_canada: 'Parks Canada',
+  recreation_gov: 'Recreation.gov',
+}
+
 function getPlatformLabel(platform: WatchData['platform']): string {
-  switch (platform) {
-    case 'bc_parks':
-      return 'BC Parks'
-    case 'ontario_parks':
-      return 'Ontario Parks'
-    case 'parks_canada':
-      return 'Parks Canada'
-    case 'recreation_gov':
-      return 'Recreation.gov'
-    default:
-      return platform || 'Unknown platform'
-  }
+  if (!platform) return 'Unknown platform'
+  return PLATFORM_LABEL[platform] ?? platform
+}
+
+type Campground = {
+  id: string
+  name: string
+  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
+  province: string | null
 }
 
 export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onComplete }: StepSearchProps) {
   const [query, setQuery] = useState(initialQuery ?? '')
-  const [results, setResults] = useState<{ id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }[]>([])
+  const [results, setResults] = useState<Campground[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const searchSeqRef = useRef(0)
@@ -82,7 +86,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
     }
   }, [highlightedIndex])
 
-  const handleSelect = (cg: { id: string; name: string; platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'; province: string | null }) => {
+  const handleSelect = (cg: Campground) => {
     setHighlightedIndex(-1)
     setQuery(cg.name)
     onUpdate({
@@ -99,126 +103,148 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
     onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
   }
 
-  const isSelected = !!data.campgroundId
+  const isSelected = Boolean(data.campgroundId)
+  const showDropdown = !isSelected && query.trim().length > 0 && !isDismissed
 
   return (
-    <div>
-      <div className="field-group">
-        <label className="field-label" htmlFor="campground-search">
-          Search for a park or campground
+    <div className="step-pane">
+      <h2 className="step-question">
+        Which park are you <em>trying to book</em>?
+      </h2>
+      <p className="step-lede">
+        We scan BC Parks, Ontario Parks, Parks Canada, and Recreation.gov. Start
+        typing a park name and pick yours.
+      </p>
+
+      <div className="step-field">
+        <label className="step-field-label" htmlFor="campground-search">
+          Park or campground
         </label>
-        <span className="field-hint">
-          Start typing — we search BC Parks, Ontario Parks, Parks Canada, and Recreation.gov
-        </span>
-        <input
-          id="campground-search"
-          className="field-input"
-          type="text"
-          placeholder="e.g. Alice Lake, Algonquin, Rathtrevor..."
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value)
-            setIsDismissed(false)
-            if (isSelected) {
-              onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
-            }
-          }}
-          onKeyDown={(e) => {
-            const dropdownVisible = !isSelected && query.trim().length > 0 && !isDismissed && results.length > 0
-            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-              e.preventDefault()
-              if (dropdownVisible) {
-                setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, Math.min(results.length, 10)))
+        <div className="step-search-input-wrap">
+          <span className="step-search-glyph" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M10.5 10.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </span>
+          <input
+            id="campground-search"
+            className="step-search-input"
+            type="text"
+            placeholder="Algonquin, Alice Lake, Rathtrevor…"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setIsDismissed(false)
+              if (isSelected) {
+                onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
               }
-            } else if (e.key === 'Enter') {
-              if (dropdownVisible && highlightedIndex >= 0 && results[highlightedIndex] != null) {
-                handleSelect(results[highlightedIndex])
+            }}
+            onKeyDown={(e) => {
+              const dropdownVisible = showDropdown && results.length > 0
+              if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault()
+                if (dropdownVisible) {
+                  setHighlightedIndex(getNextHighlightedIndex(e.key, highlightedIndex, Math.min(results.length, 10)))
+                }
+              } else if (e.key === 'Enter') {
+                if (dropdownVisible && highlightedIndex >= 0 && results[highlightedIndex] != null) {
+                  handleSelect(results[highlightedIndex])
+                }
+              } else if (e.key === 'Escape') {
+                if (debounceRef.current) clearTimeout(debounceRef.current)
+                searchSeqRef.current += 1
+                setResults([])
+                setHighlightedIndex(-1)
+                setIsSearching(false)
+                setIsDismissed(true)
               }
-            } else if (e.key === 'Escape') {
-              if (debounceRef.current) clearTimeout(debounceRef.current)
-              searchSeqRef.current += 1
-              setResults([])
-              setHighlightedIndex(-1)
-              setIsSearching(false)
-              setIsDismissed(true)
-            }
-          }}
-          role="combobox"
-          aria-expanded={!isSelected && query.trim().length > 0 && !isDismissed}
-          aria-autocomplete="list"
-          aria-controls="step-search-listbox"
-          aria-activedescendant={highlightedIndex >= 0 ? `step-search-result-${highlightedIndex}` : undefined}
-          autoFocus
-        />
+            }}
+            role="combobox"
+            aria-expanded={showDropdown}
+            aria-autocomplete="list"
+            aria-controls="step-search-listbox"
+            aria-activedescendant={highlightedIndex >= 0 ? `step-search-result-${highlightedIndex}` : undefined}
+            autoFocus
+          />
+          {isSearching ? (
+            <span className="step-search-pulse" aria-hidden="true" />
+          ) : null}
+        </div>
       </div>
 
-      {!isSelected && query.trim().length > 0 && !isDismissed && results.length === 0 && (
-        <p
-          role="status"
-          aria-live="polite"
-          style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}
-        >
-          {isSearching ? 'Searching...' : `No campgrounds found matching "${query}".`}
+      {showDropdown && results.length === 0 ? (
+        <p className="step-search-empty" role="status" aria-live="polite">
+          {isSearching ? 'Searching…' : `No campgrounds match "${query}".`}
         </p>
-      )}
-      {!isSelected && query.trim().length > 0 && !isDismissed && results.length > 0 && (
-        <div role="listbox" id="step-search-listbox" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      ) : null}
+
+      {showDropdown && results.length > 0 ? (
+        <div className="step-search-results" role="listbox" id="step-search-listbox">
           {results.slice(0, 10).map((cg, index) => (
-            <div
+            <button
               key={`${cg.platform}:${cg.id}`}
-              ref={(el) => { itemsRef.current[index] = el as HTMLElement | null }}
+              ref={(el) => {
+                itemsRef.current[index] = el
+              }}
               id={`step-search-result-${index}`}
+              type="button"
               role="option"
               aria-selected={index === highlightedIndex}
               tabIndex={-1}
-              className="selectable-item"
+              className="step-search-result"
               data-highlighted={index === highlightedIndex ? 'true' : undefined}
               onClick={() => handleSelect(cg)}
             >
-              <strong>{cg.name}</strong>
-              <span className="selectable-item-label">
-                {getPlatformLabel(cg.platform)}
+              <span className="step-search-result-mono" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
               </span>
-            </div>
+              <span className="step-search-result-main">
+                <span className="step-search-result-name">{cg.name}</span>
+                <span className="step-search-result-meta">
+                  {getPlatformLabel(cg.platform)}
+                  {cg.province ? <> · {cg.province}</> : null}
+                </span>
+              </span>
+              <span className="step-search-result-arrow" aria-hidden="true">→</span>
+            </button>
           ))}
         </div>
-      )}
+      ) : null}
 
-      {isSelected && (
-        <div style={{ marginBottom: '20px' }}>
-          <div className="selectable-item" data-selected="true" style={{ cursor: 'default' }}>
-            <strong>{data.campgroundName}</strong>
-            <span className="selectable-item-label">
-              {getPlatformLabel(data.platform)}
-            </span>
+      {isSelected ? (
+        <div className="step-search-picked">
+          <div className="step-search-picked-row">
+            <span className="step-search-picked-dot" aria-hidden="true" />
+            <div className="step-search-picked-text">
+              <span className="step-search-picked-name">{data.campgroundName}</span>
+              <span className="step-search-picked-meta">
+                {getPlatformLabel(data.platform)}
+                {data.province ? <> · {data.province}</> : null}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="step-search-picked-change"
+              onClick={handleClear}
+            >
+              Change
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleClear}
-            style={{
-              marginTop: '8px',
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-accent)',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              padding: 0,
-            }}
-          >
-            Change campground
-          </button>
         </div>
-      )}
+      ) : null}
 
-      {isSelected && (
+      <div className="step-actions">
         <button
           type="button"
-          className="btn-bold btn-bold-primary btn-bold-full"
+          className="step-cta"
           onClick={onComplete}
+          disabled={!isSelected}
         >
           Continue
+          <span aria-hidden="true">→</span>
         </button>
-      )}
+      </div>
     </div>
   )
 }

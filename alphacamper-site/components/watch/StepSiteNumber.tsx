@@ -1,6 +1,5 @@
 'use client'
 
-import { MapPinned, TentTree } from 'lucide-react'
 import type { WatchData } from './WatchWizard'
 
 interface StepSiteNumberProps {
@@ -10,99 +9,84 @@ interface StepSiteNumberProps {
 }
 
 export function StepSiteNumber({ data, onUpdate, onComplete }: StepSiteNumberProps) {
-  const hasExactSite = data.siteNumber.trim().length > 0
+  const trimmed = data.siteNumber.trim()
+  const hasExactSite = trimmed.length > 0
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div
-        style={{
-          border: 'var(--border-thin) solid var(--color-border)',
-          borderRadius: 'var(--radius-md)',
-          background: 'var(--color-surface)',
-          padding: '20px',
-          display: 'flex',
-          gap: '14px',
-          alignItems: 'flex-start',
-        }}
-      >
-        <div
-          style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '999px',
-            background: 'rgba(47, 132, 124, 0.08)',
-            color: 'var(--paradiso)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
+    <div className="step-pane">
+      <h2 className="step-question">
+        Any site — <em>or the one</em>?
+      </h2>
+      <p className="step-lede">
+        If you have a specific site number you want (because it&apos;s been your
+        family&apos;s spot for fifteen years), tell us. Otherwise we watch every
+        site for your dates.
+      </p>
+
+      <div className="step-site-choice" role="radiogroup" aria-label="Site preference">
+        <button
+          type="button"
+          role="radio"
+          aria-checked={!hasExactSite}
+          className="step-site-tile"
+          data-active={!hasExactSite ? 'true' : undefined}
+          onClick={() => onUpdate({ siteNumber: '' })}
+        >
+          <span className="step-site-tile-kicker">DEFAULT</span>
+          <span className="step-site-tile-title">Any site</span>
+          <span className="step-site-tile-body">
+            Best odds. Alerts fire the moment anything opens for your dates.
+          </span>
+        </button>
+
+        <button
+          type="button"
+          role="radio"
+          aria-checked={hasExactSite}
+          className="step-site-tile"
+          data-active={hasExactSite ? 'true' : undefined}
+          onClick={() => {
+            const input = document.getElementById('site-number') as HTMLInputElement | null
+            input?.focus()
           }}
         >
-          <TentTree size={22} />
-        </div>
-        <div>
-          <div className="field-label" style={{ marginBottom: '6px' }}>
-            Watch any site for the best odds
-          </div>
-          <p className="field-hint" style={{ margin: 0 }}>
-            Leave this blank and Alpha will alert you for any matching opening at {data.campgroundName}.
-          </p>
-        </div>
+          <span className="step-site-tile-kicker">SPECIFIC</span>
+          <span className="step-site-tile-title">The one</span>
+          <span className="step-site-tile-body">
+            Only notify me if this exact site opens.
+          </span>
+        </button>
       </div>
 
-      <div className="field-group">
-        <label className="field-label" htmlFor="site-number">
+      <div className="step-site-input-group" data-active={hasExactSite ? 'true' : undefined}>
+        <label className="step-field-label" htmlFor="site-number">
           Specific site number
         </label>
-        <span className="field-hint">
-          Optional. Only enter this if you want one exact site, like `23` or `A12`.
-        </span>
-        <div style={{ position: 'relative' }}>
+        <div className="step-site-input-wrap">
+          <span className="step-site-input-hash" aria-hidden="true">#</span>
           <input
             id="site-number"
-            className="field-input"
+            className="step-site-input"
             type="text"
-            placeholder="Leave blank to watch any site"
+            placeholder="47, A12, B-203"
             value={data.siteNumber}
             onChange={(e) => onUpdate({ siteNumber: e.target.value })}
             autoCapitalize="characters"
             spellCheck={false}
-            style={{ paddingLeft: '48px' }}
           />
-          <span
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              left: '16px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--color-text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <MapPinned size={18} />
-          </span>
         </div>
+        <p className="step-site-hint">
+          {hasExactSite
+            ? `Alpha will only alert you if site ${trimmed} opens up.`
+            : `Leave this blank and Alpha will alert you for any matching opening at ${data.campgroundName || 'this park'}.`}
+        </p>
       </div>
 
-      <div
-        style={{
-          borderTop: '1px solid var(--color-border)',
-          paddingTop: '24px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-        }}
-      >
-        <button type="button" className="btn-bold btn-bold-primary" style={{ width: '100%' }} onClick={onComplete}>
+      <div className="step-actions">
+        <button type="button" className="step-cta" onClick={onComplete}>
           {hasExactSite ? 'Save site preference' : 'Continue'}
+          <span aria-hidden="true">→</span>
         </button>
-        <p className="field-hint" style={{ margin: 0, textAlign: 'center' }}>
-          {hasExactSite
-            ? `Alpha will only alert you if site ${data.siteNumber.trim()} opens up.`
-            : 'You will get alerted for any site that opens for these dates.'}
-        </p>
       </div>
     </div>
   )

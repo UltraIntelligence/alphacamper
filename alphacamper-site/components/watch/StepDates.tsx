@@ -32,10 +32,6 @@ function nightsBetween(from: Date, to: Date): number {
 
 const MAX_NIGHTS = 14
 
-import { Calendar, Lock, Star } from 'lucide-react'
-
-// ... (keep helper functions above component unchanged) ...
-
 export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
   const [tooLong, setTooLong] = useState(false)
 
@@ -75,7 +71,7 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
 
   const canContinue = Boolean(data.arrivalDate && data.departureDate && data.nights >= 1)
 
-  const formatDate = (dateStr: string) =>
+  const formatLongDate = (dateStr: string) =>
     new Date(dateStr + 'T12:00:00').toLocaleDateString('en-CA', {
       weekday: 'short',
       month: 'short',
@@ -83,58 +79,57 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
     })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Toggle Pills */}
-      <div style={{ display: 'inline-flex', background: 'var(--color-surface-muted)', padding: '6px', borderRadius: '100px', border: '1px solid var(--color-border)', width: 'max-content' }}>
-        <button 
+    <div className="step-pane">
+      <h2 className="step-question">
+        When do you want to <em>be there</em>?
+      </h2>
+      <p className="step-lede">
+        Pick your exact arrival and departure. Up to 14 nights. We&apos;ll scan
+        every day you&apos;re watching, around the clock.
+      </p>
+
+      <div className="step-date-modes" role="tablist" aria-label="Date mode">
+        <button
+          role="tab"
+          type="button"
+          className="step-date-mode"
+          data-active={!data.isAnyOpening ? 'true' : undefined}
           onClick={() => onUpdate({ isAnyOpening: false })}
-          style={{ 
-            padding: '10px 24px', borderRadius: '100px', fontWeight: 600, fontSize: '0.95rem',
-            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', border: 'none',
-            background: !data.isAnyOpening ? 'var(--color-surface)' : 'transparent',
-            boxShadow: !data.isAnyOpening ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-            color: !data.isAnyOpening ? 'var(--color-text)' : 'var(--color-text-muted)'
-          }}
+          aria-selected={!data.isAnyOpening}
         >
-          <Calendar size={18} />
           My trip
         </button>
-        <button 
+        <button
+          role="tab"
+          type="button"
+          className="step-date-mode"
+          data-active={data.isAnyOpening ? 'true' : undefined}
           onClick={() => onUpdate({ isAnyOpening: true })}
-          style={{ 
-            padding: '10px 24px', borderRadius: '100px', fontWeight: 600, fontSize: '0.95rem',
-            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', border: 'none',
-            background: data.isAnyOpening ? 'var(--color-surface)' : 'transparent',
-            boxShadow: data.isAnyOpening ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-            color: data.isAnyOpening ? '#d97706' : 'var(--color-text-muted)'
-          }}
+          aria-selected={data.isAnyOpening}
         >
-          <Star size={16} fill={data.isAnyOpening ? '#f59e0b' : 'none'} color={data.isAnyOpening ? '#f59e0b' : 'currentColor'} />
           Any opening
+          <span className="step-date-mode-lock" aria-hidden="true">PRO</span>
         </button>
       </div>
 
       {data.isAnyOpening ? (
-        <div style={{ position: 'relative', borderRadius: '24px', border: '1px solid rgba(245, 158, 11, 0.4)', background: 'linear-gradient(to bottom right, #fffbeb, #ffffff)', padding: '48px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#fef3c7', border: '1px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-            <Lock color="#d97706" size={28} />
-          </div>
-          <h4 style={{ fontFamily: 'var(--font-momo, var(--font-display))', fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: '12px' }}>
-            Unlock "Any Opening" mode
-          </h4>
-          <p style={{ color: 'var(--color-text-muted)', maxWidth: '320px', margin: '0 auto 32px auto', fontSize: '0.95rem', lineHeight: 1.5 }}>
-            Don't have specific dates? Give Alpha an entire season to track and we'll instantly grab the absolute first cancellation. 
+        <div className="step-date-upsell">
+          <p className="step-date-upsell-kicker">Locked for the beta</p>
+          <h3 className="step-date-upsell-title">
+            Unlock &quot;Any Opening&quot; mode
+          </h3>
+          <p className="step-date-upsell-body">
+            Give us an entire season to track and we grab the first cancellation
+            that matches. Available with Pro — rolling out to paying members after
+            the beta.
           </p>
-          <UpgradeLink
-            className="btn-bold"
-            style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', padding: '16px 32px', textDecoration: 'none' }}
-          >
+          <UpgradeLink className="step-date-upsell-cta">
             Upgrade to Alpha Pro
           </UpgradeLink>
         </div>
       ) : (
         <>
-          <div className="rdp-two-col">
+          <div className="step-date-calendar">
             <div className="rdp-wrapper">
               <DayPicker
                 mode="range"
@@ -146,56 +141,53 @@ export function StepDates({ data, onUpdate, onComplete }: StepDatesProps) {
               />
             </div>
 
-            <div className="rdp-summary-panel">
-              <div>
-                <div className="rdp-summary-label">Campground</div>
-                <div className="rdp-summary-campground">{data.campgroundName}</div>
+            <div className="step-date-readout">
+              <div className="step-date-readout-row">
+                <p className="step-date-readout-label">Check-in</p>
+                <p className="step-date-readout-value">
+                  {data.arrivalDate ? formatLongDate(data.arrivalDate) : <span className="step-date-readout-dash">—</span>}
+                </p>
               </div>
-
-              <hr className="rdp-summary-divider" />
-
-              {data.arrivalDate && data.departureDate ? (
-                <>
-                  <div className="rdp-summary-date-block">
-                    <div>
-                      <div className="rdp-summary-label">Check-in</div>
-                      <div className="rdp-summary-date-value">{formatDate(data.arrivalDate)}</div>
-                    </div>
-                    <div>
-                      <div className="rdp-summary-label">Check-out</div>
-                      <div className="rdp-summary-date-value">{formatDate(data.departureDate)}</div>
-                    </div>
-                  </div>
-                  <div className="rdp-summary-nights-badge">
-                    {data.nights} night{data.nights !== 1 ? 's' : ''}
-                  </div>
-                </>
-              ) : (
-                <div className="rdp-summary-placeholder">
-                  {!data.arrivalDate
-                    ? 'Select your arrival date on the calendar.'
-                    : 'Now select your departure date.'}
-                </div>
-              )}
+              <div className="step-date-readout-row">
+                <p className="step-date-readout-label">Check-out</p>
+                <p className="step-date-readout-value">
+                  {data.departureDate ? formatLongDate(data.departureDate) : <span className="step-date-readout-dash">—</span>}
+                </p>
+              </div>
+              <div className="step-date-readout-row step-date-readout-row-chip">
+                <p className="step-date-readout-label">Nights</p>
+                <p className="step-date-readout-chip">
+                  {data.arrivalDate && data.departureDate ? data.nights : 0}
+                </p>
+              </div>
             </div>
           </div>
 
-          {tooLong && (
-            <p style={{ color: '#cc3333', fontSize: '0.85rem', marginTop: '8px' }}>
+          {tooLong ? (
+            <p className="step-date-error" role="alert">
               Max {MAX_NIGHTS} nights — try a shorter stay.
             </p>
-          )}
+          ) : null}
 
-          {canContinue && (
+          {!tooLong && (!data.arrivalDate || !data.departureDate) ? (
+            <p className="step-date-hint">
+              {!data.arrivalDate
+                ? 'Click your arrival date on the calendar.'
+                : 'Now pick your departure date.'}
+            </p>
+          ) : null}
+
+          <div className="step-actions">
             <button
               type="button"
-              className="btn-bold btn-bold-primary btn-bold-full"
+              className="step-cta"
               onClick={onComplete}
-              style={{ marginTop: '16px' }}
+              disabled={!canContinue}
             >
               Continue
+              <span aria-hidden="true">→</span>
             </button>
-          )}
+          </div>
         </>
       )}
     </div>
