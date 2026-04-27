@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { sendMagicLink, storeMagicLinkEmail } from '@/lib/auth'
-import { getCampground } from '@/lib/parks'
+import { getCampground, type CampgroundPlatform } from '@/lib/parks'
 import { StepSearch } from './StepSearch'
 import { StepDates } from './StepDates'
 import { StepSiteNumber } from './StepSiteNumber'
@@ -16,7 +16,7 @@ const PENDING_WATCH_STORAGE_KEY = 'alphacamper.pendingWatch'
 export interface WatchData {
   campgroundId: string
   campgroundName: string
-  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada' | ''
+  platform: CampgroundPlatform | ''
   province: string
   arrivalDate: string
   departureDate: string
@@ -57,6 +57,12 @@ const PLATFORM_LABELS: Record<string, string> = {
   ontario_parks: 'Ontario Parks',
   recreation_gov: 'Recreation.gov',
   parks_canada: 'Parks Canada',
+  gtc_manitoba: 'Manitoba Parks',
+  gtc_novascotia: 'Nova Scotia Parks',
+  gtc_longpoint: 'Long Point Region',
+  gtc_maitland: 'Maitland Valley',
+  gtc_stclair: 'St. Clair Region',
+  gtc_nlcamping: 'Newfoundland & Labrador Parks',
 }
 
 function formatIntakeDate(str: string): string {

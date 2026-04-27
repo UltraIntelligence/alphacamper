@@ -98,21 +98,29 @@ function buildAlertHtml(params: AlertEmailParams): string {
  * Generates a campground-specific booking URL.
  * Mirrors the deep-link patterns from AlertCard.tsx and platforms.js.
  */
+// Camis-based platforms all share the /create-booking/results?resourceLocationId={id} pattern
+const CAMIS_BOOKING_DOMAINS: Record<string, string> = {
+  bc_parks: "camping.bcparks.ca",
+  ontario_parks: "reservations.ontarioparks.ca",
+  parks_canada: "reservation.pc.gc.ca",
+  gtc_manitoba: "manitoba.goingtocamp.com",
+  gtc_novascotia: "novascotia.goingtocamp.com",
+  gtc_longpoint: "longpoint.goingtocamp.com",
+  gtc_maitland: "maitlandvalley.goingtocamp.com",
+  gtc_stclair: "stclair.goingtocamp.com",
+  gtc_nlcamping: "nlcamping.ca",
+};
+
 function getBookingUrl(platform: string, campgroundId: string): string | null {
   if (!campgroundId) return null;
-  switch (platform) {
-    case "bc_parks":
-      return `https://camping.bcparks.ca/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
-    case "ontario_parks":
-      return `https://reservations.ontarioparks.ca/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
-    case "parks_canada":
-      // Parks Canada uses Camis — same resourceLocationId pattern as BC/Ontario Parks
-      return `https://reservation.pc.gc.ca/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
-    case "recreation_gov":
-      return `https://www.recreation.gov/camping/campgrounds/${encodeURIComponent(campgroundId)}`;
-    default:
-      return null;
+  const camisDomain = CAMIS_BOOKING_DOMAINS[platform];
+  if (camisDomain) {
+    return `https://${camisDomain}/create-booking/results?resourceLocationId=${encodeURIComponent(campgroundId)}`;
   }
+  if (platform === "recreation_gov") {
+    return `https://www.recreation.gov/camping/campgrounds/${encodeURIComponent(campgroundId)}`;
+  }
+  return null;
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────

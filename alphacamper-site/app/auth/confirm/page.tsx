@@ -5,11 +5,12 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { clearMagicLinkEmail, readMagicLinkEmail, sendMagicLink } from '@/lib/auth'
 import { getSupabase } from '@/lib/supabase'
+import type { CampgroundPlatform } from '@/lib/parks'
 
 const PENDING_WATCH_STORAGE_KEY = 'alphacamper.pendingWatch'
 
 interface PendingWatchDraft {
-  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada' | ''
+  platform: CampgroundPlatform | ''
   campgroundId: string
   campgroundName: string
   siteNumber: string | null

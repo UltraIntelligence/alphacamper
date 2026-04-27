@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { getNextHighlightedIndex } from '@/lib/search-nav'
 import type { WatchData } from './WatchWizard'
+import type { CampgroundPlatform } from '@/lib/parks'
 
 interface StepSearchProps {
   data: WatchData
@@ -17,6 +18,12 @@ const PLATFORM_LABEL: Record<string, string> = {
   ontario_parks: 'Ontario Parks',
   parks_canada: 'Parks Canada',
   recreation_gov: 'Recreation.gov',
+  gtc_manitoba: 'Manitoba Parks',
+  gtc_novascotia: 'Nova Scotia Parks',
+  gtc_longpoint: 'Long Point Region',
+  gtc_maitland: 'Maitland Valley',
+  gtc_stclair: 'St. Clair Region',
+  gtc_nlcamping: 'Newfoundland & Labrador Parks',
 }
 
 function getPlatformLabel(platform: WatchData['platform']): string {
@@ -27,7 +34,7 @@ function getPlatformLabel(platform: WatchData['platform']): string {
 type Campground = {
   id: string
   name: string
-  platform: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
+  platform: CampgroundPlatform
   province: string | null
 }
 

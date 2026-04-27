@@ -7,6 +7,12 @@ const PLATFORM_PROVINCE: Record<string, string | null> = {
   bc_parks: "BC",
   ontario_parks: "ON",
   parks_canada: null, // spans AB, BC, ON, NB, PE, etc. — unknown from Camis API
+  gtc_manitoba: "MB",
+  gtc_novascotia: "NS",
+  gtc_longpoint: "ON",
+  gtc_maitland: "ON",
+  gtc_stclair: "ON",
+  gtc_nlcamping: "NL",
 };
 
 const BATCH_SIZE = 200;

@@ -1,4 +1,14 @@
-export type CampgroundPlatform = 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
+export type CampgroundPlatform =
+  | 'bc_parks'
+  | 'ontario_parks'
+  | 'recreation_gov'
+  | 'parks_canada'
+  | 'gtc_manitoba'
+  | 'gtc_novascotia'
+  | 'gtc_longpoint'
+  | 'gtc_maitland'
+  | 'gtc_stclair'
+  | 'gtc_nlcamping'
 
 export interface Campground {
   id: string
@@ -13,6 +23,12 @@ const PLATFORM_DOMAINS: Record<string, string> = {
   ontario_parks: 'reservations.ontarioparks.ca',
   recreation_gov: 'www.recreation.gov',
   parks_canada: 'reservation.pc.gc.ca',
+  gtc_manitoba: 'manitoba.goingtocamp.com',
+  gtc_novascotia: 'novascotia.goingtocamp.com',
+  gtc_longpoint: 'longpoint.goingtocamp.com',
+  gtc_maitland: 'maitlandvalley.goingtocamp.com',
+  gtc_stclair: 'stclair.goingtocamp.com',
+  gtc_nlcamping: 'nlcamping.ca',
 }
 
 export const CAMPGROUNDS: Campground[] = [

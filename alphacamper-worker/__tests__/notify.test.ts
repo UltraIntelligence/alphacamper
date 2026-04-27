@@ -155,6 +155,28 @@ describe("buildAlertHtml", () => {
 
     expect(html).toContain("https://reservations.ontarioparks.ca/create-booking/results?resourceLocationId=-2740399");
   });
+
+  it.each([
+    ["gtc_manitoba", "manitoba.goingtocamp.com"],
+    ["gtc_novascotia", "novascotia.goingtocamp.com"],
+    ["gtc_longpoint", "longpoint.goingtocamp.com"],
+    ["gtc_maitland", "maitlandvalley.goingtocamp.com"],
+    ["gtc_stclair", "stclair.goingtocamp.com"],
+    ["gtc_nlcamping", "nlcamping.ca"],
+  ])("includes booking link for GoingToCamp platform %s", (platform, domain) => {
+    const html = buildAlertHtml({
+      email: "test@example.com",
+      campgroundName: "Test",
+      campgroundId: "-2147483626",
+      platform,
+      arrivalDate: "2026-07-01",
+      departureDate: "2026-07-03",
+      sites: [{ siteId: "1", siteName: "A1" }],
+    });
+
+    expect(html).toContain(`https://${domain}/create-booking/results?resourceLocationId=-2147483626`);
+    expect(html).toContain("Book now");
+  });
 });
 
 describe("sendAlertSMS", () => {

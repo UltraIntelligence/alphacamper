@@ -5,6 +5,12 @@ const PLATFORM_LABELS: Record<string, string> = {
   ontario_parks: 'Ontario Parks',
   recreation_gov: 'Recreation.gov',
   parks_canada: 'Parks Canada',
+  gtc_manitoba: 'Manitoba Parks',
+  gtc_novascotia: 'Nova Scotia Parks',
+  gtc_longpoint: 'Long Point Region',
+  gtc_maitland: 'Maitland Valley',
+  gtc_stclair: 'St. Clair Region',
+  gtc_nlcamping: 'Newfoundland & Labrador Parks',
 }
 
 function formatDate(isoDate: string): string {

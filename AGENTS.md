@@ -93,6 +93,12 @@ RLS:
 | BC Parks | `camping.bcparks.ca` | Camis recursive map API |
 | Ontario Parks | `reservations.ontarioparks.ca` | Camis API |
 | Parks Canada | `reservation.pc.gc.ca` | Camis API (same as BC/Ontario) |
+| Manitoba Parks (`gtc_manitoba`) | `manitoba.goingtocamp.com` | Camis API (GoingToCamp white-label) |
+| Nova Scotia Parks (`gtc_novascotia`) | `novascotia.goingtocamp.com` | Camis API (GoingToCamp white-label) |
+| Long Point Region (`gtc_longpoint`) | `longpoint.goingtocamp.com` | Camis API (GoingToCamp white-label, ON regional) |
+| Maitland Valley (`gtc_maitland`) | `maitlandvalley.goingtocamp.com` | Camis API (GoingToCamp white-label, ON regional) |
+| St. Clair Region (`gtc_stclair`) | `stclair.goingtocamp.com` | Camis API (GoingToCamp white-label, ON regional) |
+| Newfoundland & Labrador Parks (`gtc_nlcamping`) | `nlcamping.ca` | Camis API behind Azure WAF (Playwright cookies) |
 | Recreation.gov | `recreation.gov` | REST API |
 
 ## Worker Gotchas

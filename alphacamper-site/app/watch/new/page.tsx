@@ -1,4 +1,5 @@
 import { WatchWizard } from '@/components/watch/WatchWizard'
+import type { CampgroundPlatform } from '@/lib/parks'
 
 export const metadata = {
   title: 'Create a Watch — Alphacamper',
@@ -14,7 +15,7 @@ export default async function WatchNewPage({
     q?: string
     name?: string
     province?: string
-    platform?: 'bc_parks' | 'ontario_parks' | 'recreation_gov' | 'parks_canada'
+    platform?: CampgroundPlatform
   }>
 }) {
   const params = await searchParams
