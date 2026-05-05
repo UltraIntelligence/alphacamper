@@ -17,3 +17,4 @@ __pycache__/
 !alphacamper-site/public/**/*.png
 .playwright-mcp/
 .playwright-cli/
+.gstack/
