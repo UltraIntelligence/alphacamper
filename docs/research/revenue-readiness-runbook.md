@@ -43,14 +43,14 @@ Current access finding from 2026-05-09:
 - Vercel CLI is authenticated for `alphacamper-site` and confirms the five Stripe production env vars are missing.
 - Local Alphacamper env files do not contain the missing Stripe billing values.
 - Local Stripe CLI can list live Stripe products/prices/webhooks, but its live key is restricted and cannot create the Alphacamper products/prices/webhook.
-- The available Stripe connector points at a different Stripe account, so do not use it for Alphacamper billing setup.
+- The available Stripe connector points at Superpress (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not use it for Alphacamper billing setup unless Ryan confirms that account is intended.
 - Do not use the Stripe CLI restricted key as `STRIPE_SECRET_KEY`; production needs a durable live secret key from Stripe key management.
 
 ## First Paid Customer Proof
 
 1. Add the missing Stripe env vars to Vercel Production.
 
-Use live-mode Stripe values only. Keep test-mode values in Preview/local only.
+Use live-mode Stripe values only. Keep test-mode values in Preview/local only. Before creating products or prices, confirm the Stripe account is the intended Alphacamper account.
 
 If the Stripe products/prices do not exist yet, create these in the correct live Stripe account first:
 

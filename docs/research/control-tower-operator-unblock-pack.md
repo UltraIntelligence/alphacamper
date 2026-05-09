@@ -31,6 +31,15 @@ GitHub blocker trackers:
 
 Do these in this order.
 
+1. Fix Railway worker heartbeat first.
+   - This unlocks real alert reliability and protects every customer-facing coverage claim.
+2. Configure the correct Alphacamper Stripe account and Vercel production env vars.
+   - This unlocks checkout and the $10k revenue scoreboard.
+3. Prove one customer watch and notification path.
+   - This turns coverage inventory into customer value.
+4. Sync Manitoba and Nova Scotia alertable labels only after worker reliability is green.
+   - This prevents the app from inviting watches the worker cannot safely service yet.
+
 ## Copy-Paste Operator Requests
 
 Use these when the blocker is access to Railway, Vercel, or Stripe. Do not send secret values back into this thread. Only confirm that the values exist, point to production, and the smoke command result.
@@ -60,6 +69,8 @@ Do not paste any secret values. Just confirm present/missing and paste the smoke
 
 ```text
 Please configure Alphacamper production checkout so the $10k net revenue scoreboard can become measurable.
+
+First confirm the Stripe account is the intended Alphacamper account. The Codex Stripe connector available in this workspace was logged into Superpress (`acct_1NpT2lFVQSJKvEIh`), so do not create or reuse products there unless Ryan explicitly confirms that is the correct Alphacamper account.
 
 In Vercel Production, add or verify:
 - STRIPE_SECRET_KEY
@@ -131,7 +142,7 @@ Current access finding:
 
 - Vercel CLI is authenticated and confirms these variables are missing.
 - Local Stripe CLI can read live Stripe objects but cannot create live Alphacamper products/prices/webhooks with its restricted key.
-- The available Stripe connector points at a different Stripe account and should not be used for Alphacamper.
+- The available Stripe connector points at Superpress (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, and should not be used for Alphacamper unless Ryan confirms that account is intended.
 - A durable live Stripe secret key must come from Stripe key management, not from the local Stripe CLI session.
 
 Required Vercel Production env vars:
