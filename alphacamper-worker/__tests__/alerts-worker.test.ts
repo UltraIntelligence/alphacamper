@@ -91,7 +91,7 @@ describe('worker alert persistence', () => {
 
     const { updateWorkerStatus } = await import('../src/supabase.js')
 
-    await updateWorkerStatus({
+    const written = await updateWorkerStatus({
       last_cycle_at: '2026-04-17T08:00:00.000Z',
       watches_checked: 18,
       alerts_created: 3,
@@ -105,6 +105,7 @@ describe('worker alert persistence', () => {
       },
     })
 
+    expect(written).toBe(true)
     expect(upsert).toHaveBeenCalledWith(
       {
         id: 'singleton',
@@ -126,5 +127,30 @@ describe('worker alert persistence', () => {
       },
       { onConflict: 'id' }
     )
+  })
+
+  it('reports worker_status write failures so health can go degraded', async () => {
+    const upsert = vi.fn(async () => ({ error: { message: 'permission denied' } }))
+
+    mockCreateClient.mockReturnValue({
+      from: vi.fn((table: string) => {
+        if (table === 'worker_status') {
+          return { upsert }
+        }
+
+        throw new Error(`Unexpected table ${table}`)
+      }),
+    })
+
+    const { updateWorkerStatus } = await import('../src/supabase.js')
+
+    const written = await updateWorkerStatus({
+      last_cycle_at: '2026-04-17T08:00:00.000Z',
+      watches_checked: 0,
+      alerts_created: 0,
+      platforms_healthy: { bc_parks: true },
+    })
+
+    expect(written).toBe(false)
   })
 })

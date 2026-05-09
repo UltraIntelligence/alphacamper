@@ -98,13 +98,17 @@ function buildPlatformHealth(): Record<string, boolean> {
 }
 
 async function writeWorkerHeartbeat(watchesChecked: number, alertsCreated: number): Promise<void> {
-  await updateWorkerStatus({
+  const heartbeatWritten = await updateWorkerStatus({
     last_cycle_at: new Date().toISOString(),
     watches_checked: watchesChecked,
     alerts_created: alertsCreated,
     consecutive_403: consecutive403,
     platforms_healthy: buildPlatformHealth(),
   });
+
+  if (!heartbeatWritten) {
+    throw new Error("worker_status heartbeat write failed");
+  }
 }
 
 function sendCustomerNotifications(watch: WatchedTarget, result: PollResult): void {

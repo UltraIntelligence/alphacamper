@@ -16,6 +16,24 @@ When a separate window finishes an epic, paste its report into this thread. The 
 
 Do not mark an epic green because code was written. Mark it green only when the customer path is verified.
 
+## Active Windows Ledger
+
+Launched from this control-tower thread on 2026-05-09:
+
+| Window | Reasoning | Scope | Status |
+|---|---|---|---|
+| Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Running |
+| Feynman | Extra high | Verified campsite-level inventory counts | Running |
+| Noether | High | Railway worker heartbeat recovery | Running |
+| Nash | High | Customer watch and notification smoke | Running |
+| Descartes | High | Demand capture for search-only/unsupported parks | Running |
+
+Control-tower intake rule:
+
+- Treat reports as proposals until their evidence is checked.
+- Preserve searchable vs realtime-alertable separation.
+- Keep the revenue and notification gates yellow until live Stripe and Railway proof are green.
+
 ## Status Key
 
 - Green: verified end to end and safe to use in the customer story.

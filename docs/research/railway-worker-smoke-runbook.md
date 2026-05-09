@@ -30,6 +30,7 @@ This is the current blocker for calling alert coverage production-ready.
 - Repo inspection found no committed Railway project link.
 - Worker deploy config now exists at `alphacamper-worker/railway.json`.
 - Worker `/health` now listens on Railway's `PORT` when provided, with `8080` as the local/default fallback.
+- Worker health now goes degraded if the `worker_status` heartbeat write fails, so a Railway green healthcheck is closer to real alert readiness.
 
 ## Success Criteria
 
@@ -46,6 +47,9 @@ Green means all of these are true:
 - Railway logs show the worker starting:
   - `Alphacamper Worker starting`
   - `Health check server on :<port>`
+- Railway logs do not show:
+  - `worker_status heartbeat write failed`
+  - `updateWorkerStatus failed`
 - Live Supabase `worker_status` has a recent row.
 - `worker_status.platforms_healthy` includes:
   - `bc_parks`

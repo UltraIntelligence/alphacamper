@@ -311,7 +311,7 @@ export async function updateWorkerStatus(stats: {
   alerts_created?: number;
   consecutive_403?: Record<string, number>;
   platforms_healthy?: Record<string, boolean>;
-}): Promise<void> {
+}): Promise<boolean> {
   const lastCycleAt = stats.last_cycle_at ?? new Date().toISOString();
   const consecutive403Counts = Object.values(stats.consecutive_403 ?? {}).map((value) => Number(value) || 0);
   const { error } = await getClient()
@@ -334,5 +334,7 @@ export async function updateWorkerStatus(stats: {
 
   if (error) {
     log.error("updateWorkerStatus failed", { error: error.message });
+    return false;
   }
+  return true;
 }

@@ -12,6 +12,24 @@ Goal-window rule:
 - The window keeps working until the objective is proven, or until it hits a real blocker.
 - The report back must include evidence, counts where relevant, risks, and the recommended next action.
 
+## Active Epic Windows
+
+Launched from the control tower on 2026-05-09:
+
+| Agent | Reasoning | Objective | Current control-tower status |
+|---|---|---|---|
+| Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Running |
+| Feynman | Extra high | Realtime Campsite Inventory Count Proof | Running |
+| Noether | High | Production Worker Heartbeat Recovery | Running |
+| Nash | High | Customer Watch And Notification Smoke | Running |
+| Descartes | High | Demand Capture And Search-Only Revenue Path | Running |
+
+Report-back rule:
+
+- Do not merge an agent result just because code changed.
+- First check the stated evidence, run the relevant tests/smokes, and keep customer-facing claims yellow until live proof exists.
+- If multiple agents touch overlapping files, reconcile manually and preserve the narrowest safe change.
+
 ## Current Gate
 
 ### 1. Production Worker Smoke
