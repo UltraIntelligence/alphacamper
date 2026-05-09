@@ -46,8 +46,10 @@ The live catalog schema blocker is cleared:
 - Worker heartbeat code is pushed, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
 - GitHub/Vercel status does not prove the worker deployed; Railway itself must show a successful `alphacamper-worker` deploy and a live heartbeat.
 - Checkout code now uses one-time Stripe payment mode to match the one-time pass copy.
-- Live Supabase now has `subscriptions` and `funnel_events`, both currently with 0 rows.
+- Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`.
+- Latest billing smoke still reports 0 paid active passes, 0 payment-mode passes, 0 gross app revenue, 0 funnel rows, 0 webhook rows, and 0 `checkout.session.completed` rows.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
+- Net/refund reporting is still not verified, so the $10k scoreboard is not green.
 - 51,997 campsite IDs are now verified from provider availability-matrix responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
 - The first 50,000 Canada inventory line is crossed by 1,997 IDs, but worker heartbeat/notification proof remains separate.
 - Worker polling and notifications are still not proven, so do not use this count as a reliability claim.
@@ -72,6 +74,7 @@ Next epic lane:
 - #17 Canada parity expansion.
 - #12 Alberta/Saskatchewan adapter discovery is closed; future live implementation waits for #9/#13.
 - #14 Parks Canada enrichment is closed; live province search and six production province pages are verified.
+- #19 demand capture is a safe parallel lead-intent lane; public request -> live aggregate -> cleanup is green, but protected operator dashboard/API proof still needs an approved operator token/session.
 
 Current intake rule:
 
@@ -215,4 +218,4 @@ Safe claim:
 - Alphacamper's expanded live catalog search is now working with 461 safe searchable campground rows.
 - New Brunswick is now in the alertable set after provider proof.
 - The first 50,000 Canadian campsite-inventory line has been crossed with 51,997 verified provider campsite IDs, but reliability remains yellow.
-- The next work is Railway worker proof, billing truth, first paid cohort, customer notification smoke, provider health/admin truth, paid alert-to-assist proof, and Canada parity expansion after reliability is green. Alberta/Saskatchewan discovery and Parks Canada enrichment are already closed unless the scope changes.
+- The next work is Railway worker proof, Stripe checkout/revenue proof, demand operator proof, first paid cohort, customer notification smoke, provider health/admin truth, paid alert-to-assist proof, and Canada parity expansion in the documented dependency order. Alberta/Saskatchewan discovery and Parks Canada enrichment are already closed unless the scope changes.

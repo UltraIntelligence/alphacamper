@@ -51,7 +51,7 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
    - Use this when the work is blocked on external service access or production configuration.
 
 6. `control-tower-snapshot-2026-05-09.md`
-   - The current executive snapshot after the first three goal windows reported.
+   - The current executive snapshot after the latest intaken goal-window reports.
    - Use this for the fastest read of where things stand now.
 
 7. `epic-launch-prompts.md`
