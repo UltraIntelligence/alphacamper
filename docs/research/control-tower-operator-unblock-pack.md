@@ -168,7 +168,8 @@ Green proof:
 
 - Production Stripe env vars are present.
 - Prices are one-time prices.
-- A real checkout creates `subscriptions` and `stripe_webhook_events` rows.
+- A real one-time checkout creates a payment-mode row in `subscriptions`.
+- Stripe records a `checkout.session.completed` row in `stripe_webhook_events`.
 - Operator revenue view shows paid passes and gross revenue.
 - Net/refund reporting is tied to Stripe before calling the $10k scoreboard fully green.
 
