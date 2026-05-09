@@ -59,7 +59,7 @@ Live aggregate read on 2026-05-09:
 | Production Vercel Stripe env vars | Missing | Live checkout cannot work until Stripe production env vars are configured. |
 | Operator revenue-quality view | Built, not green | `/api/admin/revenue-quality` and the dashboard operator panel read live Supabase, but production Stripe env vars and net Stripe reporting are still missing. |
 
-Latest verification at 2026-05-09T13:16:09Z:
+Latest verification at 2026-05-09T13:36:41Z:
 
 - `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 funnel events, 0 webhook events, and no gross app revenue.
 - `vercel env ls production` confirms `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are missing.
@@ -163,7 +163,7 @@ The business target should not be treated as separate from the product. $10k by 
 
 ## Next Work
 
-Recommended next epic after the current worker gate:
+Recommended active blocker in parallel with the Railway gate:
 
 - Billing Truth And Revenue Reporting.
 
