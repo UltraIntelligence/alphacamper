@@ -63,8 +63,9 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 4 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
 | 5 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 6 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
-| 7 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
-| 8 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
+| 7 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Next epic | Hold until #9 and #13 are green |
+| 8 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
+| 9 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
 
 ## Status Key
 
@@ -457,7 +458,7 @@ Next recommended runs:
 4. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
 5. Production Catalog Label Sync: deploy/sync the Manitoba and Nova Scotia alertable/live-polling profile update after the worker is alive.
 6. Paid Alert-To-Assist Loop: after heartbeat, billing, and notification proof are green, prove the first BC/Ontario "get you the site" loop.
-7. Alberta/Saskatchewan Adapter Sprint: discovery is closed; build live polling only after Railway heartbeat and notification proof are green.
+7. Canada Parity Expansion: after heartbeat and notification proof are green, turn Alberta/Saskatchewan or the next Canadian provider systems from search-only into alertable proof.
 8. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
 
 Keep research-only for now:

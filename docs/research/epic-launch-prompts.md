@@ -75,7 +75,7 @@ Next recommended windows:
 4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
 5. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
 6. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
-7. Canada Parity Expansion. Extra-high reasoning. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
+7. Canada Parity Expansion. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/17. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
 
 Closed or future-only scopes:
 
@@ -653,6 +653,55 @@ Paid loop proof:
 - assist/autofill:
 - review-ready handoff:
 Customer truth:
+- ...
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 15: Canada Parity Expansion
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+After Railway reliability and customer notification proof are green, turn the next Canadian provider systems from search-only or discovery into live alertable proof. This is implementation proof, not another broad discovery pass. Start with Alberta/Saskatchewan if they remain the best next bets from #12, then continue only to providers that can be proven through official/provider data.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Worker app: alphacamper-worker
+- Site app: alphacamper-site
+- Tracker: https://github.com/UltraIntelligence/alphacamper/issues/17
+- Closed discovery tracker: https://github.com/UltraIntelligence/alphacamper/issues/12
+- Provider scoring: docs/research/provider-scoring-rubric.md
+- Alberta/Saskatchewan intake: docs/research/alberta-saskatchewan-adapter-intake-2026-05-09.md
+- Current rule: search-only, coming-soon, unverified seed, and static fallback rows do not count toward realtime-alertable success.
+
+Rules:
+- Do not relaunch Alberta/Saskatchewan discovery; use the closed intake as starting evidence.
+- Keep each provider search-only until watch creation, worker polling, alert row, and customer notification are proven.
+- Use official reservation systems and official/provider data only.
+- Preserve source evidence, support status, availability mode, confidence, and last verified date.
+- Do not over-market Canada-wide reliability until the customer path is proven for each provider family.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Providers attempted:
+- ...
+Implementation proof:
+- parser/adapter:
+- watch creation:
+- worker poll:
+- alert row:
+- notification delivery:
+Counts:
+- searchable rows:
+- alertable campground rows:
+- realtime-alertable campsite IDs:
+- search-only rows:
+Customer-facing truth:
 - ...
 Risks:
 - ...

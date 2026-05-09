@@ -23,7 +23,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Live migration gate has a runbook | `live-catalog-migration-runbook.md` | Approval prompt, preflight SQL, apply step, verification, and board updates | Covered |
 | Live migration has reusable verification SQL | `live-catalog-verification.sql` | Read-only provider counts, column checks, index check, support-status distribution, and sample row lookups | Covered |
 | Post-migration launches are pre-scoped | `post-migration-launch-pack.md` | Canada provider proof, alert-engine cleanup, and catalog ingestion factory prompts | Covered |
-| Epic runs are defined | `epic-launch-prompts.md` | Fourteen copy-paste goal-window prompts, including Production Worker Smoke, customer notification smoke, billing truth, first paid cohort, and paid alert-to-assist moat proof | Covered |
+| Epic runs are defined | `epic-launch-prompts.md` | Fifteen copy-paste goal-window prompts, including Production Worker Smoke, customer notification smoke, billing truth, first paid cohort, paid alert-to-assist moat proof, and Canada parity expansion | Covered |
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
 | Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
 | Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k net summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
@@ -36,7 +36,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
 | Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
-| External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #16, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, first paid cohort, customer notification proof, provider health, and get-you-the-site proof remain tracked; Alberta/Saskatchewan discovery and Parks Canada enrichment are closed with evidence | Covered |
+| External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #17, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, first paid cohort, customer notification proof, provider health, get-you-the-site proof, and Canada parity expansion remain tracked; Alberta/Saskatchewan discovery and Parks Canada enrichment are closed with evidence | Covered |
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
@@ -137,7 +137,7 @@ Evidence inspected:
 - GitHub issue #10 tracks Stripe production checkout and revenue proof; its body was refreshed with the latest billing evidence and the rule that Stripe can move in parallel with Railway.
 - GitHub milestone #1 groups the current reliability and revenue gates.
 - GitHub milestone #2 groups the next epic goal-window trackers.
-- GitHub trackers #9, #10, #11, #13, #15, and #16 remain open in the expected two milestones; #12 and #14 are closed with intake proof and their issue bodies now say not to relaunch those scopes unless the scope changes.
+- GitHub trackers #9, #10, #11, #13, #15, #16, and #17 remain open in the expected two milestones; #12 and #14 are closed with intake proof and their issue bodies now say not to relaunch those scopes unless the scope changes.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes, only comments on GitHub issues when blocker status changes, and warns that the available Stripe connector is Superpress, not confirmed Alphacamper.
 
 Live smoke evidence:
@@ -177,7 +177,7 @@ Next control-tower action:
 - Continue #10 by configuring production Stripe env vars, verifying one-time price IDs, and proving webhook/revenue truth.
 - After #9 is green, run #13 customer watch and notification proof.
 - Sync Manitoba and Nova Scotia live labels only after worker reliability is green.
-- Then run #16 first paid cohort, #11 provider health/admin truth, and #15 paid alert-to-assist loop in the documented order.
+- Then run #16 first paid cohort, #11 provider health/admin truth, #15 paid alert-to-assist loop, and #17 Canada parity expansion in the documented order.
 - Do not relaunch #12 or #14 unless the scope changes; #12 is future implementation, and #14 is closed.
 
 ## Completion Read
