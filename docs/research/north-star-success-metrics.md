@@ -140,9 +140,9 @@ Current 2026-05-09 baseline:
 - 461 live customer-searchable Canadian campground rows.
 - 396 verified alertable Canadian campground rows.
 - 65 verified search-only Canadian campground rows.
-- 10,410 verified realtime-alertable campsite IDs counted toward the 50,000 target so far, from BC Parks only.
+- 44,817 verified realtime-alertable campsite IDs counted toward the 50,000 target so far, from BC Parks, Ontario Parks, Parks Canada, and New Brunswick.
 
-The campground-row count is progress, but the success metric is campsite inventory with polling and notification proof. The 10,410 number proves provider inventory enumeration, not Railway heartbeat or customer notification delivery.
+The campground-row count is progress, but the success metric is campsite inventory with polling and notification proof. The 44,817 number proves provider inventory enumeration, not Railway heartbeat or customer notification delivery. Alphacamper is 5,183 verified campsite IDs short of the first 50,000 success line.
 
 For the business, aim for:
 

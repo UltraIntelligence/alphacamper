@@ -14,6 +14,7 @@
  */
 
 import "../src/env.js";
+import { fileURLToPath } from "node:url";
 import { CookieManager } from "../src/cookie-manager.js";
 import { CAMIS_APP_VERSION, DOMAINS, REQUEST_DELAY_MS, USER_AGENT } from "../src/config.js";
 import { buildCatalogCampgroundRows, CATALOG_PROVIDER_PROFILES } from "../src/catalog-ingestion.js";
@@ -53,11 +54,19 @@ interface PlatformSummary {
   providerName: string;
   domain: string;
   campgroundRows: number;
+  countableCampgroundRows: number;
   campgroundsChecked: number;
+  excludedCampgrounds: number;
   campsiteCount: number;
   failedCampgrounds: number;
   status: RunStatus;
   error: string | null;
+}
+
+interface ExcludedCampgroundRow {
+  id: string;
+  name: string;
+  reason: string;
 }
 
 const DEFAULT_PLATFORMS = Object.values(CATALOG_PROVIDER_PROFILES)
@@ -67,6 +76,32 @@ const DEFAULT_PLATFORMS = Object.values(CATALOG_PROVIDER_PROFILES)
     DOMAINS[profile.platform]
   ))
   .map((profile) => profile.platform);
+
+export function isCountableRootMapId(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+export function splitCountableCampgroundRows<T extends { id: string; name: string; root_map_id: unknown }>(
+  rows: T[],
+): { countableRows: Array<T & { root_map_id: number }>; excludedRows: ExcludedCampgroundRow[] } {
+  const countableRows: Array<T & { root_map_id: number }> = [];
+  const excludedRows: ExcludedCampgroundRow[] = [];
+
+  for (const row of rows) {
+    if (isCountableRootMapId(row.root_map_id)) {
+      countableRows.push(row as T & { root_map_id: number });
+      continue;
+    }
+
+    excludedRows.push({
+      id: row.id,
+      name: row.name,
+      reason: `missing provider root map ID (${String(row.root_map_id)})`,
+    });
+  }
+
+  return { countableRows, excludedRows };
+}
 
 function readOptionValue(argv: string[], index: number, name: string): string {
   const value = argv[index + 1];
@@ -311,8 +346,15 @@ async function countCampground(
 }
 
 function platformRunStatus(summary: PlatformSummary): RunStatus {
-  if (summary.error || summary.campgroundsChecked === 0 || summary.campsiteCount === 0) return "red";
-  if (summary.failedCampgrounds > 0 || summary.campgroundsChecked < summary.campgroundRows) return "yellow";
+  if (
+    summary.error ||
+    summary.countableCampgroundRows === 0 ||
+    summary.campgroundsChecked === 0 ||
+    summary.campsiteCount === 0
+  ) return "red";
+  if (summary.failedCampgrounds > 0 || summary.campgroundsChecked < summary.countableCampgroundRows) {
+    return "yellow";
+  }
   return "green";
 }
 
@@ -330,7 +372,9 @@ async function countPlatform(
     providerName,
     domain,
     campgroundRows: 0,
+    countableCampgroundRows: 0,
     campgroundsChecked: 0,
+    excludedCampgrounds: 0,
     campsiteCount: 0,
     failedCampgrounds: 0,
     status: "red",
@@ -350,10 +394,19 @@ async function countPlatform(
   const rows = buildCatalogCampgroundRows(platform, campgroundMap).sort((a, b) => (
     a.name.localeCompare(b.name)
   ));
-  const rowsToCheck = options.maxCampgrounds ? rows.slice(0, options.maxCampgrounds) : rows;
+  const { countableRows, excludedRows } = splitCountableCampgroundRows(rows);
+  const rowsToCheck = options.maxCampgrounds ? countableRows.slice(0, options.maxCampgrounds) : countableRows;
 
   summary.campgroundRows = rows.length;
-  console.log(`Campground rows from provider directory: ${rows.length}`);
+  summary.countableCampgroundRows = countableRows.length;
+  summary.excludedCampgrounds = excludedRows.length;
+  console.log(
+    `Campground rows from provider directory: ${rows.length}` +
+    ` (${countableRows.length} countable, ${excludedRows.length} excluded)`,
+  );
+  for (const excluded of excludedRows) {
+    console.log(`Excluded ${excluded.name}: ${excluded.reason}`);
+  }
   if (options.maxCampgrounds) {
     console.log(`Limited proof run: checking first ${rowsToCheck.length} row(s).`);
   }
@@ -401,7 +454,9 @@ function overallStatus(summaries: PlatformSummary[]): RunStatus {
 function printSummary(summaries: PlatformSummary[], options: Options): void {
   const status = overallStatus(summaries);
   const totalCampgrounds = summaries.reduce((sum, item) => sum + item.campgroundRows, 0);
+  const totalCountable = summaries.reduce((sum, item) => sum + item.countableCampgroundRows, 0);
   const totalChecked = summaries.reduce((sum, item) => sum + item.campgroundsChecked, 0);
+  const totalExcluded = summaries.reduce((sum, item) => sum + item.excludedCampgrounds, 0);
   const totalCampsites = summaries.reduce((sum, item) => sum + item.campsiteCount, 0);
   const totalFailures = summaries.reduce((sum, item) => sum + item.failedCampgrounds, 0);
 
@@ -409,16 +464,20 @@ function printSummary(summaries: PlatformSummary[], options: Options): void {
   console.log(`Status: ${status}`);
   console.log(`Date window: ${options.startDate} to ${options.endDate}`);
   console.log(`Campground rows: ${totalCampgrounds}`);
+  console.log(`Countable campground rows: ${totalCountable}`);
   console.log(`Campgrounds checked: ${totalChecked}`);
+  console.log(`Excluded non-countable rows: ${totalExcluded}`);
   console.log(`Verified campsite-level count: ${totalCampsites}`);
   console.log(`Failed campgrounds: ${totalFailures}`);
   console.log("\nProvider table:");
-  console.log("Provider                         Rows  Checked  Campsites  Failed  Status");
+  console.log("Provider                         Rows  Countable  Checked  Excluded  Campsites  Failed  Status");
   for (const item of summaries) {
     console.log(
       `${item.providerName.padEnd(32)} ` +
       `${String(item.campgroundRows).padStart(4)} ` +
+      `${String(item.countableCampgroundRows).padStart(10)} ` +
       `${String(item.campgroundsChecked).padStart(8)} ` +
+      `${String(item.excludedCampgrounds).padStart(8)} ` +
       `${String(item.campsiteCount).padStart(10)} ` +
       `${String(item.failedCampgrounds).padStart(7)} ` +
       `${item.status}`,
@@ -447,7 +506,9 @@ async function main(): Promise<void> {
   process.exit(status === "red" ? 1 : 0);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

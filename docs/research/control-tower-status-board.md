@@ -22,7 +22,7 @@ Current epic windows launched from this control-tower thread on 2026-05-09:
 
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
-| Ohm | Extra high | 50k verified campsite coverage proof | Running |
+| Ohm | Extra high | 50k verified campsite coverage proof | Reported green inventory proof; verified and integrated |
 | Pauli | High | Revenue readiness toward $10k summer target | Reported yellow; verified and integrated |
 | Tesla | High | Production ops reliability and Railway heartbeat clarity | Reported yellow/blocked; verified and integrated |
 | Curie | Extra high | "Get you the site" product moat plan | Reported yellow product proof; strategy integrated |
@@ -32,7 +32,7 @@ Previous windows launched from this control-tower thread on 2026-05-09:
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
 | Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Reported yellow; parser proof under intake |
-| Feynman | Extra high | Verified campsite-level inventory counts | Reported yellow; BC-only count under intake |
+| Feynman | Extra high | Verified campsite-level inventory counts | Superseded by Ohm's verified 44,817 count |
 | Noether | High | Railway worker heartbeat recovery | Reported yellow; heartbeat hardening landed |
 | Nash | High | Customer watch and notification smoke | Reported yellow; smoke helper under intake |
 | Descartes | High | Demand capture for search-only/unsupported parks | Reported green for scoped change; under intake |
@@ -74,14 +74,18 @@ These numbers should be treated differently depending on their evidence level.
 | Static fallback campgrounds | 174 | Verified by Avicenna report | Safest current customer-facing searchable fallback | Recount from `alphacamper-site/lib/parks.ts` when needed |
 | Live known catalog rows | 464 | Verified live read after catalog refresh | Official/provider directory rows are now in live Supabase, including stale rows marked unsupported | Keep refreshing from official sources |
 | Live customer-searchable rows | 461 | Verified live read after catalog refresh | Safe searchable inventory excluding unsupported stale rows | Deploy updated UI/API evidence fields |
-| Verified alertable campground rows | 396 | Verified live read after provider proof and refresh | BC, Ontario, Parks Canada, and New Brunswick are marked alertable with live-polling evidence | Convert this into campsite-level counts and health |
-| Verified realtime-alertable campsite IDs | 10,410 | BC Parks provider availability proof only | First campsite-level count toward the 50,000 Canada target | Finish Ontario, Parks Canada, and New Brunswick counts before claiming full current Canada inventory |
+| Verified alertable campground rows | 396 | Verified live read after provider proof and refresh | BC, Ontario, Parks Canada, and New Brunswick are marked alertable with live-polling evidence | Pair with worker heartbeat and notification proof |
+| Verified realtime-alertable campsite IDs | 44,817 | Clean patched provider availability proof across BC, Ontario, Parks Canada, and New Brunswick | 89.6% of the 50,000 Canada target | Add at least 5,183 more verified campsite IDs to cross the first success line |
 | Search-only campground rows | 65 | Verified live read after provider proof and refresh | Manitoba and Nova Scotia are visible but not marketed as realtime alertable yet | Prove or build live polling before upgrading |
 | Unsupported stale rows | 3 | Verified live read after refresh | Carmanah Walbran, Grand-Pre, and Internet are not treated as alert inventory | Keep stale rows out of customer claims |
-| BC Parks alertable rows | 145 | Verified live provider refresh | Strong BC catalog base with source evidence | Verify campsite-level alertability count |
-| Ontario Parks alertable rows | 129 | Verified live provider refresh | Strong Ontario catalog base with source evidence | Verify campsite-level alertability count |
+| BC Parks campsite IDs | 10,410 | Clean provider availability proof, 145/145 countable rows checked | Verified campsite-level inventory | Pair with Railway heartbeat and notifications before marketing reliability |
+| Ontario Parks campsite IDs | 21,640 | Clean provider availability proof, 127/127 countable rows checked, 2 non-countable admin rows excluded | Biggest verified jump toward the Canada target | Pair with Railway heartbeat and notifications before marketing reliability |
+| Parks Canada campsite IDs | 11,336 | Clean provider availability proof, 107/107 countable rows checked, 6 non-countable rows excluded | National coverage inventory is now counted | Add province enrichment for better coverage pages |
+| New Brunswick campsite IDs | 1,431 | Clean provider availability proof, 9/9 countable rows checked | First Atlantic realtime-alertable province slice at campsite level | Pair with Railway heartbeat and notifications before marketing reliability |
+| BC Parks alertable rows | 145 | Verified live provider refresh | Strong BC catalog base with source evidence | Keep refreshed from provider source |
+| Ontario Parks alertable rows | 129 | Verified live provider refresh | Strong Ontario catalog base with source evidence | Keep refreshed from provider source |
 | Parks Canada alertable rows | 113 | Verified live provider refresh | Useful Parks Canada base, but province enrichment remains weak | Add/verify province enrichment |
-| New Brunswick alertable rows | 9 | Verified provider proof and live refresh | First Atlantic realtime-alertable province slice | Deploy worker support and smoke-test alerts |
+| New Brunswick alertable rows | 9 | Verified provider proof and live refresh | First Atlantic realtime-alertable province slice | Keep refreshed from provider source |
 | Manitoba search-only rows | 45 | Verified live provider refresh | Searchable, honest expansion inventory | Prove worker polling before upgrading |
 | Nova Scotia search-only rows | 20 | Verified live provider refresh | Searchable, honest expansion inventory | Prove worker polling before upgrading |
 | Active live watches | 5 | Verified production provider-quality route | Real customers/admin tests have active watches waiting on worker polling | Prove Railway heartbeat and notification delivery |
@@ -161,12 +165,13 @@ Current result:
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
 - GitHub deployment metadata for the fix points to Vercel site deployment, not Railway worker deployment.
 - Worker deploy hardening now exists in code: `alphacamper-worker/railway.json`, Railway `PORT` support, and a clearer `/health` starting/degraded response.
-- Realtime-alertable campsite proof is now partially verified: 10,410 BC Parks campsite IDs from provider availability responses.
-- Ontario, Parks Canada, and New Brunswick campsite-level counts remain unverified, so the full Canada inventory count is still yellow.
+- Realtime-alertable campsite inventory proof is now verified for the current Canada core: 44,817 campsite IDs from BC Parks, Ontario Parks, Parks Canada, and New Brunswick provider availability responses.
+- This is still 5,183 verified campsite IDs short of the 50,000 first success line.
+- This proves provider inventory enumeration, not Railway heartbeat, active-watch polling, or customer notification delivery.
 
 Next prompt:
 
-> Smoke-test live watch creation and Railway worker health. Finish Ontario, Parks Canada, and New Brunswick campsite-level counts before claiming the current Canada total.
+> Smoke-test live watch creation and Railway worker health. Add at least 5,183 more verified campsite IDs from the next providers before claiming the 50,000 Canada target.
 
 ### Epic 2: Canada Coverage Sprint
 
@@ -393,7 +398,7 @@ Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-3. 50k Verified Campsite Coverage Proof: finish Ontario, Parks Canada, and New Brunswick campsite-level counts.
+3. 50k Verified Campsite Coverage Proof: add at least 5,183 more verified campsite IDs from the next providers.
 4. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
 5. Paid Alert-To-Assist Loop: after heartbeat and billing are green, prove the first BC/Ontario "get you the site" loop.
 6. Alberta/Saskatchewan Adapter Sprint: build live polling only after Railway heartbeat is green.
@@ -437,7 +442,7 @@ Short version:
 - We have the foundation for Canadian expansion.
 - Live Supabase now powers 461 safe searchable rows from official/provider directories.
 - We have 396 verified alertable campground rows, but not a verified campsite-level count yet.
-- We should not claim broad alertable Canada coverage until worker heartbeat, notification smoke, and campsite-level counts are proven.
+- We should not claim broad reliable alert coverage until worker heartbeat and notification smoke are proven.
 - We should not claim the $10k goal is measurable from the app database until billing mode and live revenue reporting are fixed.
 - The next real unlock is Railway worker proof, then customer watch/notification smoke, then billing truth, then Alberta/Saskatchewan adapter work.
 
@@ -446,8 +451,8 @@ Short version:
 Major success line:
 
 - 50,000 verified realtime-alertable Canadian campsites.
-- Current board-safe count: 10,410 verified campsite IDs from BC Parks only.
-- The next coverage proof must finish Ontario, Parks Canada, and New Brunswick before Canada can be called close to 50k.
+- Current board-safe count: 44,817 verified campsite IDs from BC Parks, Ontario Parks, Parks Canada, and New Brunswick.
+- The next coverage proof needs at least 5,183 more verified campsite IDs to cross the 50k line.
 
 Longer-term category leadership line:
 

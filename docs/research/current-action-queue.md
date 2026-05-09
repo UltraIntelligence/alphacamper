@@ -18,7 +18,7 @@ Currently running from the control tower on 2026-05-09:
 
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
-| Ohm | Extra high | 50k Verified Campsite Coverage Proof | Running |
+| Ohm | Extra high | 50k Verified Campsite Coverage Proof | Reported green inventory proof; verified and integrated |
 | Pauli | High | Revenue Readiness Toward $10k Summer Target | Reported yellow; verified and integrated |
 | Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Reported yellow/blocked; verified and integrated |
 | Curie | Extra high | "Get You The Site" Product Moat Plan | Reported yellow product proof; strategy integrated |
@@ -28,7 +28,7 @@ Previous windows launched from the control tower on 2026-05-09:
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
 | Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Reported yellow; parser proof under intake |
-| Feynman | Extra high | Realtime Campsite Inventory Count Proof | Reported yellow; BC-only count under intake |
+| Feynman | Extra high | Realtime Campsite Inventory Count Proof | Superseded by Ohm's verified 44,817 count |
 | Noether | High | Production Worker Heartbeat Recovery | Reported yellow; heartbeat hardening landed |
 | Nash | High | Customer Watch And Notification Smoke | Reported yellow; smoke helper under intake |
 | Descartes | High | Demand Capture And Search-Only Revenue Path | Reported green for scoped change; under intake |
@@ -132,7 +132,9 @@ Current result:
 - Live known catalog rows: 464.
 - Live customer-searchable rows: 461.
 - Verified alertable campground rows: 396.
-- Verified realtime-alertable campsite IDs: 10,410 from BC Parks only.
+- Verified realtime-alertable campsite IDs: 44,817 from BC Parks, Ontario Parks, Parks Canada, and New Brunswick.
+- Provider campsite counts: BC Parks 10,410; Ontario Parks 21,640; Parks Canada 11,336; New Brunswick 1,431.
+- This is 5,183 verified campsite IDs short of the 50,000 Canada success line.
 - Search-only campground rows: 65.
 - Unsupported stale rows: 3.
 
@@ -140,7 +142,7 @@ Next action:
 
 - Add recurring provider refresh and an admin-facing provider health view.
 - Keep the live provider-quality route wired into the operator/admin experience.
-- Finish campsite-level counts for Ontario, Parks Canada, and New Brunswick; do not use campground-row counts as the 50k success metric.
+- Add at least 5,183 more verified campsite IDs from the next providers; do not use campground-row counts as the 50k success metric.
 
 ### 3. Alert Engine Cleanup
 
