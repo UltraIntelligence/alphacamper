@@ -37,7 +37,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
-| Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns worker reliability smoke and billing readiness smoke every 30 minutes and reports back to this thread | Covered |
+| Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns worker reliability smoke and billing readiness smoke every 30 minutes, reports back to this thread, and comments on #9/#10 only when a gate changes, turns green, or reveals a new blocker | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
 | Existing research is preserved | `canadian-database-parity-plan.md`, `parks-canada-api.md` | Prior research remains in place | Covered |
 | Completed windows will not be relaunched by accident | `README.md`, `epic-launch-prompts.md`, `current-action-queue.md`, `control-tower-status-board.md`, `report-intake-procedure.md` | Completed reports are marked as intaken/reported; current gate is Production Worker Smoke | Covered |
@@ -124,7 +124,7 @@ Evidence inspected:
 - GitHub issue #10 tracks Stripe production checkout and revenue proof.
 - GitHub milestone #1 groups the current reliability and revenue gates.
 - GitHub milestone #2 groups the next epic goal-window trackers.
-- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes.
+- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes, and only comments on GitHub issues when blocker status changes.
 
 Live smoke evidence:
 

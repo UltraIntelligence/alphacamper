@@ -65,7 +65,7 @@ Current status:
 - Code is locally verified, live data is refreshed, and the site deploy is live.
 - Railway worker runtime still needs heartbeat proof.
 - Production provider-quality now exposes live Supabase truth and reports the missing worker heartbeat.
-- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes.
+- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes. It comments on #9 or #10 only when the matching gate changes, turns green, or reveals a new blocker.
 
 Launch status:
 
