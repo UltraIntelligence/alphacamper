@@ -50,12 +50,13 @@ Do not paste secret values into Codex, GitHub, Slack, or docs. Only report prese
 Checked from this Codex shell on 2026-05-09:
 
 - Shell env exposes `SUPABASE_ACCESS_TOKEN` only among Railway/Stripe/Vercel/Supabase access-style variables.
+- Supabase CLI can see the Alphacamper project `tbdrmcdrfgunbcevslqf`, but this repo checkout is not linked to a Supabase project.
 - No local `RAILWAY_TOKEN`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, or `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is present.
 - `railway whoami` returns unauthorized.
-- `alphacamper-site/.env.local` has Supabase and Resend values, but no Stripe billing values.
+- `alphacamper-site/.env.local` has Supabase and Resend values, but no Stripe billing values, no `EXTENSION_AUTH_SECRET`, and no `OPERATOR_EMAIL_ALLOWLIST`.
 - `alphacamper-worker/.env.local` has `CAMPFLARE_API_KEY`, but not `SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`.
 
-Meaning: this shell can inspect live Supabase through the existing smoke scripts, but cannot prove or fix Railway service config and cannot configure Stripe production checkout without external account access.
+Meaning: this shell can inspect live Supabase through the existing smoke scripts, but cannot prove or fix Railway service config, cannot configure Stripe production checkout, and cannot finish protected operator dashboard proof without external account/session access.
 
 ## Report-Back Template
 
