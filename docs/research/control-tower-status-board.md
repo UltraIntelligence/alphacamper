@@ -32,7 +32,7 @@ These gates protect the product from over-promising.
 | Live catalog schema | Green | Live Supabase has support labels, provider evidence, and sync tracking | Support-status and catalog-evidence migrations applied and verified 2026-05-09 |
 | Customer campground search | Green | `/api/campgrounds` works against live Supabase and labels support clearly | Live-only Bamberton and New Brunswick Sugarloaf rows now return from `alphacamper.com/api/campgrounds` |
 | Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
-| Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; Railway worker heartbeat is not yet proven in `worker_status` |
+| Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Provider sync table now records six live provider refreshes; admin-facing view still not proven |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
 
@@ -109,7 +109,10 @@ Current result:
 - Unsupported stale rows: 3.
 - Live API returns Bamberton and New Brunswick Sugarloaf from Supabase with alertable labels and source evidence.
 - Live `/api/check-availability` now returns 410 retired with `engine: railway-worker`.
-- Live `worker_status` query currently returns no heartbeat rows, so Railway runtime health remains unverified.
+- Worker heartbeat fix pushed at `d7464921c`: quiet cycles now write `worker_status`.
+- GitHub CI is green for the heartbeat fix.
+- Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
+- GitHub deployment metadata for the fix points to Vercel site deployment, not Railway worker deployment.
 - Realtime-alertable campsite estimate remains unverified; campground rows do not equal campsite count.
 
 Next prompt:
@@ -166,6 +169,7 @@ Current result:
 - Live `/api/check-availability` now returns the retired Railway-worker message.
 - Local worker/site tests and builds pass.
 - Live Supabase `worker_status` currently has no heartbeat row, so worker runtime health still needs Railway-side verification.
+- Railway CLI in this shell is not authenticated, so the worker service status could not be checked directly.
 
 Next prompt:
 

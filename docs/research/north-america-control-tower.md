@@ -61,7 +61,7 @@ The goal windows own:
 - The live API now returns live-only rows such as Bamberton and New Brunswick Sugarloaf.
 - Support labels are now normalized for the first six refreshed providers.
 - The site deploy is live: `/api/check-availability` returns 410 retired.
-- Railway worker runtime health is still unproven because live `worker_status` currently has no rows.
+- Worker heartbeat fix is pushed at `d7464921c`, but Railway runtime health is still unproven because live `worker_status` currently has no rows.
 
 ### Coverage state
 

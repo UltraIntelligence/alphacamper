@@ -50,7 +50,10 @@ Current result:
 - Live catalog refresh is green for six providers.
 - Live site deploy is green: `/api/check-availability` returns 410 retired.
 - Live catalog API now returns evidence fields for Bamberton and Sugarloaf.
-- Supabase `worker_status` currently returns no heartbeat rows.
+- Worker heartbeat fix is pushed at `d7464921c` and CI is green.
+- Supabase `worker_status` still returns no heartbeat rows after the fix.
+- GitHub deployment metadata shows the push deployed to Vercel, not proof of Railway worker deployment.
+- Railway CLI is not authenticated in this shell.
 
 Next action:
 

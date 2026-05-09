@@ -32,7 +32,7 @@ The live catalog schema blocker is cleared:
 - `/api/campgrounds?q=Sugarloaf` returns the New Brunswick provider-proof row.
 - `/api/check-availability` now returns 410 retired on the live site.
 - Support labels are normalized for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
-- Live `worker_status` currently has no heartbeat rows, so Railway runtime health remains unverified.
+- Worker heartbeat fix is pushed at `d7464921c`, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
 - Zero campsites should be counted toward the 50,000 realtime-alertable north-star target until worker polling and notifications are verified by provider.
 
 ## Completed Goal Windows
