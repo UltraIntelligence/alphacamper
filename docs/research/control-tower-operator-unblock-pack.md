@@ -34,7 +34,7 @@ Do these two things first. They are independent and can happen in parallel.
 1. Railway: log into/link the Alphacamper Railway project, confirm the worker service is the `alphacamper-worker` service, then rerun the Railway smoke.
 2. Stripe/Vercel: confirm the correct Alphacamper Stripe account, add the five production Stripe env vars to Vercel, redeploy, then rerun the billing smoke.
 
-Latest refresh: 2026-05-09T15:12:56Z.
+Latest refresh: 2026-05-09T15:36:51Z.
 
 Current smoke result:
 

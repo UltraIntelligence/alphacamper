@@ -60,7 +60,7 @@ Live aggregate read on 2026-05-09:
 | Production Vercel Stripe env vars | Missing | Live checkout cannot work until Stripe production env vars are configured. |
 | Operator revenue-quality view | Built, not green | `/api/admin/revenue-quality` and the dashboard operator panel read live Supabase, but production Stripe env vars and net Stripe reporting are still missing. |
 
-Latest verification at 2026-05-09T15:12:56Z:
+Latest verification at 2026-05-09T15:36:51Z:
 
 - `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no gross app revenue, no checkout/webhook proof, and net/refund reporting not verified.
 - Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make this gate green.

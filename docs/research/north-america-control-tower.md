@@ -404,7 +404,7 @@ Do not relaunch closed discovery/enrichment scopes #12 or #14 unless the scope c
 ## Companion Docs
 
 - `docs/research/control-tower-status-board.md` tracks epic status, blockers, and report intake.
-- `docs/research/control-tower-snapshot-2026-05-09.md` gives the current executive snapshot after the first three goal windows.
+- `docs/research/control-tower-snapshot-2026-05-09.md` gives the current executive snapshot after the latest intaken goal-window reports.
 - `docs/research/north-star-success-metrics.md` defines the major goal and campsite-count thresholds for success.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k revenue target, pass-count math, and billing/reporting blocker.
 - `docs/research/live-catalog-migration-runbook.md` gives the approval-gated steps for applying and verifying the live Supabase catalog migration.
