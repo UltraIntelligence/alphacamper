@@ -12,7 +12,7 @@ Longer-term category leadership line:
 
 Business line:
 
-- $10k revenue by the end of summer.
+- $10k net collected revenue by the end of summer.
 - Count net collected revenue as the real success number; use gross revenue as an early signal.
 
 ## Current Verdict
@@ -45,6 +45,30 @@ The live catalog schema blocker is cleared:
 - The first 50,000 Canada inventory line is crossed by 1,997 IDs, but worker heartbeat/notification proof remains separate.
 - Worker polling and notifications are still not proven, so do not use this count as a reliability claim.
 
+## Control Tower Tracker Lanes
+
+External blocker lane:
+
+- https://github.com/UltraIntelligence/alphacamper/milestone/1
+- #9 Railway worker heartbeat.
+- #10 Stripe production checkout and revenue proof.
+
+Next epic lane:
+
+- https://github.com/UltraIntelligence/alphacamper/milestone/2
+- #13 Customer watch and notification delivery.
+- #11 Provider health/admin truth.
+- #15 Get-you-the-site paid assist loop.
+- #12 Alberta/Saskatchewan adapter discovery.
+- #14 Parks Canada enrichment.
+
+Current intake rule:
+
+- Match every returning goal-window report to its GitHub tracker.
+- Comment the evidence back on that tracker.
+- Update the status board only after checking the evidence.
+- Do not relaunch old windows just because the conversation was forked.
+
 ## Completed Goal Windows
 
 ### Epic 1: Phase 2 Live Catalog Fix
@@ -75,7 +99,7 @@ Decision:
 
 Next proof:
 
-> Verify Railway worker health, production watch creation, and campsite-level counts.
+> Verify Railway worker health, production watch creation, and customer notification delivery.
 
 ### Epic 3: Alert Engine Truth Audit
 
@@ -180,4 +204,5 @@ Safe claim:
 - Alphacamper has the foundation for Canada-first expansion.
 - Alphacamper's expanded live catalog search is now working with 461 safe searchable campground rows.
 - New Brunswick is now in the alertable set after provider proof.
-- The next work is Railway worker proof, customer notification smoke, billing truth, campsite-level counts, and Alberta/Saskatchewan adapter work.
+- The first 50,000 Canadian campsite-inventory line has been crossed with 51,997 verified provider campsite IDs, but reliability remains yellow.
+- The next work is Railway worker proof, customer notification smoke, billing truth, provider health/admin truth, get-you-the-site proof, Alberta/Saskatchewan adapter work, and Parks Canada enrichment.
