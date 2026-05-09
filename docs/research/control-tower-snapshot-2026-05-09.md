@@ -2,6 +2,12 @@
 
 ## North Star
 
+Product ambition:
+
+- Build a tier-one Campnab/Campflare competitor.
+- Distinction: not just finding the site, but helping the camper get the site.
+- Help regular campers become Alphacampers: prepared, fast to act, and guided toward the best realistic booking move.
+
 First success line:
 
 - 50,000 verified realtime-alertable Canadian campsites.
@@ -37,7 +43,8 @@ The live catalog schema blocker is cleared:
 - `/api/admin/provider-quality` now reads live Supabase on production and reports 5 active watches.
 - Support labels are normalized for BC, Ontario, Parks Canada, and New Brunswick live; Manitoba and Nova Scotia are repo-ready for alertable/live-polling after the next deploy/sync.
 - Production provider-quality reports `railway_worker` degraded with `missing_worker_heartbeat`.
-- Worker heartbeat fix is pushed at `d7464921c`, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
+- Worker heartbeat code is pushed, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
+- GitHub/Vercel status does not prove the worker deployed; Railway itself must show a successful `alphacamper-worker` deploy and a live heartbeat.
 - Checkout code now uses one-time Stripe payment mode to match the one-time pass copy.
 - Live Supabase now has `subscriptions` and `funnel_events`, both currently with 0 rows.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
@@ -125,19 +132,18 @@ Decision:
 
 Status: yellow.
 
-Top next bets:
+Top roadmap bets:
 
 1. Alberta Parks.
 2. Saskatchewan Parks.
-3. New Brunswick, then PEI.
+3. PEI.
 4. US GoingToCamp cluster: Washington, Wisconsin, Michigan, Maryland.
 5. ReserveCalifornia later, after Canada core.
 
 Decision:
 
-- Next proof workstream after catalog unblocks:
-  - New Brunswick GoingToCamp alertability.
-  - Alberta/Saskatchewan adapter discovery.
+- New Brunswick is already in the alertable set after provider proof.
+- Alberta/Saskatchewan discovery is closed; future live implementation waits for Railway heartbeat and customer notification proof.
 - Keep SEPAQ research-only until Cloudflare and French-first UX risks are solved.
 - Hold broad US rollout until Canada parity providers are visibly searchable and verified alertable.
 
@@ -148,22 +154,22 @@ Decision:
 Result:
 
 - New Brunswick is alertable after directory and site-level availability proof.
-- Alberta and Saskatchewan likely need shared Aspira/ReserveAmerica-style adapter work.
+- Alberta and Saskatchewan discovery is closed: official `ABPP` and `SKPP` paths are proven, but both remain search-only until live polling and notification proof exist.
 
 Next action:
 
-- Build Alberta first, then transfer the adapter to Saskatchewan if the shape holds.
+- Do not launch implementation until #9 and #13 are green. Then build Alberta live polling first, transfer the adapter to Saskatchewan if the shape holds, and only upgrade labels after watch -> poll -> alert -> notification proof.
 
 ### 2. Alert-engine cleanup window
 
 Result:
 
 - Recreation.gov worker support exists in code.
-- The Vercel cron path is retired in code.
+- The Vercel cron path is retired in code and on the live site.
 
 Next action:
 
-- Deploy and smoke-test production behavior.
+- Prove Railway worker deploy/runtime behavior from Railway itself, then rerun worker smokes.
 
 ### 3. Catalog ingestion factory
 
@@ -194,7 +200,7 @@ Do not claim:
 
 - broad Canadian coverage
 - 50,000 realtime-alertable campsites
-- Manitoba/Nova Scotia/Alberta/Saskatchewan alertability
+- Manitoba/Nova Scotia live alertability labels, or Alberta/Saskatchewan alertability
 - all search results are alertable
 - Vercel cron-backed providers count toward the Canadian realtime target
 - $10k progress is measurable from the app database
