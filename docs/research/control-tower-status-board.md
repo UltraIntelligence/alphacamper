@@ -447,11 +447,11 @@ Reported back and integrated:
 Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
-2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-3. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
+2. Billing Truth And Revenue Reporting: configure the correct Alphacamper Stripe account/env vars, prove checkout/webhook, and finish the operator revenue view.
+3. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
 4. Production Catalog Label Sync: deploy/sync the Manitoba and Nova Scotia alertable/live-polling profile update after the worker is alive.
 5. Paid Alert-To-Assist Loop: after heartbeat and billing are green, prove the first BC/Ontario "get you the site" loop.
-6. Alberta/Saskatchewan Adapter Sprint: build live polling only after Railway heartbeat is green.
+6. Alberta/Saskatchewan Adapter Sprint: discovery is closed; build live polling only after Railway heartbeat and notification proof are green.
 7. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
 
 Keep research-only for now:

@@ -202,7 +202,7 @@ Next action:
 
 - Verify Railway worker health includes Recreation.gov.
 
-## Next Big Runs
+## Active And Held Runs
 
 These should be separate goal windows when launched.
 
@@ -249,7 +249,7 @@ Use runbook for framing:
 
 Goal objective:
 
-- Build the shared adapter proof for Alberta first, then Saskatchewan.
+- Future-only: build live polling for Alberta first, then Saskatchewan, after reliability gates are green.
 
 Why it matters:
 
@@ -270,7 +270,8 @@ Current truth:
 
 Next action:
 
-- Turn the parser proof into a live polling implementation only after Railway heartbeat is green.
+- Do nothing here until #9 and #13 are green.
+- Then turn the parser proof into a live polling implementation.
 - Then prove a controlled watch, provider poll, alert row, and customer notification before upgrading labels from search-only to alertable.
 
 ### 6. Get You The Site Moat
@@ -336,7 +337,7 @@ Current intake:
 - It must not be described as realtime alert coverage.
 - The captured signal is campground-level interest, not a paid conversion yet.
 
-## Ready For Implementation
+## Completed And Closed
 
 ### 9. Parks Canada Enrichment
 
@@ -344,21 +345,19 @@ Goal objective:
 
 - Make Parks Canada rows useful for province search and honest province coverage pages without guessing.
 
-Current intake:
+Current result:
 
 - Ampere reported back and the control tower verified the core finding.
-- Live Supabase has 115 Parks Canada rows: 113 `alertable` / `live_polling`, 2 `unsupported` / `directory_only`.
-- All 115 live Parks Canada rows have `province = null`.
-- Live `q=Alberta` search returns 0 rows, so province discovery is broken for Parks Canada even though name searches like Banff and Fundy work.
-- Raw Parks Canada payload URLs can safely derive province for 113 alertable rows; only `Grand-Pré` and `Internet` remain uncertain, and both are unsupported.
 - Repo patch is implemented: worker catalog ingestion derives province from official URL paths, and the site API expands full province names to stored province codes.
-- Live one-provider sync completed: 113 Parks Canada rows now have province; 2 unsupported stale rows remain null province.
-- Live customer searches for `Alberta`, `Prince Edward Island`, `Saskatchewan`, and `New Brunswick` now return province-matched Parks Canada rows.
+- Live one-provider sync completed: 113 Parks Canada rows now have province; 2 unsupported stale rows remain null province instead of guessed.
+- Live customer searches for `Alberta`, `Prince Edward Island`, `Saskatchewan`, and `New Brunswick` return province-matched Parks Canada rows.
+- Six production province pages are live and in the sitemap.
+- Tracker #14 is closed.
 - Intake artifact: `docs/research/parks-canada-enrichment-intake-2026-05-09.md`.
 
-Use prompt:
+Next action:
 
-- Add province coverage pages, but keep reliability claims gated behind Railway heartbeat and notification proof.
+- Do not relaunch unless the scope changes. Reliability claims still belong to #9/#13.
 
 ## Report-Back Rule
 
