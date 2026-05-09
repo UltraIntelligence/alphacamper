@@ -107,14 +107,14 @@ Current result:
 - Live catalog API now returns evidence fields for Bamberton and Sugarloaf.
 - Worker heartbeat fix is pushed, and latest main CI is green in GitHub Actions.
 - Live `https://alphacamper.com/api/admin/provider-quality` now returns `fetchedFrom: live_supabase`.
-- The same production route reports 5 active watches and `railway_worker` degraded with `missing_worker_heartbeat`.
+- The same production route reports 5 active watches split across `bc_parks:4` and `ontario_parks:1`, with `railway_worker` degraded by `missing_worker_heartbeat`.
 - Supabase `worker_status` still returns no heartbeat rows after the fix.
 - GitHub deployment metadata shows the push deployed to Vercel, not proof of Railway worker deployment.
 - Railway CLI is not authenticated in this shell.
 - Repo now includes `alphacamper-worker/railway.json` to make the worker's Railway build/deploy settings explicit.
 - Worker health now listens on Railway's `PORT` when provided, with `8080` as the fallback.
 - `npm run smoke:railway -- --allow-blocked` now prints live production heartbeat proof before Railway auth/log checks.
-- Latest verified worker smoke at 2026-05-09T15:36:51Z remains yellow: active watches 5, total alerts 0, delivered alerts 0, worker degraded with `missing_worker_heartbeat`, no Supabase heartbeat, and missing worker platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
+- Latest verified worker smoke at 2026-05-09T16:03:17Z remains yellow: active watches 5, active watch split `bc_parks:4` and `ontario_parks:1`, total alerts 0, delivered alerts 0, worker degraded with `missing_worker_heartbeat`, no Supabase heartbeat, and missing worker platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
 - GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/9
 
 Next action:
@@ -237,7 +237,7 @@ Current truth:
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
 - `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, gross app-recorded revenue, checkout/webhook proof, and net/refund reporting state.
 - Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make the gate green.
-- Latest verified billing smoke at 2026-05-09T15:36:51Z is yellow: 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
+- Latest verified billing smoke at 2026-05-09T16:03:17Z is yellow: 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
 - Direct `vercel env ls production` confirms the five missing names are not configured in production.
 - The available Stripe connector is currently logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not create or reuse Stripe products from that connector without confirming the correct account first.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.

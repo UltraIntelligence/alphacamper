@@ -39,7 +39,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #19, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, demand capture/conversion, first paid cohort, customer notification proof, Manitoba/Nova Scotia label sync, provider health, get-you-the-site proof, and Canada parity expansion remain tracked; Alberta/Saskatchewan discovery and Parks Canada enrichment are closed with evidence | Covered |
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
-| Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
+| Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches split across `bc_parks:4` and `ontario_parks:1`, and `missing_worker_heartbeat` | Covered |
 | Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns worker reliability smoke and billing readiness smoke every 30 minutes, reports back to this thread, comments on #9/#10 only when a gate changes, turns green, or reveals a new blocker, and preserves the warning not to use the Superpress Stripe account for Alphacamper without confirmation | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
 | Existing research is preserved | `canadian-database-parity-plan.md`, `parks-canada-api.md` | Prior research remains in place | Covered |
@@ -103,7 +103,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T15:36:51Z.
+Audit timestamp: 2026-05-09T16:03:17Z.
 
 Objective restated as concrete deliverables:
 
@@ -123,8 +123,8 @@ Evidence inspected:
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
 - `docs/research/north-star-success-metrics.md` and `docs/research/north-america-control-tower.md` capture the tier-one competitor ambition, get-you-the-site distinction, regular-camper-to-Alphacamper framing, and $10k net revenue target.
-- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T15:36:51Z.
-- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T15:36:51Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
+- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T16:03:17Z.
+- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T16:03:17Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked at 2026-05-09T15:36Z because this shell is not Railway-authenticated.
 - `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
 - GitHub Actions is supporting evidence only, not Railway proof or revenue proof; verify the current `main` run with `/Users/ryan/.codex/bin/gh-no-proxy run list --limit 3` before relying on it.
@@ -144,6 +144,7 @@ Live smoke evidence:
 
 - Provider-quality source: `live_supabase`.
 - Active watches: 5.
+- Active watches by platform: `bc_parks:4`, `ontario_parks:1`.
 - Total alerts: 0.
 - Delivered alerts: 0.
 - Worker status: degraded.

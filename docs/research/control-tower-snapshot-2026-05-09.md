@@ -40,7 +40,7 @@ The live catalog schema blocker is cleared:
 - `/api/campgrounds?q=Bamberton` now returns a live-only Supabase row.
 - `/api/campgrounds?q=Sugarloaf` returns the New Brunswick provider-proof row.
 - `/api/check-availability` now returns 410 retired on the live site.
-- `/api/admin/provider-quality` now reads live Supabase on production and reports 5 active watches.
+- `/api/admin/provider-quality` now reads live Supabase on production and reports 5 active watches; worker smoke splits them as `bc_parks:4` and `ontario_parks:1`.
 - Support labels are normalized for BC, Ontario, Parks Canada, and New Brunswick live; Manitoba and Nova Scotia are repo-ready for alertable/live-polling after the next deploy/sync.
 - Production provider-quality reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Worker heartbeat code is pushed, but live `worker_status` still has no rows, so Railway runtime health remains unverified.

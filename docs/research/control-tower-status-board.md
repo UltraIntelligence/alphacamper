@@ -116,7 +116,7 @@ These numbers should be treated differently depending on their evidence level.
 | New Brunswick alertable rows | 9 | Verified provider proof and live refresh | First Atlantic alertable catalog slice; production reliability still waits for Railway | Keep refreshed from provider source |
 | Manitoba rows | 45 | Verified live provider refresh plus 2026-05-09 live availability proof | Repo profile is now alertable/live-polling; live catalog label still needs sync | Pair with Railway heartbeat and notifications before marketing reliability |
 | Nova Scotia rows | 20 | Verified live provider refresh plus 2026-05-09 live availability proof | Repo profile is now alertable/live-polling; live catalog label still needs sync | Pair with Railway heartbeat and notifications before marketing reliability |
-| Active live watches | 5 | Verified production provider-quality route | Real customers/admin tests have active watches waiting on worker polling | Prove Railway heartbeat and notification delivery |
+| Active live watches | 5 total: `bc_parks:4`, `ontario_parks:1` | Verified production provider-quality route plus worker smoke | Real customers/admin tests have active watches waiting on worker polling | Prove Railway heartbeat and notification delivery |
 
 Control-tower rule:
 
@@ -191,9 +191,9 @@ Current result:
 - Worker heartbeat hardening was pushed before the latest docs/ops commits: quiet cycles now write `worker_status`, heartbeat write failures degrade health, and Railway diagnostics look for the heartbeat-write failure marker.
 - Latest main CI is green in GitHub Actions after the control-tower docs/ops updates.
 - Live `/api/admin/provider-quality` now reads live Supabase and reports `railway_worker` as degraded with `missing_worker_heartbeat`.
-- The same production route reports 5 active watches.
+- The same production route reports 5 active watches; worker smoke splits them as `bc_parks:4` and `ontario_parks:1`.
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
-- Latest verified worker smoke at 2026-05-09T15:36:51Z remains yellow: active watches 5, total alerts 0, delivered alerts 0, `missing_worker_heartbeat`, no Supabase heartbeat, and missing platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
+- Latest verified worker smoke at 2026-05-09T16:03:17Z remains yellow: active watches 5, active watch split `bc_parks:4` and `ontario_parks:1`, total alerts 0, delivered alerts 0, `missing_worker_heartbeat`, no Supabase heartbeat, and missing platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
 - GitHub deployment metadata for the fix points to Vercel site deployment, not Railway worker deployment.
 - Worker deploy hardening now exists in code: `alphacamper-worker/railway.json`, Railway `PORT` support, and a clearer `/health` starting/degraded response.
 - Provider-inventory campsite proof is now verified for the current Canada core: 51,997 campsite IDs from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia provider availability-matrix responses.
@@ -397,7 +397,7 @@ Current result:
 - Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`; current counts are 0 rows for paid passes and funnel events.
 - Production Vercel is missing `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, so live checkout is not green yet.
 - `npm run smoke:billing -- --allow-yellow` now gives a repeatable secret-safe billing proof with paid active passes, summer/year split, payment-mode pass count, gross app-recorded revenue, checkout/webhook proof, and net/refund reporting state.
-- Latest verified billing smoke at 2026-05-09T15:36:51Z remains yellow: 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no gross app revenue, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars still missing.
+- Latest verified billing smoke at 2026-05-09T16:03:17Z remains yellow: 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no gross app revenue, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars still missing.
 - `/api/admin/revenue-quality` and the dashboard operator panel now provide a protected revenue-quality view for allowlisted operator accounts.
 - `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
 - `docs/research/revenue-readiness-runbook.md` now defines the path from zero live revenue proof to first paid customer proof without doing a fake live charge.
