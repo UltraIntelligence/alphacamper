@@ -44,6 +44,22 @@ Control-tower intake rule:
 - Preserve searchable vs realtime-alertable separation.
 - Keep the revenue and notification gates yellow until live Stripe and Railway proof are green.
 
+## GitHub Tracker Ledger
+
+Blocker lane: https://github.com/UltraIntelligence/alphacamper/milestone/1
+
+Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
+
+| Order | Tracker | Lane | Status |
+|---:|---|---|---|
+| 1 | [#9 Railway worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | Blocker | Active external blocker |
+| 2 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
+| 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
+| 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
+| 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
+| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Discovery allowed; live claims hold |
+| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Ready when coverage window is available |
+
 ## Status Key
 
 - Green: verified end to end and safe to use in the customer story.
