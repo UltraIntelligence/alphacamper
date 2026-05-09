@@ -27,6 +27,8 @@ What is already green:
 
 What is still yellow/red:
 
+- Owner update at 2026-05-09T16:30:24Z: Stripe does not exist yet for Alphacamper.
+- Alphacamper Stripe account/setup must be created or selected before production checkout can be proven.
 - Vercel production is missing these Stripe env vars:
   - `STRIPE_SECRET_KEY`
   - `STRIPE_WEBHOOK_SECRET`
@@ -42,17 +44,17 @@ Current access finding from 2026-05-09:
 
 - Vercel CLI is authenticated for `alphacamper-site` and confirms the five Stripe production env vars are missing.
 - Local Alphacamper env files do not contain the missing Stripe billing values.
-- Local Stripe CLI can list live Stripe products/prices/webhooks, but its live key is restricted and cannot create the Alphacamper products/prices/webhook.
+- Owner update says Alphacamper Stripe does not exist yet; treat any visible non-Alphacamper Stripe account as unrelated unless Ryan explicitly says otherwise.
 - The available Stripe connector points at Superpress (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not use it for Alphacamper billing setup unless Ryan confirms that account is intended.
 - Do not use the Stripe CLI restricted key as `STRIPE_SECRET_KEY`; production needs a durable live secret key from Stripe key management.
 
 ## First Paid Customer Proof
 
-1. Add the missing Stripe env vars to Vercel Production.
+1. Create or select the Alphacamper Stripe setup.
 
-Use live-mode Stripe values only. Keep test-mode values in Preview/local only. Before creating products or prices, confirm the Stripe account is the intended Alphacamper account.
+Use live-mode Stripe values only. Keep test-mode values in Preview/local only. Do not create Alphacamper products in the Superpress account unless Ryan explicitly confirms that is intended.
 
-If the Stripe products/prices do not exist yet, create these in the correct live Stripe account first:
+Create these in the correct live Alphacamper Stripe account:
 
 - `Alphacamper Summer Pass 2026`, one-time USD price, $29.00.
 - `Alphacamper Year Pass 2026`, one-time USD price, $49.00.
@@ -67,7 +69,9 @@ Optional legacy compatibility events if Stripe asks for them:
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
 
-Then put the two price IDs and webhook signing secret into Vercel Production.
+2. Add the missing Stripe env vars to Vercel Production.
+
+Put the live secret key, two price IDs, webhook signing secret, and publishable key into Vercel Production.
 
 Secret-safe Vercel CLI path, run from a normal terminal or use the Vercel dashboard. Do not paste secret values into Codex or GitHub:
 
@@ -81,11 +85,11 @@ vercel env add STRIPE_PRICE_YEAR production
 vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production
 ```
 
-2. Verify the two Stripe prices.
+3. Verify the two Stripe prices.
 
 Both pass prices should be one-time prices, not recurring subscription prices.
 
-3. Redeploy production after the env vars are present.
+4. Redeploy production after the env vars are present.
 
 This makes the runtime actually see the new Stripe config.
 
@@ -93,7 +97,7 @@ This makes the runtime actually see the new Stripe config.
 vercel deploy --prod --force --yes
 ```
 
-4. Run the billing smoke check.
+5. Run the billing smoke check.
 
 ```bash
 cd alphacamper-site
@@ -110,11 +114,11 @@ Expected next result:
 - `Net/refund reporting`: not verified until Stripe-side net/refund reporting is wired.
 - Overall status: still yellow if no paid customer exists, no webhook proof exists, or net/refund reporting is not wired.
 
-5. Do one real customer checkout only when ready.
+6. Do one real customer checkout only when ready.
 
 Do not create a fake live charge just to satisfy the dashboard. The first proof should be a real buyer, or a clearly approved internal live purchase that can be refunded and documented.
 
-6. Confirm the Stripe webhook landed.
+7. Confirm the Stripe webhook landed.
 
 After checkout succeeds, the operator should see:
 
@@ -123,7 +127,7 @@ After checkout succeeds, the operator should see:
 - Paid active passes above 0.
 - Gross app revenue above 0.
 
-7. Confirm the customer can use the product.
+8. Confirm the customer can use the product.
 
 The customer should be able to:
 
@@ -132,7 +136,7 @@ The customer should be able to:
 - Create a watch.
 - Receive an alert when availability is found.
 
-8. Add net/refund reporting.
+9. Add net/refund reporting.
 
 Do not call revenue reporting fully green until refunds are checked against Stripe, not just app-side gross revenue.
 
@@ -149,10 +153,11 @@ Green:
 
 Yellow:
 
-- Code and tables are ready, but production env vars, first payment proof, or net/refund reporting are missing.
+- Code and tables are ready, but the Alphacamper Stripe setup, production env vars, first payment proof, or net/refund reporting are missing.
 
 Red:
 
+- Alphacamper Stripe setup does not exist and no owner path exists to create it.
 - Checkout cannot start.
 - Webhook signature verification fails for real Stripe events.
 - A customer pays in Stripe but the app does not grant access.
@@ -160,7 +165,7 @@ Red:
 
 ## Smallest Next Action
 
-Add the five missing Stripe env vars to Vercel Production, redeploy, then rerun:
+Create or select the Alphacamper Stripe account/setup, then create the two live one-time prices and the production webhook. After that, add the five missing Stripe env vars to Vercel Production, redeploy, then rerun:
 
 ```bash
 cd /Users/ryan/Code/Alphacamper/alphacamper-site

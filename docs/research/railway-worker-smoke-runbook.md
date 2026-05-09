@@ -33,11 +33,18 @@ This is the current blocker for calling alert coverage production-ready.
 - Worker `/health` now listens on Railway's `PORT` when provided, with `8080` as the local/default fallback.
 - Worker health now goes degraded if the `worker_status` heartbeat write fails, so a Railway green healthcheck is closer to real alert readiness.
 - `npm run smoke:railway` now includes live production heartbeat proof. Railway startup logs alone cannot mark the gate green if the live provider-quality route or Supabase heartbeat is still missing.
+- Owner update at 2026-05-09T16:30:24Z: Railway is sleeping because the account was not reactivated yet.
+
+Control-tower meaning:
+
+- Do not spend more cycles debugging worker code until Railway is reactivated or the worker service is visibly running.
+- Treat unchanged `missing_worker_heartbeat` output as expected owner-blocked status while Railway is sleeping.
 
 ## Success Criteria
 
 Green means all of these are true:
 
+- Railway account/project is reactivated and not sleeping.
 - Railway service is deployed from the current `main` commit or a commit at/after `d7464921c`.
 - Railway service root directory is `/alphacamper-worker`.
 - Railway config file path is `/alphacamper-worker/railway.json` if the service does not auto-detect it.
@@ -68,6 +75,7 @@ Yellow means:
 
 Red means:
 
+- Railway account/project is inactive or sleeping.
 - Railway is not deployed/running.
 - Required live env vars are missing.
 - Worker crashes on startup.
@@ -78,6 +86,9 @@ Red means:
 ## Railway Service Setup Checklist
 
 Use this when the local CLI reports `blocked` because it is not authenticated.
+
+Before checking service details, confirm the Railway account/project has been
+reactivated and the service is no longer sleeping.
 
 In Railway, the worker service should be configured like this:
 
@@ -132,6 +143,9 @@ npm run smoke:railway
 
 Current expected result before Railway is fixed: yellow with `missing_worker_heartbeat`.
 
+Current expected result while Railway is sleeping: yellow with no live
+`worker_status` heartbeat. That is not a repo-code finding by itself.
+
 ```bash
 railway status
 railway service status --service alphacamper-worker --environment production
@@ -150,6 +164,10 @@ Fastest operator unblock path:
 
 ```bash
 cd /Users/ryan/Code/Alphacamper/alphacamper-worker
+
+# First do this in Railway/dashboard/account settings if needed:
+# reactivate the Railway account/project and wake the alphacamper-worker service.
+
 railway login
 railway link --service alphacamper-worker --environment production
 
