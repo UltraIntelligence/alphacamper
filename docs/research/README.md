@@ -54,59 +54,63 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
    - The current executive snapshot after the latest intaken goal-window reports.
    - Use this for the fastest read of where things stand now.
 
-7. `epic-launch-prompts.md`
+7. `control-tower-state-of-union-2026-05-09.md`
+   - The simplest current-state read.
+   - Use this when Ryan asks what we are doing, where we are, what helps customers, what helps the $10k target, and whether reliability is still first.
+
+8. `epic-launch-prompts.md`
    - Copy-paste prompts for the separate long-running goal windows.
    - Use this to launch the next workstreams.
 
-8. `live-catalog-migration-runbook.md`
+9. `live-catalog-migration-runbook.md`
    - The approval-gated runbook for applying and verifying the live Supabase catalog migration.
    - Use this before any customer-facing coverage expansion.
 
-9. `live-catalog-verification.sql`
+10. `live-catalog-verification.sql`
    - Read-only SQL checks for the live catalog before and after the migration.
    - Use this inside the Supabase SQL Editor alongside the runbook.
 
-10. `current-action-queue.md`
+11. `current-action-queue.md`
    - The immediate operating queue.
    - Use this to see what to launch now, what is held, and why.
 
-11. `post-migration-launch-pack.md`
+12. `post-migration-launch-pack.md`
    - The next huge goal windows to launch after the live catalog migration is verified.
    - Use this immediately after Epic 1 is no longer red.
 
-12. `competitor-data-pipeline-playbook.md`
+13. `competitor-data-pipeline-playbook.md`
    - Explains how competitors likely built high-quality campground data.
    - Use this when planning catalog ingestion and enrichment.
 
-13. `provider-scoring-rubric.md`
+14. `provider-scoring-rubric.md`
    - Gives the roadmap window a consistent way to rank the next providers.
    - Use this for Alberta, Saskatchewan, PEI, Quebec/SEPAQ, and US expansion decisions.
 
-14. `report-intake-procedure.md`
+15. `report-intake-procedure.md`
     - Explains how to process reports from long-running goal windows.
     - Use this when a window comes back green/yellow/red.
 
-15. `control-tower-artifact-audit.md`
+16. `control-tower-artifact-audit.md`
     - Maps the control-tower request to the actual docs, commands, evidence, and remaining gaps.
     - Use this to audit whether the operating system still covers the brief before calling anything complete.
 
-16. `railway-worker-smoke-runbook.md`
+17. `railway-worker-smoke-runbook.md`
     - The current production worker blocker.
     - Use this to verify Railway deploy/runtime, `worker_status`, and alert-engine ownership.
 
-17. `revenue-readiness-runbook.md`
+18. `revenue-readiness-runbook.md`
     - The Stripe and first-paid-customer proof path.
     - Use this for #10 before calling the $10k scoreboard measurable.
 
-18. `customer-watch-notification-smoke-runbook.md`
+19. `customer-watch-notification-smoke-runbook.md`
     - The next proof after Railway heartbeat is green.
     - Use this to verify real watch creation, guardrails, alert rows, notification delivery, and cleanup.
 
-19. `get-the-site-moat-plan.md`
+20. `get-the-site-moat-plan.md`
     - The product moat plan for helping campers get the site after an alert.
     - Use this when #15 is ready to move from strategy into paid-loop proof.
 
-20. `current-action-queue.md#8-demand-capture-and-conversion`
+21. `current-action-queue.md#8-demand-capture-and-conversion`
     - The current #19 proof path.
     - Use `cd alphacamper-site && npm run smoke:demand` for public request -> live aggregate -> cleanup proof.
     - Use `ALPHACAMPER_ACCESS_TOKEN=<approved-operator-token> npm run smoke:demand` for the final protected operator API/dashboard proof.
@@ -127,6 +131,7 @@ The live catalog schema gate is now cleared:
 - Site deploy is live: `/api/check-availability` returns 410 retired.
 - Production provider-quality is live: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` as degraded with `missing_worker_heartbeat`; worker smoke splits active watches as `bc_parks:4` and `ontario_parks:1`.
 - Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
+- Latest verified worker smoke at 2026-05-09T16:27:19Z remains yellow; `npm run smoke:railway -- --allow-blocked` also reports Railway auth blocked in this shell.
 - Campsite-level inventory proof is now at 51,997 verified campsite IDs from provider availability-matrix responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia. This crosses the first 50,000 Canada inventory line by 1,997 IDs.
 - This is not a vanity spreadsheet, but it is also not live customer reliability proof; Railway heartbeat, active polling, alert creation, and notification delivery are still the gate.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` is active every 30 minutes to re-run worker reliability smoke and billing readiness smoke, then report back here. It should comment on #9 or #10 only when a gate changes, turns green, or reveals a new blocker.
@@ -145,6 +150,7 @@ Business line:
 
 - $10k net collected revenue by the end of summer.
 - The current revenue scoreboard is not green yet: checkout now uses one-time payment mode in code and the live billing/conversion tables exist, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
+- Latest verified billing smoke at 2026-05-09T16:27:19Z remains yellow with 0 paid passes, 0 webhook rows, no checkout proof, no net/refund proof, and the five production Stripe env vars still missing.
 
 ## Current Window Status
 
