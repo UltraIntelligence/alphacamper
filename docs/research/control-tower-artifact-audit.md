@@ -30,16 +30,17 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Tier-one competitor ambition is captured | `north-star-success-metrics.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | Strategy names Campnab/Campflare as the tier-one bar and frames Alphacamper as a Canada-first alert and planning product moving toward a broader North American camper assistant | Covered |
 | Product distinction is captured | `north-star-success-metrics.md`, `north-america-control-tower.md`, `get-the-site-moat-plan.md`, `control-tower-status-board.md` | Docs say the moat is not just finding the site, but helping the camper get the site, with the paid alert-to-official-review loop held until reliability and billing gates are green | Covered |
 | Autonomy rule is captured | `north-america-control-tower.md`, `control-tower-status-board.md` | Control tower is expected to move autonomously unless a change is unusually destructive, risky, or legally sensitive | Covered |
-| Billing blocker has an executable proof path | `alphacamper-site/scripts/smoke-billing.ts`, `alphacamper-site/package.json`, `summer-revenue-scoreboard.md` | `npm run smoke:billing` checks live billing tables, Vercel Stripe env names, one-time Stripe price shape when local Stripe env is available, paid checkout/webhook proof, and net/refund reporting state | Covered |
+| Billing blocker has an executable proof path | `alphacamper-site/scripts/smoke-billing.ts`, `alphacamper-site/package.json`, `summer-revenue-scoreboard.md`, `revenue-readiness-runbook.md`, `control-tower-operator-unblock-pack.md` | `npm run smoke:billing` checks live billing tables, Vercel Stripe env names, one-time Stripe price shape when local Stripe env is available, paid checkout/webhook proof, and net/refund reporting state; the handoff now includes exact secret-safe Vercel CLI steps | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, tracker mapping, GitHub comment rule, escalation rules, output format | Covered |
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
-| Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
+| Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `control-tower-operator-unblock-pack.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets; the handoff now matches the current Railway CLI service/environment flags | Covered |
 | External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #19, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, demand capture/conversion, first paid cohort, customer notification proof, Manitoba/Nova Scotia label sync, provider health, get-you-the-site proof, and Canada parity expansion remain tracked; Alberta/Saskatchewan discovery and Parks Canada enrichment are closed with evidence | Covered |
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches split across `bc_parks:4` and `ontario_parks:1`, and `missing_worker_heartbeat` | Covered |
+| External owner handoffs are secret-safe | `control-tower-operator-unblock-pack.md`, `railway-worker-smoke-runbook.md`, `revenue-readiness-runbook.md`, GitHub issues #9 and #10 | Railway instructions list service status, variable presence, and logs without secret values; Stripe/Vercel instructions use interactive env entry and warn not to paste secrets | Covered |
 | Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns worker reliability smoke and billing readiness smoke every 30 minutes, reports back to this thread, comments on #9/#10 only when a gate changes, turns green, or reveals a new blocker, and preserves the warning not to use the Superpress Stripe account for Alphacamper without confirmation | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
 | Existing research is preserved | `canadian-database-parity-plan.md`, `parks-canada-api.md` | Prior research remains in place | Covered |
@@ -103,7 +104,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T16:03:17Z.
+Audit timestamp: 2026-05-09T16:14:37Z.
 
 Objective restated as concrete deliverables:
 
@@ -122,19 +123,21 @@ Evidence inspected:
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
+- `docs/research/control-tower-operator-unblock-pack.md`, `docs/research/railway-worker-smoke-runbook.md`, and `docs/research/revenue-readiness-runbook.md` now include exact secret-safe Railway and Vercel owner steps.
 - `docs/research/north-star-success-metrics.md` and `docs/research/north-america-control-tower.md` capture the tier-one competitor ambition, get-you-the-site distinction, regular-camper-to-Alphacamper framing, and $10k net revenue target.
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T16:03:17Z.
 - `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T16:03:17Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked at 2026-05-09T15:36Z because this shell is not Railway-authenticated.
 - `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
 - GitHub Actions is supporting evidence only, not Railway proof or revenue proof; verify the current `main` run with `/Users/ryan/.codex/bin/gh-no-proxy run list --limit 3` before relying on it.
+- Latest supporting GitHub Actions run checked during this audit: `25605657104`, green for commit `ef854bcc6`.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
 - `vercel env list production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
 - Local Stripe CLI can read live Stripe objects but is restricted from creating live Alphacamper products/prices/webhooks.
 - Stripe connector account check returned a different account (`Superpress`), so it is not the Alphacamper billing source.
-- GitHub issue #9 tracks Railway heartbeat and live alert reliability; its body was refreshed with the latest smoke evidence and the rule that notification/Manitoba/Nova Scotia label proof waits on Railway.
-- GitHub issue #10 tracks Stripe production checkout and revenue proof; its body was refreshed with the latest billing evidence and the rule that Stripe can move in parallel with Railway.
+- GitHub issue #9 tracks Railway heartbeat and live alert reliability; its body was refreshed with the latest smoke evidence, active watch platform split, and exact Railway owner commands.
+- GitHub issue #10 tracks Stripe production checkout and revenue proof; its body was refreshed with the latest billing evidence, exact secret-safe Vercel env setup path, and the rule that Stripe can move in parallel with Railway.
 - GitHub milestone #1, `Control Tower: Reliability + Revenue Gates`, groups the current Railway and Stripe gates.
 - GitHub milestone #2, `Control Tower: Next Epic Runs`, groups the held next goal-window trackers in launch order.
 - GitHub trackers #9, #10, #11, #13, #15, #16, #17, #18, and #19 remain open in the expected two milestones; #12 and #14 are closed with intake proof and should not be relaunched unless the scope changes.
