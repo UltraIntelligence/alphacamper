@@ -27,6 +27,10 @@ First match the report to its GitHub tracker:
 | [#13 Customer watch and notification](https://github.com/UltraIntelligence/alphacamper/issues/13) | End-to-end alert delivery |
 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Coverage enrichment |
 | [#15 Get-you-the-site assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Product moat proof |
+| [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | First paid customer/cohort proof |
+| [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Future Canadian provider implementation |
+| [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | Live catalog label sync after worker proof |
+| [#19 Demand capture and conversion](https://github.com/UltraIntelligence/alphacamper/issues/19) | Lead-intent capture and operator demand proof |
 
 Choose one:
 
@@ -44,12 +48,14 @@ Do not mark green just because:
 
 Green requires evidence that the relevant customer/admin path works.
 
-After classifying it, add a short comment to the matching GitHub tracker with:
+After classifying a new goal-window report, add a short comment to the matching GitHub tracker with:
 
 - status
 - evidence inspected
 - remaining blocker
 - next action
+
+Exception: for the recurring heartbeat smoke, comment on #9 or #10 only when a gate changes, turns green, or reveals a new blocker. Do not comment on unchanged yellow results.
 
 ## Step 2: Update The Status Board
 
@@ -157,19 +163,25 @@ Next best move:
 
 The control tower is currently organized into two GitHub lanes:
 
-- Current external blockers: https://github.com/UltraIntelligence/alphacamper/milestone/1
-- Next epic runs: https://github.com/UltraIntelligence/alphacamper/milestone/2
+- Current external blockers: `Control Tower: Reliability + Revenue Gates`
+  https://github.com/UltraIntelligence/alphacamper/milestone/1
+- Next epic runs: `Control Tower: Next Epic Runs`
+  https://github.com/UltraIntelligence/alphacamper/milestone/2
 
 Active blocker intake order:
 
 1. #9 Railway worker heartbeat.
 2. #10 Stripe production checkout and revenue proof.
 
-Next epic intake order after blockers clear:
+Next epic intake order and gates:
 
-1. #13 Customer watch and notification delivery.
-2. #11 Provider health/admin truth.
-3. #15 Get-you-the-site paid assist loop.
+1. #19 Demand capture and conversion path can run in parallel as lead intent; do not call it revenue or reliability green.
+2. #16 First paid cohort waits until #10 is green enough to take payment safely.
+3. #13 Customer watch and notification delivery waits until #9 is green.
+4. #18 Manitoba/Nova Scotia label sync waits until #9 is green; do not market reliability until #13 is green.
+5. #11 Provider health/admin truth waits until #9 has live worker data.
+6. #15 Get-you-the-site paid assist loop waits until #9, #10, and #13 are green.
+7. #17 Canada parity expansion waits until #9 and #13 are green.
 
 Closed or future-only:
 
