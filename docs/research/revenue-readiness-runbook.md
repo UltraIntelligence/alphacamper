@@ -38,11 +38,33 @@ What is still yellow/red:
 - Live `funnel_events` has 0 rows.
 - Net revenue after refunds is not wired from Stripe yet.
 
+Current access finding from 2026-05-09:
+
+- Vercel CLI is authenticated for `alphacamper-site` and confirms the five Stripe production env vars are missing.
+- Local Alphacamper env files do not contain the missing Stripe billing values.
+- Local Stripe CLI can list live Stripe products/prices/webhooks, but its live key is restricted and cannot create the Alphacamper products/prices/webhook.
+- The available Stripe connector points at a different Stripe account, so do not use it for Alphacamper billing setup.
+- Do not use the Stripe CLI restricted key as `STRIPE_SECRET_KEY`; production needs a durable live secret key from Stripe key management.
+
 ## First Paid Customer Proof
 
 1. Add the missing Stripe env vars to Vercel Production.
 
 Use live-mode Stripe values only. Keep test-mode values in Preview/local only.
+
+If the Stripe products/prices do not exist yet, create these in the correct live Stripe account first:
+
+- `Alphacamper Summer Pass 2026`, one-time USD price, $29.00.
+- `Alphacamper Year Pass 2026`, one-time USD price, $49.00.
+- A live webhook endpoint for `https://alphacamper.com/api/stripe/webhook`.
+
+Required webhook events:
+
+- `checkout.session.completed`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+
+Then put the two price IDs and webhook signing secret into Vercel Production.
 
 2. Verify the two Stripe prices.
 

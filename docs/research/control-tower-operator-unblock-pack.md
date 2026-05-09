@@ -64,6 +64,16 @@ In Vercel Production, add or verify:
 
 The summer and year prices should be one-time Stripe prices, not recurring subscriptions.
 
+If the live Alphacamper Stripe objects do not exist yet, create:
+- Alphacamper Summer Pass 2026: one-time USD $29.00
+- Alphacamper Year Pass 2026: one-time USD $49.00
+- Webhook endpoint: https://alphacamper.com/api/stripe/webhook
+
+Webhook events:
+- checkout.session.completed
+- customer.subscription.updated
+- customer.subscription.deleted
+
 After production is redeployed, do not paste secret values. Just confirm the variables are present and paste the billing smoke result.
 ```
 
@@ -111,6 +121,13 @@ Green proof:
 ### 3. Configure Stripe Production Revenue Path
 
 Only call revenue green after the env vars, webhook, and at least one real paid proof exist.
+
+Current access finding:
+
+- Vercel CLI is authenticated and confirms these variables are missing.
+- Local Stripe CLI can read live Stripe objects but cannot create live Alphacamper products/prices/webhooks with its restricted key.
+- The available Stripe connector points at a different Stripe account and should not be used for Alphacamper.
+- A durable live Stripe secret key must come from Stripe key management, not from the local Stripe CLI session.
 
 Required Vercel Production env vars:
 

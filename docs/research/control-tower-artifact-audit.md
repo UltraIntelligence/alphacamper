@@ -93,7 +93,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T11:58:54Z.
+Audit timestamp: 2026-05-09T12:03:40Z.
 
 Objective restated as concrete deliverables:
 
@@ -117,6 +117,8 @@ Evidence inspected:
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
+- Local Stripe CLI can read live Stripe objects but is restricted from creating live Alphacamper products/prices/webhooks.
+- Stripe connector account check returned a different account (`Superpress`), so it is not the Alphacamper billing source.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes.
 
 Live smoke evidence:
