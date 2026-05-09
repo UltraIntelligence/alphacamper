@@ -126,6 +126,7 @@ Evidence inspected:
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T14:01:05Z.
 - `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T14:01:05Z because production Stripe env vars are missing and no paid rows exist yet.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
+- `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
 - Latest `main` CI after commit `39b3d16b8 Clarify parallel control tower unblocks` passed the site, worker, extension, and smoke-check jobs in GitHub Actions run `25602976436`.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.

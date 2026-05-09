@@ -49,7 +49,7 @@ Previous windows launched from the control tower on 2026-05-09:
 | Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Reported yellow; parser proof under intake |
 | Feynman | Extra high | Realtime Campsite Inventory Count Proof | Superseded by Ohm/Jason's verified 51,997 count |
 | Noether | High | Production Worker Heartbeat Recovery | Reported yellow; heartbeat hardening landed |
-| Nash | High | Customer Watch And Notification Smoke | Reported yellow; smoke helper under intake |
+| Nash | High | Customer Watch And Notification Smoke | Reported yellow; read-only helper verified; held until Railway heartbeat is green |
 | Descartes | High | Demand Capture And Search-Only Revenue Path | Reported green for scoped change; under intake |
 
 Report-back rule:
