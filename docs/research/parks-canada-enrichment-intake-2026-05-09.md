@@ -65,3 +65,19 @@ Add a Parks Canada province enrichment step in catalog ingestion. Derive provinc
 Then add tests proving province searches like `Alberta`, `British Columbia`, `New Brunswick`, and `Prince Edward Island` return Parks Canada rows.
 
 Do not change reliability claims yet. Railway heartbeat and notification proof remain yellow.
+
+## Implementation Follow-Up
+
+Completed in repo:
+
+- `alphacamper-worker/src/catalog-ingestion.ts` now derives Parks Canada province from official URL paths.
+- `alphacamper-site/app/api/campgrounds/route.ts` now expands full province names like `Alberta` to stored province codes like `AB`.
+- Worker tests cover `/pn-np/{province}/`, `/lhn-nhs/{province}/`, and `/amnc-nmca/{province}/` URL path shapes.
+- Site route tests cover full province name search expansion.
+
+Live catalog sync:
+
+- `npm run sync:parks-canada -- --dry-run` returned 113 facilities.
+- `npm run sync:parks-canada` upserted 113 Parks Canada facilities and marked 2 stale rows unsupported.
+- Direct Supabase read after sync: 115 Parks Canada rows, 113 with province, 2 null province unsupported rows.
+- Province buckets after sync: AB 22, BC 24, MB 2, NB 9, NL 10, NS 9, NT 1, ON 13, PE 2, QC 15, SK 4, YT 2.

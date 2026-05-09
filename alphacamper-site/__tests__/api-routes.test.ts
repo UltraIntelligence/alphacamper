@@ -273,6 +273,54 @@ describe('campgrounds route', () => {
     })
   })
 
+  it('matches full province names to province codes in live catalog search', async () => {
+    const queryChain = buildSelectChain({
+      data: [{
+        id: '-2147483315',
+        platform: 'parks_canada',
+        root_map_id: -1,
+        name: 'Banff - Tunnel Mountain Village 1',
+        short_name: 'Banff',
+        province: 'AB',
+        support_status: 'alertable',
+        provider_key: 'parks_canada',
+        source_url: 'https://reservation.pc.gc.ca/api/resourceLocation',
+        last_verified_at: '2026-05-09T00:00:00.000Z',
+        availability_mode: 'live_polling',
+        confidence: 'verified',
+        source_evidence: { province_source: 'parks_canada_official_url_path' },
+      }],
+      error: null,
+    })
+    mockFrom.mockReturnValue(queryChain)
+
+    const response = await campgroundsRoute.GET(
+      new Request('https://alphacamper.test/api/campgrounds?q=Alberta')
+    )
+
+    expect(response.status).toBe(200)
+    expect(queryChain.or).toHaveBeenCalledWith(
+      'name.ilike.%Alberta%,short_name.ilike.%Alberta%,province.ilike.%Alberta%,province.eq.AB'
+    )
+    await expect(response.json()).resolves.toEqual({
+      campgrounds: [{
+        id: '-2147483315',
+        platform: 'parks_canada',
+        root_map_id: -1,
+        name: 'Banff - Tunnel Mountain Village 1',
+        short_name: 'Banff',
+        province: 'AB',
+        support_status: 'alertable',
+        provider_key: 'parks_canada',
+        source_url: 'https://reservation.pc.gc.ca/api/resourceLocation',
+        last_verified_at: '2026-05-09T00:00:00.000Z',
+        availability_mode: 'live_polling',
+        confidence: 'verified',
+        source_evidence: { province_source: 'parks_canada_official_url_path' },
+      }],
+    })
+  })
+
   it('falls back while catalog evidence columns are still rolling out', async () => {
     const evidenceQueryChain = buildSelectChain({
       data: null,

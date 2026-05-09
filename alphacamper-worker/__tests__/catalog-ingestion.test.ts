@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildCatalogCampgroundRows,
+  deriveCatalogProvince,
   getCatalogProviderProfile,
 } from "../src/catalog-ingestion.js";
 import type { CamisCampground } from "../src/id-resolver.js";
@@ -83,5 +84,86 @@ describe("catalog ingestion row builder", () => {
     expect(profile.availabilityMode).toBe("live_polling");
     expect(profile.sourceUrl).toBe("https://reservations.parcsnbparks.ca/api/resourceLocation");
     expect(profile.confidence).toBe("verified");
+  });
+
+  it("derives Parks Canada provinces from official source URL paths", () => {
+    const verifiedAt = new Date("2026-05-09T00:00:00.000Z");
+    const banff: CamisCampground = {
+      resourceLocationId: -2147483315,
+      rootMapId: -1,
+      shortName: "Banff",
+      fullName: "Banff - Tunnel Mountain Village 1",
+      rawPayload: {
+        resourceLocationId: -2147483315,
+        rootMapId: -1,
+        localizedValues: [{
+          shortName: "Banff",
+          fullName: "Banff - Tunnel Mountain Village 1",
+          website: "https://parks.canada.ca/pn-np/ab/banff/activ/camping",
+        }],
+      },
+    };
+    const fortLangley: CamisCampground = {
+      resourceLocationId: -2147483316,
+      rootMapId: -1,
+      shortName: "Fort Langley",
+      fullName: "Fort-Langley",
+      rawPayload: {
+        resourceLocationId: -2147483316,
+        rootMapId: -1,
+        localizedValues: [{
+          shortName: "Fort Langley",
+          fullName: "Fort-Langley",
+          website: "https://parks.canada.ca/lhn-nhs/bc/langley/visit",
+        }],
+      },
+    };
+    const fathomFive: CamisCampground = {
+      resourceLocationId: -2147483317,
+      rootMapId: -1,
+      shortName: "Fathom Five",
+      fullName: "Fathom Five - Flowerpot Island",
+      rawPayload: {
+        resourceLocationId: -2147483317,
+        rootMapId: -1,
+        localizedValues: [{
+          shortName: "Fathom Five",
+          fullName: "Fathom Five - Flowerpot Island",
+          website: "https://parks.canada.ca/amnc-nmca/on/fathomfive/visit",
+        }],
+      },
+    };
+
+    const rows = buildCatalogCampgroundRows(
+      "parks_canada",
+      new Map([
+        ["banff", banff],
+        ["fort-langley", fortLangley],
+        ["fathom-five", fathomFive],
+      ]),
+      verifiedAt,
+    );
+
+    expect(rows.map(row => [row.name, row.province])).toEqual([
+      ["Banff - Tunnel Mountain Village 1", "AB"],
+      ["Fort-Langley", "BC"],
+      ["Fathom Five - Flowerpot Island", "ON"],
+    ]);
+    expect(rows[0].source_evidence).toMatchObject({
+      province: "AB",
+      province_source: "parks_canada_official_url_path",
+    });
+  });
+
+  it("does not guess Parks Canada province when source URLs do not identify one", () => {
+    expect(
+      deriveCatalogProvince("parks_canada", {
+        localizedValues: [{
+          shortName: "Mystery",
+          fullName: "Mystery Campground",
+          website: "https://parks.canada.ca/visit",
+        }],
+      }, null),
+    ).toBeNull();
   });
 });

@@ -5,6 +5,20 @@ import { normalizeSupportStatus, searchCampgrounds } from '@/lib/parks'
 const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' }
 const BASE_COLUMNS = 'id, platform, root_map_id, name, short_name, province, support_status, provider_key, source_url, last_verified_at'
 const EVIDENCE_COLUMNS = `${BASE_COLUMNS}, availability_mode, confidence, source_evidence`
+const PROVINCE_SEARCH_ALIASES: Array<{ code: string; aliases: string[] }> = [
+  { code: 'AB', aliases: ['alberta'] },
+  { code: 'BC', aliases: ['british columbia'] },
+  { code: 'MB', aliases: ['manitoba'] },
+  { code: 'NB', aliases: ['new brunswick'] },
+  { code: 'NL', aliases: ['newfoundland and labrador', 'newfoundland labrador'] },
+  { code: 'NS', aliases: ['nova scotia'] },
+  { code: 'NT', aliases: ['northwest territories', 'northwest territory'] },
+  { code: 'ON', aliases: ['ontario'] },
+  { code: 'PE', aliases: ['pei', 'p e i', 'prince edward island'] },
+  { code: 'QC', aliases: ['quebec'] },
+  { code: 'SK', aliases: ['saskatchewan'] },
+  { code: 'YT', aliases: ['yukon'] },
+]
 
 type CampgroundRow = {
   id: string
@@ -37,6 +51,27 @@ function normalizeCampgroundKey(value: string | null | undefined) {
     .replace(/[^a-z0-9]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+function normalizeProvinceSearch(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function provinceCodesForSearch(value: string) {
+  const normalized = normalizeProvinceSearch(value)
+  if (!normalized) return []
+
+  return PROVINCE_SEARCH_ALIASES
+    .filter(({ code, aliases }) => (
+      normalized === code.toLowerCase() || aliases.includes(normalized)
+    ))
+    .map(({ code }) => code)
 }
 
 export async function GET(request: Request) {
@@ -76,9 +111,13 @@ export async function GET(request: Request) {
       return query
     }
 
-    query = query.or(
-      `name.ilike.%${escapedQuery}%,short_name.ilike.%${escapedQuery}%,province.ilike.%${escapedQuery}%`
-    )
+    const provinceFilters = provinceCodesForSearch(escapedQuery).map(code => `province.eq.${code}`)
+    query = query.or([
+      `name.ilike.%${escapedQuery}%`,
+      `short_name.ilike.%${escapedQuery}%`,
+      `province.ilike.%${escapedQuery}%`,
+      ...provinceFilters,
+    ].join(','))
     if (platform) query = query.eq('platform', platform)
     return query
   }

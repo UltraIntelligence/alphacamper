@@ -26,7 +26,7 @@ GitHub tracker map:
 | 4 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
 | 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Reported yellow; feasible after reliability gates |
-| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Reported yellow; province enrichment next |
+| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Repo patch and live catalog sync complete; deploy verification next |
 
 ## Current And Recent Epic Windows
 
@@ -348,11 +348,13 @@ Current intake:
 - All 115 live Parks Canada rows have `province = null`.
 - Live `q=Alberta` search returns 0 rows, so province discovery is broken for Parks Canada even though name searches like Banff and Fundy work.
 - Raw Parks Canada payload URLs can safely derive province for 113 alertable rows; only `Grand-Pré` and `Internet` remain uncertain, and both are unsupported.
+- Repo patch is implemented: worker catalog ingestion derives province from official URL paths, and the site API expands full province names to stored province codes.
+- Live one-provider sync completed: 113 Parks Canada rows now have province; 2 unsupported stale rows remain null province.
 - Intake artifact: `docs/research/parks-canada-enrichment-intake-2026-05-09.md`.
 
 Use prompt:
 
-- Add Parks Canada province enrichment from official/source-backed URL paths, then add province search tests before creating province coverage pages.
+- Verify live `q=Alberta` returns Parks Canada rows after deploy, then add province coverage pages.
 
 ## Report-Back Rule
 

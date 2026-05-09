@@ -49,6 +49,24 @@ export interface CatalogCampgroundRow {
   synced_at: string;
 }
 
+const PARKS_CANADA_PROVINCE_CODES = new Set([
+  "AB",
+  "BC",
+  "MB",
+  "NB",
+  "NL",
+  "NS",
+  "NT",
+  "ON",
+  "PE",
+  "QC",
+  "SK",
+  "YT",
+]);
+
+const PARKS_CANADA_PROVINCE_PATH =
+  /\/(?:pn-np|lhn-nhs|amnc-nmca)\/([a-z]{2})\//i;
+
 export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> = {
   bc_parks: {
     platform: "bc_parks",
@@ -144,6 +162,35 @@ export function getCatalogProviderProfile(platform: string): CatalogProviderProf
   };
 }
 
+export function deriveCatalogProvince(
+  platform: string,
+  rawPayload: Record<string, unknown>,
+  fallbackProvince: string | null,
+): string | null {
+  if (platform !== "parks_canada") return fallbackProvince;
+
+  for (const candidate of collectStringValues(rawPayload)) {
+    const code = candidate.match(PARKS_CANADA_PROVINCE_PATH)?.[1]?.toUpperCase();
+    if (code && PARKS_CANADA_PROVINCE_CODES.has(code)) return code;
+  }
+
+  return fallbackProvince;
+}
+
+function collectStringValues(value: unknown, depth = 0): string[] {
+  if (depth > 5 || value == null) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => collectStringValues(item, depth + 1));
+  }
+  if (typeof value === "object") {
+    return Object.values(value as Record<string, unknown>).flatMap(item =>
+      collectStringValues(item, depth + 1),
+    );
+  }
+  return [];
+}
+
 export function buildCatalogCampgroundRows(
   platform: string,
   campgroundMap: Map<string, CamisCampground>,
@@ -162,6 +209,12 @@ export function buildCatalogCampgroundRows(
     if (!name || name.toLowerCase() === "internet") continue;
 
     const dedupeKey = `${platform}:${entry.resourceLocationId}`;
+    const rawPayload = entry.rawPayload ?? {
+      resourceLocationId: entry.resourceLocationId,
+      rootMapId: entry.rootMapId,
+      localizedValues: [{ shortName: entry.shortName, fullName: entry.fullName }],
+    };
+    const province = deriveCatalogProvince(platform, rawPayload, profile.province);
     const sourceEvidence = {
       source_type: "provider_directory",
       source_url: profile.sourceUrl,
@@ -172,6 +225,12 @@ export function buildCatalogCampgroundRows(
       root_map_id: entry.rootMapId,
       dedupe_key: dedupeKey,
       dedupe_rule: "Use provider platform + resourceLocationId as the canonical row; name keys are lookup aliases only.",
+      province,
+      province_source: platform === "parks_canada" && province
+        ? "parks_canada_official_url_path"
+        : profile.province
+          ? "provider_profile"
+          : null,
       availability_mode: profile.availabilityMode,
       confidence: profile.confidence,
       verification_note: profile.verificationNote,
@@ -183,7 +242,7 @@ export function buildCatalogCampgroundRows(
       root_map_id: entry.rootMapId,
       name,
       short_name: entry.shortName || null,
-      province: profile.province,
+      province,
       support_status: profile.supportStatus,
       provider_key: profile.providerKey,
       source_url: profile.sourceUrl,
@@ -191,11 +250,7 @@ export function buildCatalogCampgroundRows(
       availability_mode: profile.availabilityMode,
       confidence: profile.confidence,
       source_evidence: sourceEvidence,
-      raw_payload: entry.rawPayload ?? {
-        resourceLocationId: entry.resourceLocationId,
-        rootMapId: entry.rootMapId,
-        localizedValues: [{ shortName: entry.shortName, fullName: entry.fullName }],
-      },
+      raw_payload: rawPayload,
       synced_at: verifiedIso,
     });
   }
