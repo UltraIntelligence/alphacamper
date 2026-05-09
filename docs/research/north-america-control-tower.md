@@ -257,7 +257,12 @@ Main output:
 
 ## Epic Goal Windows
 
-Use these as standalone prompts in separate long-running windows. Report back here with the report format below.
+The canonical current launch queue is now:
+
+- `docs/research/current-action-queue.md`
+- `docs/research/epic-launch-prompts.md`
+
+Those files contain the tracker-backed order and all 15 copy-paste goal-window prompts. The windows below are the original strategy seeds and historical context; do not use this section as the current launch order.
 
 ### Epic 1: Phase 2 Live Catalog Fix
 
@@ -380,9 +385,19 @@ Next recommended action:
 
 ## Current Next Action
 
-Continue Production Worker Smoke. The live catalog gate is cleared, but Railway worker heartbeat and notification proof are still the product gate.
+Continue Production Worker Smoke (#9). The live catalog gate is cleared, but Railway worker heartbeat and notification proof are still the product reliability gate.
 
-Continue Billing Truth And Revenue Reporting in parallel with the Railway unblock so the $10k summer goal becomes measurable. Run Customer Watch And Notification Smoke after the worker heartbeat is green.
+Continue Billing Truth And Revenue Reporting (#10) in parallel with the Railway unblock so the $10k summer goal becomes measurable.
+
+Then hold the next windows in this order:
+
+1. First Paid Cohort Sprint (#16): after #10 is green enough to take payment safely.
+2. Customer Watch And Notification Smoke (#13): after #9 is green.
+3. Provider Health/Admin Truth (#11): after #9 has live worker data.
+4. Paid Alert-To-Assist Moat Proof (#15): after #9, #10, and #13 are green.
+5. Canada Parity Expansion (#17): after #9 and #13 are green.
+
+Do not relaunch closed discovery/enrichment scopes #12 or #14 unless the scope changes.
 
 ## Companion Docs
 
