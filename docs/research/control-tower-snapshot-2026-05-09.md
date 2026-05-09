@@ -65,6 +65,7 @@ Next epic lane:
 - https://github.com/UltraIntelligence/alphacamper/milestone/2
 - #16 First paid cohort sprint.
 - #13 Customer watch and notification delivery.
+- #18 Manitoba/Nova Scotia label sync.
 - #11 Provider health/admin truth.
 - #15 Paid alert-to-assist loop.
 - #17 Canada parity expansion.

@@ -61,11 +61,12 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 2 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
 | 3 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | Next epic | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
 | 4 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
-| 5 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
-| 6 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
-| 7 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Next epic | Hold until #9 and #13 are green |
-| 8 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
-| 9 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
+| 5 | [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | Next epic | Hold until #9 is green; do not market reliability until #13 is green |
+| 6 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
+| 7 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
+| 8 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Next epic | Hold until #9 and #13 are green |
+| 9 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
+| 10 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
 
 ## Status Key
 
@@ -99,7 +100,7 @@ These numbers should be treated differently depending on their evidence level.
 | Live known catalog rows | 464 | Verified live read after catalog refresh | Official/provider directory rows are now in live Supabase, including stale rows marked unsupported | Keep refreshing from official sources |
 | Live customer-searchable rows | 461 | Verified live read after catalog refresh | Safe searchable inventory excluding unsupported stale rows | Deploy updated UI/API evidence fields |
 | Verified alertable campground rows | 396 live; 461 repo-ready | Live read has BC, Ontario, Parks Canada, and New Brunswick alertable; Manitoba and Nova Scotia now have repo-side live-polling proof | Production catalog sync/deploy still needs to update live labels |
-| Verified realtime-alertable campsite IDs | 51,997 | Clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia | First 50,000 Canada inventory line is crossed by 1,997 campsite IDs | Pair with worker heartbeat and notification proof before marketing reliability |
+| Verified provider-inventory campsite IDs | 51,997 | Clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia | First 50,000 Canada inventory line is crossed by 1,997 campsite IDs | Pair with worker heartbeat and notification proof before marketing reliability |
 | Search-only campground rows | 65 live; 0 after Manitoba/Nova Scotia sync | Live read still shows Manitoba and Nova Scotia as search-only until production catalog sync runs | Sync production catalog after deploy if the control tower wants live labels updated |
 | Unsupported stale rows | 3 | Verified live read after refresh | Carmanah Walbran, Grand-Pre, and Internet are not treated as alert inventory | Keep stale rows out of customer claims |
 | BC Parks campsite IDs | 10,410 | Clean provider availability proof, 145/145 countable rows checked | Verified campsite-level inventory | Pair with Railway heartbeat and notifications before marketing reliability |
@@ -193,7 +194,7 @@ Current result:
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
 - GitHub deployment metadata for the fix points to Vercel site deployment, not Railway worker deployment.
 - Worker deploy hardening now exists in code: `alphacamper-worker/railway.json`, Railway `PORT` support, and a clearer `/health` starting/degraded response.
-- Realtime-alertable campsite inventory proof is now verified for the current Canada core: 51,997 campsite IDs from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia provider availability responses.
+- Provider-inventory campsite proof is now verified for the current Canada core: 51,997 campsite IDs from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia provider availability responses.
 - The first 50,000 provider-inventory line is crossed by 1,997 campsite IDs.
 - This proves provider inventory enumeration, not Railway heartbeat, active-watch polling, or customer notification delivery.
 
@@ -456,10 +457,10 @@ Next recommended runs:
 2. Billing Truth And Revenue Reporting: configure the correct Alphacamper Stripe account/env vars, prove checkout/webhook, and finish the operator revenue view.
 3. First Paid Cohort Sprint: after #10 is green, measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
 4. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-5. Production Catalog Label Sync: deploy/sync the Manitoba and Nova Scotia alertable/live-polling profile update after the worker is alive.
-6. Paid Alert-To-Assist Loop: after heartbeat, billing, and notification proof are green, prove the first BC/Ontario "get you the site" loop.
-7. Canada Parity Expansion: after heartbeat and notification proof are green, turn Alberta/Saskatchewan or the next Canadian provider systems from search-only into alertable proof.
-8. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
+5. Manitoba/Nova Scotia Label Sync: deploy/sync the alertable/live-polling profile update after the worker is alive; do not market reliability until notification proof is green.
+6. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
+7. Paid Alert-To-Assist Loop: after heartbeat, billing, and notification proof are green, prove the first BC/Ontario "get you the site" loop.
+8. Canada Parity Expansion: after heartbeat and notification proof are green, turn Alberta/Saskatchewan or the next Canadian provider systems from search-only into alertable proof.
 
 Keep research-only for now:
 

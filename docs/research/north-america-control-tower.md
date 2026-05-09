@@ -85,7 +85,7 @@ Verified live Supabase rows after catalog refresh:
 - New Brunswick: 9 alertable.
 - Manitoba: 45 live search-only rows; repo-ready alertable/live-polling after deploy/sync.
 - Nova Scotia: 20 live search-only rows; repo-ready alertable/live-polling after deploy/sync.
-- Verified realtime-alertable campsite IDs: 51,997 from clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
+- Verified provider-inventory campsite IDs: 51,997 from clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
 - Provider campsite counts: BC Parks 10,410; Ontario Parks 21,640; Parks Canada 11,336; New Brunswick 1,431; Manitoba 5,480; Nova Scotia 1,700.
 - The first 50,000 Canada inventory line is crossed by 1,997 campsite IDs.
 
@@ -393,9 +393,10 @@ Then hold the next windows in this order:
 
 1. First Paid Cohort Sprint (#16): after #10 is green enough to take payment safely.
 2. Customer Watch And Notification Smoke (#13): after #9 is green.
-3. Provider Health/Admin Truth (#11): after #9 has live worker data.
-4. Paid Alert-To-Assist Moat Proof (#15): after #9, #10, and #13 are green.
-5. Canada Parity Expansion (#17): after #9 and #13 are green.
+3. Manitoba/Nova Scotia Label Sync (#18): after #9 is green; do not market reliability until #13 is green.
+4. Provider Health/Admin Truth (#11): after #9 has live worker data.
+5. Paid Alert-To-Assist Moat Proof (#15): after #9, #10, and #13 are green.
+6. Canada Parity Expansion (#17): after #9 and #13 are green.
 
 Do not relaunch closed discovery/enrichment scopes #12 or #14 unless the scope changes.
 

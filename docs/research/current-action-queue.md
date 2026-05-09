@@ -24,11 +24,12 @@ GitHub tracker map:
 | 2 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
 | 3 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | High | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
 | 4 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | High | Hold until #9 is green |
-| 5 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
-| 6 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
-| 7 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Extra high | Hold until #9 and #13 are green |
-| 8 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
-| 9 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
+| 5 | [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | High | Hold until #9 is green; do not market reliability until #13 is green |
+| 6 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
+| 7 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
+| 8 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Extra high | Hold until #9 and #13 are green |
+| 9 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
+| 10 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
 
 ## Current And Recent Epic Windows
 
@@ -151,14 +152,14 @@ Done means:
 
 - Every row has support status, source evidence, availability mode, confidence, and last verified date.
 - Stale rows are downgraded instead of marketed.
-- Counts stay separated between searchable rows, alertable campground rows, and realtime-alertable campsite inventory.
+- Counts stay separated between searchable rows, alertable campground rows, and provider-inventory campsite IDs.
 
 Current result:
 
 - Live known catalog rows: 464.
 - Live customer-searchable rows: 461.
 - Verified alertable campground rows: 396 live; 461 repo-ready after Manitoba and Nova Scotia sync.
-- Verified realtime-alertable campsite IDs: 51,997 from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
+- Verified provider-inventory campsite IDs: 51,997 from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
 - Provider campsite counts: BC Parks 10,410; Ontario Parks 21,640; Parks Canada 11,336; New Brunswick 1,431; Manitoba 5,480; Nova Scotia 1,700.
 - The first 50,000 Canada inventory line is crossed by 1,997 campsite IDs.
 - Search-only campground rows: 65 live; 0 after the Manitoba and Nova Scotia sync.

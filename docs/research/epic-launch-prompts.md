@@ -35,6 +35,7 @@ Use high reasoning for:
 - Customer Watch And Notification Smoke.
 - Billing Truth And Revenue Reporting.
 - First Paid Cohort Sprint.
+- Manitoba/Nova Scotia Label Sync.
 - Canada Coverage Sprint.
 - Parks Canada Enrichment.
 - Provider Health/Admin Truth.
@@ -71,11 +72,12 @@ Next recommended windows:
 
 1. Production Worker Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/9. Launch/continue now; likely blocked on Railway access.
 2. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after the correct Alphacamper Stripe account and production Vercel env vars are confirmed.
-3. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
-4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
-5. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
-6. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
-7. Canada Parity Expansion. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/17. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
+3. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
+4. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
+5. Manitoba/Nova Scotia Label Sync. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/18. Hold until worker heartbeat is green; do not market reliability until notification proof is green.
+6. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
+7. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
+8. Canada Parity Expansion. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/17. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
 
 Closed or future-only scopes:
 
@@ -704,6 +706,63 @@ Counts:
 Customer-facing truth:
 - ...
 Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 16: Manitoba And Nova Scotia Catalog Label Sync
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+After the Railway worker heartbeat is green, sync Manitoba and Nova Scotia from repo-ready alertable/live-polling profiles into the live production catalog. This is a careful label-sync and proof window, not a marketing launch.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Site app: alphacamper-site
+- Worker app: alphacamper-worker
+- Tracker: https://github.com/UltraIntelligence/alphacamper/issues/18
+- Worker blocker tracker: https://github.com/UltraIntelligence/alphacamper/issues/9
+- Customer notification tracker: https://github.com/UltraIntelligence/alphacamper/issues/13
+- Current proof: Manitoba has 5,480 verified provider-inventory campsite IDs from 45/45 countable rows; Nova Scotia has 1,700 from 20/20 countable rows.
+- Current caution: production catalog labels are still search-only until sync/deploy. Reliability claims stay yellow until customer watch and notification proof is green.
+
+Rules:
+- Do not start until #9 is green.
+- Do not market Manitoba/Nova Scotia as reliable customer alert coverage until #13 is green.
+- Keep source evidence, support status, availability mode, confidence, and last verified date intact.
+- Prove live watch creation allows supported Manitoba/Nova Scotia rows after the sync.
+- Preserve rollback notes if any live rows change unexpectedly.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Tracker:
+- #18:
+Dependency proof:
+- #9 worker heartbeat:
+- #13 notification proof:
+Live catalog proof:
+- Manitoba rows changed:
+- Nova Scotia rows changed:
+- support status:
+- availability mode:
+- source evidence:
+Customer-path proof:
+- search/API response:
+- watch creation:
+- worker polling:
+- alert row:
+- notification delivery:
+Counts:
+- Manitoba campsite IDs:
+- Nova Scotia campsite IDs:
+- total provider-inventory IDs:
+Risks:
+- ...
+Rollback note:
 - ...
 Recommended control-tower update:
 - ...
