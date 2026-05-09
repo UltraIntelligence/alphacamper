@@ -316,12 +316,15 @@ Context:
 - Worker app: alphacamper-worker
 - Live site: https://alphacamper.com
 - Current expected live catalog: 461 searchable rows, 396 alertable campground rows, 65 search-only rows, 3 unsupported stale rows.
-- Current known gap: live worker_status currently has no heartbeat rows.
+- Current provider-quality proof: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` with `missing_worker_heartbeat`.
+- Current known gap: live `worker_status` currently has no heartbeat rows.
+- Repo smoke command: from `alphacamper-worker`, run `npm run smoke:production`.
 
 Rules:
 - Treat this as production verification, not new feature work.
 - Do not overclaim campsite-level totals.
 - If the worker is not live yet, say exactly what is pending and keep watching if possible.
+- Do not print secret values from Railway or Supabase. Only report whether required variables exist and point to the live project.
 
 Report back:
 Epic:
