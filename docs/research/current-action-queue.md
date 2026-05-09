@@ -343,9 +343,10 @@ Current intake:
 
 - Demand capture is green as a campground-interest signal.
 - Repo-side operator visibility is now built into the protected revenue-quality view and deployed route shape is live: `campground_interest` is aggregated into total requests, unique requested campgrounds, seven-day requests, support-status mix, platform mix, and top requested campground rows without exposing customer emails.
+- Live demand smoke is green as of 2026-05-09T15:24:48Z: `npm run smoke:demand` posted one controlled `coming_soon` request through `alphacamper.com/api/campground-interest`, verified the row in the aggregate, and deleted it.
 - It must not be described as realtime alert coverage.
 - The captured signal is campground-level interest, not a paid conversion yet.
-- Tracker #19 now owns the next step: use an approved operator account to prove a controlled live request appears in the panel/report, then clean up the test row.
+- Tracker #19 now owns the next step: use an approved operator account to prove the protected dashboard panel renders the demand queue from live data.
 
 ## Completed And Closed
 
