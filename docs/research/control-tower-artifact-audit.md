@@ -27,6 +27,9 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
 | Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
 | Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k net summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
+| Tier-one competitor ambition is captured | `north-star-success-metrics.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | Strategy names Campnab/Campflare as the tier-one bar and frames Alphacamper as a Canada-first alert and planning product moving toward a broader North American camper assistant | Covered |
+| Product distinction is captured | `north-star-success-metrics.md`, `north-america-control-tower.md`, `get-the-site-moat-plan.md`, `control-tower-status-board.md` | Docs say the moat is not just finding the site, but helping the camper get the site, with the paid alert-to-official-review loop held until reliability and billing gates are green | Covered |
+| Autonomy rule is captured | `north-america-control-tower.md`, `control-tower-status-board.md` | Control tower is expected to move autonomously unless a change is unusually destructive, risky, or legally sensitive | Covered |
 | Billing blocker has an executable proof path | `alphacamper-site/scripts/smoke-billing.ts`, `alphacamper-site/package.json`, `summer-revenue-scoreboard.md` | `npm run smoke:billing` checks live billing tables, Vercel Stripe env names, and one-time Stripe price shape when local Stripe env is available | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, tracker mapping, GitHub comment rule, escalation rules, output format | Covered |
@@ -53,6 +56,10 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | "Find how competitors populated high-quality data" | `competitor-data-pipeline-playbook.md` |
 | "Be clear on the big goal and success count" | `north-star-success-metrics.md`, `control-tower-status-board.md` |
 | "Make $10k revenue by the end of summer" | `summer-revenue-scoreboard.md`, `current-action-queue.md`, `epic-launch-prompts.md` |
+| "Build a tier-one Campnab/Campflare competitor" | `north-star-success-metrics.md`, `north-america-control-tower.md`, `control-tower-status-board.md` |
+| "Not just finding the site, but getting you the site" | `north-star-success-metrics.md`, `north-america-control-tower.md`, `get-the-site-moat-plan.md` |
+| "Help regular campers become Alphacampers" | `north-star-success-metrics.md`, `north-america-control-tower.md` |
+| "Operate autonomously" | `north-america-control-tower.md`, `control-tower-status-board.md` |
 | "Use huge tasks with their own goals" | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` |
 | "What is blocking us now?" | `control-tower-snapshot-2026-05-09.md`, `railway-worker-smoke-runbook.md`, `current-action-queue.md` |
 | "What do we launch after migration?" | `post-migration-launch-pack.md`, `current-action-queue.md` |
@@ -96,7 +103,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T13:32:34Z.
+Audit timestamp: 2026-05-09T13:39:39Z.
 
 Objective restated as concrete deliverables:
 
@@ -115,9 +122,11 @@ Evidence inspected:
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
-- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T13:16:09Z.
-- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T13:16:09Z because production Stripe env vars are missing and no paid rows exist yet.
+- `docs/research/north-star-success-metrics.md` and `docs/research/north-america-control-tower.md` capture the tier-one competitor ambition, get-you-the-site distinction, regular-camper-to-Alphacamper framing, and $10k net revenue target.
+- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T13:36:41Z.
+- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T13:36:41Z because production Stripe env vars are missing and no paid rows exist yet.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
+- Latest `main` CI after commit `a79811871 Align control tower strategy notes` passed the site, worker, extension, and smoke-check jobs in GitHub Actions run `25602486254`.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
 - Local Stripe CLI can read live Stripe objects but is restricted from creating live Alphacamper products/prices/webhooks.
