@@ -170,7 +170,10 @@ Next epic intake order after blockers clear:
 1. #13 Customer watch and notification delivery.
 2. #11 Provider health/admin truth.
 3. #15 Get-you-the-site paid assist loop.
-4. #12 Alberta/Saskatchewan adapter discovery.
-5. #14 Parks Canada enrichment.
+
+Closed or future-only:
+
+- #12 Alberta/Saskatchewan adapter discovery is closed; relaunch only as live implementation after #9/#13 are green.
+- #14 Parks Canada enrichment is closed; relaunch only if the scope changes.
 
 Do not relaunch old windows just because the conversation was forked. Relaunch only when the scope changes or the tracker explicitly needs a new proof pass.

@@ -55,7 +55,7 @@ Already reported back and intaken:
 1. Phase 2 Live Catalog Fix: yellow after live migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
-4. Canada Provider Proof: yellow; New Brunswick alertable, Manitoba/Nova Scotia repo-ready, Alberta/Saskatchewan need adapter work.
+4. Canada Provider Proof: yellow; New Brunswick alertable, Manitoba/Nova Scotia repo-ready, Alberta/Saskatchewan discovery closed with live implementation waiting for reliability gates.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.

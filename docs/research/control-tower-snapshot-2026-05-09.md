@@ -59,8 +59,8 @@ Next epic lane:
 - #13 Customer watch and notification delivery.
 - #11 Provider health/admin truth.
 - #15 Get-you-the-site paid assist loop.
-- #12 Alberta/Saskatchewan adapter discovery.
-- #14 Parks Canada enrichment.
+- #12 Alberta/Saskatchewan adapter discovery is closed; future live implementation waits for #9/#13.
+- #14 Parks Canada enrichment is closed; live province search and six production province pages are verified.
 
 Current intake rule:
 

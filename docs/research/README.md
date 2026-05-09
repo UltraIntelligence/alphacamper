@@ -134,7 +134,7 @@ Already reported back and intaken:
 1. Phase 2 Live Catalog Fix: yellow after migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
-4. Canada Provider Proof: yellow; New Brunswick is alertable, Manitoba/Nova Scotia are repo-ready, Alberta/Saskatchewan need adapter work.
+4. Canada Provider Proof: yellow; New Brunswick is alertable, Manitoba/Nova Scotia are repo-ready, Alberta/Saskatchewan discovery is closed with live implementation waiting for reliability gates.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.
@@ -146,14 +146,14 @@ Do not relaunch those same windows just because this conversation was forked.
 Next high-leverage runs:
 
 1. Production Worker Smoke. High reasoning. Launch/continue now; likely blocked on Railway access.
-2. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
-3. Billing Truth And Revenue Reporting. High reasoning. Continue after production Stripe env vars are configured.
+2. Billing Truth And Revenue Reporting. High reasoning. Continue after the correct Alphacamper Stripe account and production Vercel env vars are configured.
+3. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
 4. Provider Health/Admin Truth UI and recurring ops. High reasoning. Continue once live worker heartbeat creates real provider health data.
-5. Get You The Site Moat Proof. Extra-high reasoning. Prove one paid alert-to-official-review assist loop.
-6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Hold active-alert launch until Railway heartbeat and notification proof are green.
+5. Get You The Site Moat Proof. Extra-high reasoning. Hold until Railway heartbeat, Stripe revenue proof, and customer notification proof are green.
+6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Future live implementation only after Railway heartbeat and notification proof are green.
 7. Demand Capture And Conversion. High reasoning. Use only as a revenue path, not a reliability claim.
 
-Run when official Parks Canada source data is selected:
+Closed unless the scope changes:
 
 1. Parks Canada Enrichment.
 

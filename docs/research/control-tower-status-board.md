@@ -55,8 +55,8 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | Order | Tracker | Lane | Status |
 |---:|---|---|---|
 | 1 | [#9 Railway worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | Blocker | Active external blocker |
-| 2 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
-| 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
+| 2 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
+| 3 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
 | 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
 | 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
@@ -316,7 +316,7 @@ Current blocker:
 
 Next prompt:
 
-> Launch the next proof window after Epic 1 is unblocked: verify New Brunswick GoingToCamp alertability, then run Alberta/Saskatchewan adapter discovery against official reservation pages. Keep every new provider searchable-only until site-level availability polling is proven.
+> After #9 and #13 are green, turn the Alberta/Saskatchewan discovery into live polling proof against official reservation pages. Keep every new provider searchable-only until site-level availability polling and notification delivery are proven.
 
 Top roadmap bets:
 
@@ -437,7 +437,7 @@ Do not relaunch those same windows unless the scope changes.
 
 Reported back and integrated:
 
-1. Canada Provider Proof: New Brunswick alertable; Alberta/Saskatchewan need adapter work.
+1. Canada Provider Proof: New Brunswick alertable; Alberta/Saskatchewan discovery closed, with live implementation waiting for reliability gates.
 2. Alert Engine Cleanup: Recreation.gov moved into Railway in code; Vercel cron retired in code.
 3. Catalog Ingestion Factory: official/provider refresh ran live for six providers.
 4. Revenue Readiness: repo-side billing diagnostics are stronger; production Stripe env vars and first paid checkout proof remain yellow.
