@@ -33,6 +33,7 @@ const FAILURE_MARKERS = [
   "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set",
   "Cycle failed",
   "updateWorkerStatus failed",
+  "worker_status heartbeat write failed",
 ];
 
 type Options = {

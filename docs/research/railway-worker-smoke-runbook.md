@@ -144,12 +144,34 @@ If the service is stale or not running:
 railway redeploy --yes
 ```
 
+Fastest operator unblock path:
+
+```bash
+cd /Users/ryan/Code/Alphacamper/alphacamper-worker
+railway login
+railway link
+railway service link alphacamper-worker
+
+# Check service/env without printing secret values.
+npm run smoke:railway -- --service alphacamper-worker --environment production --allow-blocked
+
+# If service settings or env vars are fixed in Railway, redeploy and rerun.
+railway redeploy --service alphacamper-worker --yes
+npm run smoke:railway -- --service alphacamper-worker --environment production
+npm run smoke:production
+```
+
+The first green proof we need is not an alert. It is a recent live
+`worker_status` heartbeat with the expected platforms listed. Only after that
+should the customer notification smoke move from setup proof to delivery proof.
+
 If the service is running but no heartbeat appears, inspect logs:
 
 ```bash
 railway logs --since 15m --filter "Alphacamper Worker"
 railway logs --since 15m --filter "Cycle failed"
 railway logs --since 15m --filter "updateWorkerStatus failed"
+railway logs --since 15m --filter "worker_status heartbeat write failed"
 railway logs --since 15m --filter "SUPABASE_URL"
 ```
 
