@@ -141,6 +141,7 @@ async function fetchSupabaseWorkerStatus(): Promise<{
   configured: boolean;
   latestWorker: WorkerStatusRow | null;
   activeWatches: number | null;
+  activeWatchesByPlatform: Record<string, number>;
   recentAlerts: number | null;
   error: string | null;
 }> {
@@ -153,13 +154,14 @@ async function fetchSupabaseWorkerStatus(): Promise<{
       configured: false,
       latestWorker: null,
       activeWatches: null,
+      activeWatchesByPlatform: {},
       recentAlerts: null,
       error: null,
     };
   }
 
   const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const [workerResult, watchesResult, alertsResult] = await Promise.all([
+  const [workerResult, watchesResult, watchRowsResult, alertsResult] = await Promise.all([
     supabase
       .from("worker_status")
       .select("id, last_cycle_at, last_successful_poll_at, platforms_healthy, cycle_stats")
@@ -170,15 +172,24 @@ async function fetchSupabaseWorkerStatus(): Promise<{
       .select("id", { count: "exact", head: true })
       .eq("active", true),
     supabase
+      .from("watched_targets")
+      .select("platform")
+      .eq("active", true),
+    supabase
       .from("availability_alerts")
       .select("id", { count: "exact", head: true }),
   ]);
+
+  const activeWatchesByPlatform = summarizeActiveWatchesByPlatform(
+    (watchRowsResult.data ?? []) as Array<{ platform: string | null }>,
+  );
 
   if (workerResult.error) {
     return {
       configured: true,
       latestWorker: null,
       activeWatches: watchesResult.count ?? null,
+      activeWatchesByPlatform,
       recentAlerts: alertsResult.count ?? null,
       error: workerResult.error.message,
     };
@@ -188,6 +199,7 @@ async function fetchSupabaseWorkerStatus(): Promise<{
     configured: true,
     latestWorker: ((workerResult.data ?? [])[0] as WorkerStatusRow | undefined) ?? null,
     activeWatches: watchesResult.count ?? null,
+    activeWatchesByPlatform,
     recentAlerts: alertsResult.count ?? null,
     error: null,
   };
@@ -207,6 +219,20 @@ function missingRequiredPlatforms(platforms: Record<string, boolean> | null | un
 
 function printLine(label: string, value: string | number | null | undefined) {
   console.log(`${label.padEnd(24)} ${value ?? "none"}`);
+}
+
+export function summarizeActiveWatchesByPlatform(rows: Array<{ platform: string | null }>): Record<string, number> {
+  return rows.reduce<Record<string, number>>((summary, row) => {
+    const platform = row.platform?.trim() || "unknown";
+    summary[platform] = (summary[platform] ?? 0) + 1;
+    return summary;
+  }, {});
+}
+
+export function formatPlatformCounts(counts: Record<string, number>): string {
+  const entries = Object.entries(counts).sort(([a], [b]) => a.localeCompare(b));
+  if (!entries.length) return "none";
+  return entries.map(([platform, count]) => `${platform}:${count}`).join(", ");
 }
 
 export function evaluateProductionWorkerSmokeStatus(input: ProductionWorkerSmokeStatusInput): SmokeStatus {
@@ -276,6 +302,7 @@ async function main() {
     printLine("Supabase heartbeat", supabase.latestWorker?.last_cycle_at);
     printLine("Heartbeat age", heartbeatAge === null ? "unknown" : `${heartbeatAge} minutes`);
     printLine("Supabase active", supabase.activeWatches);
+    printLine("Active by platform", formatPlatformCounts(supabase.activeWatchesByPlatform));
     printLine("Supabase alerts", supabase.recentAlerts);
     printLine("Missing platforms", platformMisses.length ? platformMisses.join(", ") : "none");
     printLine("Supabase error", supabase.error);
