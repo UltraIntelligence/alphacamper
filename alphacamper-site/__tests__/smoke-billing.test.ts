@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import { summarizeBillingRows } from "@/scripts/smoke-billing";
+import { evaluateBillingSmokeStatus, summarizeBillingRows } from "@/scripts/smoke-billing";
 
 describe("billing smoke diagnostics", () => {
   it("summarizes active paid passes and ignores expired or unpaid rows", () => {
@@ -60,5 +60,41 @@ describe("billing smoke diagnostics", () => {
         usd: 7800,
       },
     });
+  });
+
+  it("keeps billing yellow until paid checkout, webhook, and net reporting proof exist", () => {
+    const readyRuntime = {
+      supabaseError: null,
+      stripeError: null,
+      supabaseConfigured: true,
+      subscriptionsCount: 0,
+      funnelEventsCount: 0,
+      webhookEventsCount: 0,
+      vercelConfigured: true,
+      missingVercelEnvCount: 0,
+      priceTypesKnown: true,
+      priceTypesAreOneTime: true,
+      paidPasses: 0,
+      netRefundReportingVerified: false,
+    };
+
+    expect(evaluateBillingSmokeStatus(readyRuntime)).toBe("yellow");
+    expect(
+      evaluateBillingSmokeStatus({
+        ...readyRuntime,
+        subscriptionsCount: 1,
+        webhookEventsCount: 1,
+        paidPasses: 1,
+      }),
+    ).toBe("yellow");
+    expect(
+      evaluateBillingSmokeStatus({
+        ...readyRuntime,
+        subscriptionsCount: 1,
+        webhookEventsCount: 1,
+        paidPasses: 1,
+        netRefundReportingVerified: true,
+      }),
+    ).toBe("green");
   });
 });

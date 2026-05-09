@@ -89,7 +89,9 @@ Expected next result:
 - Stripe env vars: present.
 - Local Stripe price check: green only if local env has matching Stripe values.
 - Live DB rows: still 0 until a real customer pays.
-- Overall status: still yellow if no paid customer exists or net/refund reporting is not wired.
+- `Checkout/webhook proof`: no until a real paid checkout creates both a paid pass row and a webhook-event row.
+- `Net/refund reporting`: not verified until Stripe-side net/refund reporting is wired.
+- Overall status: still yellow if no paid customer exists, no webhook proof exists, or net/refund reporting is not wired.
 
 5. Do one real customer checkout only when ready.
 

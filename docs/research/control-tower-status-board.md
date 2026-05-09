@@ -387,8 +387,8 @@ Current result:
 - Legacy subscription webhook handling remains for any older subscription-mode sessions.
 - Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`; current counts are 0 rows for paid passes and funnel events.
 - Production Vercel is missing `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, so live checkout is not green yet.
-- `npm run smoke:billing -- --allow-yellow` now gives a repeatable secret-safe billing proof with paid active passes, summer/year split, payment-mode pass count, and gross app-recorded revenue.
-- Latest verified smoke result: 0 subscriptions, 0 paid active passes, 0 funnel events, 0 webhook events, and no gross app revenue.
+- `npm run smoke:billing -- --allow-yellow` now gives a repeatable secret-safe billing proof with paid active passes, summer/year split, payment-mode pass count, gross app-recorded revenue, checkout/webhook proof, and net/refund reporting state.
+- Latest verified smoke result: 0 subscriptions, 0 paid active passes, 0 funnel events, 0 webhook events, no gross app revenue, no checkout/webhook proof, and net/refund reporting not verified.
 - `/api/admin/revenue-quality` and the dashboard operator panel now provide a protected revenue-quality view for allowlisted operator accounts.
 - `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
 - `docs/research/revenue-readiness-runbook.md` now defines the path from zero live revenue proof to first paid customer proof without doing a fake live charge.

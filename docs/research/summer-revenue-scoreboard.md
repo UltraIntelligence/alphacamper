@@ -59,9 +59,9 @@ Live aggregate read on 2026-05-09:
 | Production Vercel Stripe env vars | Missing | Live checkout cannot work until Stripe production env vars are configured. |
 | Operator revenue-quality view | Built, not green | `/api/admin/revenue-quality` and the dashboard operator panel read live Supabase, but production Stripe env vars and net Stripe reporting are still missing. |
 
-Latest verification at 2026-05-09T13:36:41Z:
+Latest verification at 2026-05-09T14:13:54Z:
 
-- `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 funnel events, 0 webhook events, and no gross app revenue.
+- `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 funnel events, 0 webhook events, no gross app revenue, no checkout/webhook proof, and net/refund reporting not verified.
 - `vercel env ls production` confirms `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are missing.
 - The available Stripe connector is logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), so it should not be used for Alphacamper billing setup unless Ryan confirms that is the intended Stripe account.
 

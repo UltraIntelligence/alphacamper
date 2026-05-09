@@ -228,8 +228,8 @@ Current truth:
 - The protected operator revenue-quality view is built in the site dashboard for allowlisted operator accounts.
 - The live tables currently have 0 billing/conversion rows.
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
-- `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, and gross app-recorded revenue.
-- Latest verified smoke result at 2026-05-09T14:01:05Z is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, and the five production Stripe env vars missing.
+- `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, gross app-recorded revenue, checkout/webhook proof, and net/refund reporting state.
+- Latest verified smoke result at 2026-05-09T14:13:54Z is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
 - Direct `vercel env ls production` confirms the five missing names are not configured in production.
 - The available Stripe connector is currently logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not create or reuse Stripe products from that connector without confirming the correct account first.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.

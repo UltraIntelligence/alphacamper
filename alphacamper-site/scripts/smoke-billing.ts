@@ -52,6 +52,21 @@ export type BillingSummary = {
   grossRevenueByCurrency: Record<string, number>;
 };
 
+export type BillingSmokeStatusInput = {
+  supabaseError: string | null;
+  stripeError: string | null;
+  supabaseConfigured: boolean;
+  subscriptionsCount: number | null;
+  funnelEventsCount: number | null;
+  webhookEventsCount: number | null;
+  vercelConfigured: boolean;
+  missingVercelEnvCount: number;
+  priceTypesKnown: boolean;
+  priceTypesAreOneTime: boolean;
+  paidPasses: number | null;
+  netRefundReportingVerified: boolean;
+};
+
 function parseArgs(argv: string[]): Options {
   const options: Options = {
     allowYellow: false,
@@ -127,6 +142,32 @@ export function summarizeBillingRows(rows: SubscriptionRow[], now = Date.now()):
     canceledPasses: rows.filter((row) => row.status === "canceled").length,
     grossRevenueByCurrency,
   };
+}
+
+export function evaluateBillingSmokeStatus(input: BillingSmokeStatusInput): SmokeStatus {
+  if (input.supabaseError || input.stripeError) {
+    return "red";
+  }
+
+  const checkoutWebhookProof =
+    (input.paidPasses ?? 0) > 0 && (input.webhookEventsCount ?? 0) > 0;
+
+  if (
+    !input.supabaseConfigured ||
+    input.subscriptionsCount === null ||
+    input.funnelEventsCount === null ||
+    input.webhookEventsCount === null ||
+    !input.vercelConfigured ||
+    input.missingVercelEnvCount > 0 ||
+    !input.priceTypesKnown ||
+    !input.priceTypesAreOneTime ||
+    !checkoutWebhookProof ||
+    !input.netRefundReportingVerified
+  ) {
+    return "yellow";
+  }
+
+  return "green";
 }
 
 function runVercelEnvList(): {
@@ -274,22 +315,24 @@ async function main() {
   const priceTypesKnown = stripe.configured && !stripe.error;
   const priceTypesAreOneTime =
     priceTypesKnown && stripe.summerType === "one_time" && stripe.yearType === "one_time";
-
-  let status: SmokeStatus = "green";
-  if (supabase.error || stripe.error) {
-    status = "red";
-  } else if (
-    !supabase.configured ||
-    supabase.subscriptionsCount === null ||
-    supabase.funnelEventsCount === null ||
-    supabase.webhookEventsCount === null ||
-    !vercel.configured ||
-    missingVercelEnv.length > 0 ||
-    !priceTypesKnown ||
-    !priceTypesAreOneTime
-  ) {
-    status = "yellow";
-  }
+  const checkoutWebhookProof =
+    (supabase.billingSummary?.paidPasses ?? 0) > 0 &&
+    (supabase.webhookEventsCount ?? 0) > 0;
+  const netRefundReportingVerified = false;
+  const status = evaluateBillingSmokeStatus({
+    supabaseError: supabase.error,
+    stripeError: stripe.error,
+    supabaseConfigured: supabase.configured,
+    subscriptionsCount: supabase.subscriptionsCount,
+    funnelEventsCount: supabase.funnelEventsCount,
+    webhookEventsCount: supabase.webhookEventsCount,
+    vercelConfigured: vercel.configured,
+    missingVercelEnvCount: missingVercelEnv.length,
+    priceTypesKnown,
+    priceTypesAreOneTime,
+    paidPasses: supabase.billingSummary?.paidPasses ?? null,
+    netRefundReportingVerified,
+  });
 
   printLine("Status", status);
   printLine("Supabase direct read", supabase.configured ? "configured" : "missing env");
@@ -301,6 +344,8 @@ async function main() {
   printLine("Gross app revenue", supabase.billingSummary ? formatCentsByCurrency(supabase.billingSummary.grossRevenueByCurrency) : null);
   printLine("Funnel event rows", supabase.funnelEventsCount);
   printLine("Webhook event rows", supabase.webhookEventsCount);
+  printLine("Checkout/webhook proof", checkoutWebhookProof ? "yes" : "no");
+  printLine("Net/refund reporting", netRefundReportingVerified ? "verified" : "not verified");
   printLine("Supabase error", supabase.error);
   printLine("Vercel env readable", vercel.configured ? "yes" : "no");
   printLine("Missing Vercel Stripe env", missingVercelEnv.length ? missingVercelEnv.join(", ") : "none");
@@ -311,11 +356,17 @@ async function main() {
   printLine("Stripe error", stripe.error);
 
   if (status === "green") {
-    console.log("\nNext action: prove one checkout/webhook path and add the operator revenue view.");
+    console.log("\nNext action: revenue proof is green; keep monitoring weekly gross/net revenue.");
     process.exit(0);
   }
 
-  console.log("\nNext action: configure production Stripe env vars, verify one-time price ids, then rerun billing smoke.");
+  if (missingVercelEnv.length > 0 || !priceTypesKnown || !priceTypesAreOneTime) {
+    console.log("\nNext action: configure production Stripe env vars, verify one-time price ids, then rerun billing smoke.");
+  } else if (!checkoutWebhookProof) {
+    console.log("\nNext action: prove one real checkout/webhook path, then rerun billing smoke.");
+  } else {
+    console.log("\nNext action: wire Stripe-side net/refund reporting before calling the $10k scoreboard green.");
+  }
   process.exit(status === "yellow" && options.allowYellow ? 0 : 1);
 }
 
