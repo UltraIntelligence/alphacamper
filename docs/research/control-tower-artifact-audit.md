@@ -17,8 +17,8 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Requirement | Covered By | Evidence | Status |
 |---|---|---|---|
 | Big arc is organized | `north-america-control-tower.md` | Mission, current truth, competitor bar, three-week operating plan | Covered |
-| Current status is visible | `control-tower-status-board.md` | Master gates, epic board, count ledger, decision log | Covered |
-| Current executive snapshot exists | `control-tower-snapshot-2026-05-09.md` | Summarizes the three completed goal windows and current blocker | Covered |
+| Current status is visible | `control-tower-status-board.md` | Master gates, epic board, tracker ledger, count ledger, decision log | Covered |
+| Current executive snapshot exists | `control-tower-snapshot-2026-05-09.md` | Summarizes the intaken goal windows, tracker lanes, current blockers, and safe claims | Covered |
 | Immediate next actions are clear | `current-action-queue.md` | Launch-now, hold, and later queues | Covered |
 | Live migration gate has a runbook | `live-catalog-migration-runbook.md` | Approval prompt, preflight SQL, apply step, verification, and board updates | Covered |
 | Live migration has reusable verification SQL | `live-catalog-verification.sql` | Read-only provider counts, column checks, index check, support-status distribution, and sample row lookups | Covered |
@@ -29,11 +29,11 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k net summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
 | Billing blocker has an executable proof path | `alphacamper-site/scripts/smoke-billing.ts`, `alphacamper-site/package.json`, `summer-revenue-scoreboard.md` | `npm run smoke:billing` checks live billing tables, Vercel Stripe env names, and one-time Stripe price shape when local Stripe env is available | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
-| Report-back process exists | `report-intake-procedure.md` | Intake steps, escalation rules, output format | Covered |
+| Report-back process exists | `report-intake-procedure.md` | Intake steps, tracker mapping, GitHub comment rule, escalation rules, output format | Covered |
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
 | Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
-| External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #15, `current-action-queue.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, customer notification proof, provider health, get-you-the-site proof, Alberta/Saskatchewan discovery, and Parks Canada enrichment have explicit trackers | Covered |
+| External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #15, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, customer notification proof, provider health, get-you-the-site proof, Alberta/Saskatchewan discovery, and Parks Canada enrichment have explicit trackers | Covered |
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
@@ -81,6 +81,8 @@ Created/updated docs:
 - `docs/research/railway-worker-smoke-runbook.md`
 - `docs/research/customer-watch-notification-smoke-runbook.md`
 - `docs/research/summer-revenue-scoreboard.md`
+- `docs/research/control-tower-operator-unblock-pack.md`
+- `docs/research/revenue-readiness-runbook.md`
 - `alphacamper-site/scripts/smoke-billing.ts`
 - `alphacamper-worker/railway.json`
 - `alphacamper-worker/scripts/smoke-production.ts`
@@ -94,7 +96,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T12:11:29Z.
+Audit timestamp: 2026-05-09T12:32:12Z.
 
 Objective restated as concrete deliverables:
 
@@ -106,15 +108,15 @@ Objective restated as concrete deliverables:
 Evidence inspected:
 
 - `docs/research/README.md` lists the control-tower operating model and where to start.
-- `docs/research/control-tower-status-board.md` lists the master gates, count ledger, decision log, epic board, and current blockers.
-- `docs/research/current-action-queue.md` says the current gate is Production Worker Smoke.
-- `docs/research/epic-launch-prompts.md` includes twelve large goal-window prompts.
-- `docs/research/report-intake-procedure.md` defines how reports are classified and folded back into the board.
+- `docs/research/control-tower-status-board.md` lists the master gates, count ledger, decision log, epic board, tracker ledger, and current blockers.
+- `docs/research/current-action-queue.md` says the current gate is Production Worker Smoke and maps issues #9 through #15 in launch order.
+- `docs/research/epic-launch-prompts.md` includes twelve large goal-window prompts and links the active next windows to their GitHub trackers.
+- `docs/research/report-intake-procedure.md` defines how reports are matched to trackers, classified, commented back to GitHub, and folded back into the board.
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
-- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
-- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow because production Stripe env vars are missing and no paid rows exist yet.
+- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T12:32:12Z.
+- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T12:32:12Z because production Stripe env vars are missing and no paid rows exist yet.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
@@ -124,6 +126,7 @@ Evidence inspected:
 - GitHub issue #10 tracks Stripe production checkout and revenue proof.
 - GitHub milestone #1 groups the current reliability and revenue gates.
 - GitHub milestone #2 groups the next epic goal-window trackers.
+- Open GitHub trackers #9 through #15 were verified in the expected two milestones.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes, and only comments on GitHub issues when blocker status changes.
 
 Live smoke evidence:
@@ -136,7 +139,7 @@ Live smoke evidence:
 - Worker error: `missing_worker_heartbeat`.
 - Supabase heartbeat: none.
 - Missing required worker platforms: `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, `recreation_gov`.
-- Billing smoke: 0 paid active passes, 0 funnel events, 0 webhook events, and missing production Stripe env vars.
+- Billing smoke: 0 subscriptions, 0 paid active passes, 0 summer passes, 0 year passes, no gross app revenue, 0 funnel events, 0 webhook events, Vercel env readable, and the five production Stripe env vars still missing.
 
 ## Remaining Open Work
 
@@ -156,11 +159,11 @@ Reported windows now reflected in the board:
 
 Next control-tower action:
 
-- Launch or continue Production Worker Smoke with Railway access.
+- Continue #9 Production Worker Smoke with Railway access.
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
-- After heartbeat proof, smoke-test authenticated watch creation and notification delivery.
-- Use `docs/research/customer-watch-notification-smoke-runbook.md` for that next customer-path proof.
-- Then configure production Stripe env vars and revenue reporting, prove the paid alert-to-assist loop, resume Alberta/Saskatchewan adapter work, and continue Provider Health/Admin Truth UI/ops.
+- Continue #10 by configuring production Stripe env vars, verifying one-time price IDs, and proving webhook/revenue truth.
+- After #9 is green, run #13 customer watch and notification proof.
+- Then run #11 provider health/admin truth, #15 paid alert-to-assist loop, #12 Alberta/Saskatchewan discovery, and #14 Parks Canada enrichment in the documented order.
 
 ## Completion Read
 
