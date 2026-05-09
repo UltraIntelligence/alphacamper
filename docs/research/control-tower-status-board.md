@@ -60,7 +60,7 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
 | 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Reported yellow; feasible after reliability gates |
-| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Live province search verified; province pages next |
+| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Live province search and six province pages verified |
 
 ## Status Key
 
@@ -99,13 +99,13 @@ These numbers should be treated differently depending on their evidence level.
 | Unsupported stale rows | 3 | Verified live read after refresh | Carmanah Walbran, Grand-Pre, and Internet are not treated as alert inventory | Keep stale rows out of customer claims |
 | BC Parks campsite IDs | 10,410 | Clean provider availability proof, 145/145 countable rows checked | Verified campsite-level inventory | Pair with Railway heartbeat and notifications before marketing reliability |
 | Ontario Parks campsite IDs | 21,640 | Clean provider availability proof, 127/127 countable rows checked, 2 non-countable admin rows excluded | Biggest verified jump toward the Canada target | Pair with Railway heartbeat and notifications before marketing reliability |
-| Parks Canada campsite IDs | 11,336 | Clean provider availability proof, 107/107 countable rows checked, 6 non-countable rows excluded | National coverage inventory is now counted | Add province enrichment for better coverage pages |
+| Parks Canada campsite IDs | 11,336 | Clean provider availability proof, 107/107 countable rows checked, 6 non-countable rows excluded | National coverage inventory is now counted and province-searchable | Pair with Railway heartbeat and notification proof before marketing reliability |
 | New Brunswick campsite IDs | 1,431 | Clean provider availability proof, 9/9 countable rows checked | First Atlantic realtime-alertable province slice at campsite level | Pair with Railway heartbeat and notifications before marketing reliability |
 | Manitoba campsite IDs | 5,480 | Clean provider availability proof, 45/45 countable rows checked | Smallest verified path across the 50,000 campsite line by itself | Production catalog sync/deploy needed before live labels change |
 | Nova Scotia campsite IDs | 1,700 | Clean provider availability proof, 20/20 countable rows checked | Safe same-provider Atlantic expansion after Manitoba | Production catalog sync/deploy needed before live labels change |
 | BC Parks alertable rows | 145 | Verified live provider refresh | Strong BC catalog base with source evidence | Keep refreshed from provider source |
 | Ontario Parks alertable rows | 129 | Verified live provider refresh | Strong Ontario catalog base with source evidence | Keep refreshed from provider source |
-| Parks Canada alertable rows | 113 | Verified live provider refresh | Useful Parks Canada base, but province enrichment remains weak | Add/verify province enrichment |
+| Parks Canada alertable rows | 113 | Verified live provider refresh plus province sync | Useful Parks Canada base with province search and six live coverage pages | Expand page pattern only when it helps demand capture; reliability still waits on #9/#13 |
 | New Brunswick alertable rows | 9 | Verified provider proof and live refresh | First Atlantic realtime-alertable province slice | Keep refreshed from provider source |
 | Manitoba rows | 45 | Verified live provider refresh plus 2026-05-09 live availability proof | Repo profile is now alertable/live-polling; live catalog label still needs sync | Pair with Railway heartbeat and notifications before marketing reliability |
 | Nova Scotia rows | 20 | Verified live provider refresh plus 2026-05-09 live availability proof | Repo profile is now alertable/live-polling; live catalog label still needs sync | Pair with Railway heartbeat and notifications before marketing reliability |
@@ -151,7 +151,7 @@ Control-tower rule:
 
 ### Epic 1: Phase 2 Live Catalog Fix
 
-Status: Yellow
+Status: Green for province/customer coverage; reliability still gated by #9/#13
 
 Owner window: launched 2026-05-09 as Avicenna
 
@@ -284,10 +284,12 @@ Current blocker:
 - The live Parks Canada catalog was synced with 113 province-enriched rows; 2 stale rows remain unsupported with null province.
 - The live site API now expands full province-name searches to province codes.
 - Verified live searches: `Alberta`, `Prince Edward Island`, `Saskatchewan`, and `New Brunswick` return province-matched Parks Canada rows.
+- Six production coverage pages are live and in the sitemap: Alberta, British Columbia, Ontario, New Brunswick, Prince Edward Island, and Saskatchewan.
+- The Alberta page returns 200 on production and keeps the honest "not a blanket claim" copy before sending campers to `/watch/new?q=Alberta`.
 
 Next prompt:
 
-> Create province coverage pages now that live province search is proven, but keep reliability claims gated behind Railway heartbeat and notification proof.
+> Hold further Parks Canada marketing expansion until Railway heartbeat and notification proof are green, then decide whether more province pages are worth adding for demand capture.
 
 ### Epic 5: North America Provider Roadmap
 
