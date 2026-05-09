@@ -14,7 +14,16 @@ Goal-window rule:
 
 ## Active Epic Windows
 
-Launched from the control tower on 2026-05-09:
+Currently running from the control tower on 2026-05-09:
+
+| Agent | Reasoning | Objective | Current control-tower status |
+|---|---|---|---|
+| Ohm | Extra high | 50k Verified Campsite Coverage Proof | Running |
+| Pauli | High | Revenue Readiness Toward $10k Summer Target | Running |
+| Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Running |
+| Curie | Extra high | "Get You The Site" Product Moat Plan | Running |
+
+Previous windows launched from the control tower on 2026-05-09:
 
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
@@ -180,6 +189,10 @@ Why it matters:
 
 - The product goal is not only more coverage. Campers need to pay, create watches, receive alerts, and believe Alphacamper improves their odds of getting a site.
 
+Launch status:
+
+- Relaunched as Pauli on 2026-05-09.
+
 Current truth:
 
 - Checkout copy says the passes are one-time.
@@ -220,7 +233,30 @@ Next action:
 - Turn the parser proof into a live polling implementation only after Railway heartbeat is green.
 - Then prove a controlled watch, provider poll, alert row, and customer notification before upgrading labels from search-only to alertable.
 
-### 6. Provider Health/Admin Truth
+### 6. Get You The Site Moat
+
+Launch status:
+
+- Launched as Curie on 2026-05-09.
+
+Goal objective:
+
+- Turn Alphacamper's distinction into product work that helps campers actually get the site, not only hear that a site exists.
+
+Why it matters:
+
+- This is the difference between a plain alert tool and a product regular campers will pay for and trust.
+
+Current truth:
+
+- The repo already has alerts, watch creation, and a Chrome extension with autofill/rehearsal pieces.
+- The control tower still needs a ranked product plan that separates launch-critical trust features from later "all powerful app" ideas.
+
+Next action:
+
+- Use Curie's report to choose the next implementation task after Railway heartbeat, customer notification proof, and billing truth are unblocked.
+
+### 7. Provider Health/Admin Truth
 
 Goal objective:
 
@@ -235,7 +271,7 @@ Current truth:
 - `catalog_provider_syncs` now records provider refresh status.
 - Worker health exists, but an admin-facing view is not proven.
 
-### 7. Demand Capture And Conversion
+### 8. Demand Capture And Conversion
 
 Goal objective:
 
@@ -247,19 +283,20 @@ Why it matters:
 
 Current truth:
 
-- Search-only, coming-soon, and unsupported campground selections now have a proposed email capture path.
+- Search-only, coming-soon, and unsupported campground selections now have a built and deployed email capture path.
+- The live route was proven with a synthetic row and the test row was deleted after verification.
 - The product still needs clearer "we can help you get this site" flows.
 - This should build on the revenue scoreboard so demand work is measured against paid conversion and booking outcomes.
 
 Current intake:
 
-- Demand capture should stay yellow until the route is deployed and verified live.
+- Demand capture is green as a campground-interest signal.
 - It must not be described as realtime alert coverage.
 - The captured signal is campground-level interest, not a paid conversion yet.
 
 ## Run When Source Data Is Chosen
 
-### 8. Parks Canada Enrichment
+### 9. Parks Canada Enrichment
 
 Goal objective:
 

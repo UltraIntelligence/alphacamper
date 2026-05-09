@@ -18,7 +18,16 @@ Do not mark an epic green because code was written. Mark it green only when the 
 
 ## Active Windows Ledger
 
-Launched from this control-tower thread on 2026-05-09:
+Current epic windows launched from this control-tower thread on 2026-05-09:
+
+| Window | Reasoning | Scope | Status |
+|---|---|---|---|
+| Ohm | Extra high | 50k verified campsite coverage proof | Running |
+| Pauli | High | Revenue readiness toward $10k summer target | Running |
+| Tesla | High | Production ops reliability and Railway heartbeat clarity | Running |
+| Curie | Extra high | "Get you the site" product moat plan | Running |
+
+Previous windows launched from this control-tower thread on 2026-05-09:
 
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
@@ -53,7 +62,7 @@ These gates protect the product from over-promising.
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
 | Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout now uses one-time payment mode in code and live DB tables exist; operator revenue-quality view is built; production Stripe env vars and net Stripe reporting are still missing |
-| Demand capture | Yellow | Unsupported searches become a prioritization queue | Campground-interest capture is built for non-alertable search selections; live route proof pending deploy |
+| Demand capture | Green | Unsupported searches become a prioritization queue | Campground-interest capture is built, deployed, live-proven with a synthetic row, and cleaned up after proof |
 
 ## Current Count Ledger
 
@@ -103,6 +112,7 @@ Control-tower rule:
 | 2026-05-09 | Build a catalog ingestion factory, not a hand-curated list | Competitor-scale coverage requires repeatable official/provider data pipelines | Planned |
 | 2026-05-09 | Do not count Vercel cron toward the 50,000 Canadian north-star target | Pasteur found Vercel cron is a weaker legacy path; cleanup code retires it once deployed | Active |
 | 2026-05-09 | Operate autonomously unless a move is unusually destructive or risky | Ryan wants the control tower to move like an owner, not wait on normal execution approvals | Active |
+| 2026-05-09 | Product moat is "not just find the site, help the camper get the site" | Alphacamper should become a more useful camper assistant than a plain alert tool | Active |
 | 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
 | 2026-05-09 | Treat net collected revenue as the real $10k target | The 30-day guarantee means gross sales alone can overstate success | Active |
 | 2026-05-09 | Use one-time payments for 2026 passes | Matches pass copy, lowers customer confusion, and makes summer revenue reporting clearer | Active |
@@ -143,8 +153,8 @@ Current result:
 - Unsupported stale rows: 3.
 - Live API returns Bamberton and New Brunswick Sugarloaf from Supabase with alertable labels and source evidence.
 - Live `/api/check-availability` now returns 410 retired with `engine: railway-worker`.
-- Worker heartbeat fix pushed at `d7464921c`: quiet cycles now write `worker_status`.
-- GitHub CI is green for the heartbeat fix.
+- Worker heartbeat hardening is pushed through `7c89bb34e`: quiet cycles now write `worker_status`, heartbeat write failures degrade health, and Railway diagnostics look for the heartbeat-write failure marker.
+- GitHub CI is green through `7c89bb34e`.
 - Live `/api/admin/provider-quality` now reads live Supabase and reports `railway_worker` as degraded with `missing_worker_heartbeat`.
 - The same production route reports 5 active watches.
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
@@ -401,6 +411,8 @@ Short version:
 Major success line:
 
 - 50,000 verified realtime-alertable Canadian campsites.
+- Current board-safe count: 10,410 verified campsite IDs from BC Parks only.
+- The next coverage proof must finish Ontario, Parks Canada, and New Brunswick before Canada can be called close to 50k.
 
 Longer-term category leadership line:
 
@@ -410,5 +422,10 @@ Business line:
 
 - $10k revenue by the end of summer.
 - Count net collected revenue as the real success number; use gross revenue as an early warning signal.
+
+Product moat:
+
+- Alphacamper should not only tell a camper a site exists.
+- It should help the camper move fast enough and confidently enough to actually get the site.
 
 Only count realtime-alertable inventory when measuring this goal. Search-only rows, static fallback rows, unverified seeds, and coming-soon providers are useful, but they do not count toward the realtime success number.
