@@ -23,16 +23,18 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Live migration gate has a runbook | `live-catalog-migration-runbook.md` | Approval prompt, preflight SQL, apply step, verification, and board updates | Covered |
 | Live migration has reusable verification SQL | `live-catalog-verification.sql` | Read-only provider counts, column checks, index check, support-status distribution, and sample row lookups | Covered |
 | Post-migration launches are pre-scoped | `post-migration-launch-pack.md` | Canada provider proof, alert-engine cleanup, and catalog ingestion factory prompts | Covered |
-| Epic runs are defined | `epic-launch-prompts.md` | Six copy-paste goal-window prompts | Covered |
+| Epic runs are defined | `epic-launch-prompts.md` | Ten copy-paste goal-window prompts, including Production Worker Smoke and revenue/demand capture | Covered |
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
 | Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, escalation rules, output format | Covered |
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
+| Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state without printing secrets | Covered |
+| Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
 | Existing research is preserved | `canadian-database-parity-plan.md`, `parks-canada-api.md` | Prior research remains in place | Covered |
-| Completed windows will not be relaunched by accident | `README.md`, `epic-launch-prompts.md`, `current-action-queue.md`, `control-tower-status-board.md`, `report-intake-procedure.md` | First three reports are marked as intaken/reported, with the live migration approval called out as the current gate | Covered |
+| Completed windows will not be relaunched by accident | `README.md`, `epic-launch-prompts.md`, `current-action-queue.md`, `control-tower-status-board.md`, `report-intake-procedure.md` | Completed reports are marked as intaken/reported; current gate is Production Worker Smoke | Covered |
 
 ## Prompt-To-Artifact Map
 
@@ -45,10 +47,11 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | "Find how competitors populated high-quality data" | `competitor-data-pipeline-playbook.md` |
 | "Be clear on the big goal and success count" | `north-star-success-metrics.md`, `control-tower-status-board.md` |
 | "Use huge tasks with their own goals" | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` |
-| "What is blocking us now?" | `control-tower-snapshot-2026-05-09.md`, `live-catalog-migration-runbook.md` |
+| "What is blocking us now?" | `control-tower-snapshot-2026-05-09.md`, `railway-worker-smoke-runbook.md`, `current-action-queue.md` |
 | "What do we launch after migration?" | `post-migration-launch-pack.md`, `current-action-queue.md` |
 | "Do not overclaim coverage" | `control-tower-status-board.md`, `report-intake-procedure.md` |
 | "Do we need to relaunch the forked windows?" | `README.md`, `epic-launch-prompts.md`, `control-tower-status-board.md` |
+| "Prove the worker is live" | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts` |
 
 ## Current Evidence
 
@@ -67,38 +70,76 @@ Created/updated docs:
 - `docs/research/post-migration-launch-pack.md`
 - `docs/research/provider-scoring-rubric.md`
 - `docs/research/report-intake-procedure.md`
+- `docs/research/railway-worker-smoke-runbook.md`
+- `alphacamper-worker/scripts/smoke-production.ts`
+- `alphacamper-worker/package.json`
 
 Existing supporting docs:
 
 - `docs/research/canadian-database-parity-plan.md`
 - `docs/research/parks-canada-api.md`
 
+## Completion Audit
+
+Audit timestamp: 2026-05-09T09:45:46Z.
+
+Objective restated as concrete deliverables:
+
+- Keep the North America campsite-alert expansion organized around a clear strategy, success metric, and current state.
+- Define the next large goal windows with copy-paste prompts and evidence requirements.
+- Coordinate reports back into a single status board without overclaiming customer coverage.
+- Keep the live customer/admin truth separate from local code or test confidence.
+
+Evidence inspected:
+
+- `docs/research/README.md` lists the control-tower operating model and where to start.
+- `docs/research/control-tower-status-board.md` lists the master gates, count ledger, decision log, epic board, and current blockers.
+- `docs/research/current-action-queue.md` says the current gate is Production Worker Smoke.
+- `docs/research/epic-launch-prompts.md` includes ten large goal-window prompts.
+- `docs/research/report-intake-procedure.md` defines how reports are classified and folded back into the board.
+- `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
+- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
+
+Live smoke evidence:
+
+- Provider-quality source: `live_supabase`.
+- Active watches: 5.
+- Total alerts: 0.
+- Delivered alerts: 0.
+- Worker status: degraded.
+- Worker error: `missing_worker_heartbeat`.
+- Supabase heartbeat: none.
+- Missing required worker platforms: `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, `recreation_gov`.
+
 ## Remaining Open Work
 
-The control-tower artifacts are ready.
+The control-tower operating system is usable, but the overall control-tower goal remains active because this is an ongoing coordination role and the current production gate is still yellow.
 
-The first three long-running windows have reported:
+Reported windows now reflected in the board:
 
 1. Phase 2 Live Catalog Fix: yellow after live migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
-
-The operational program is not done because support-label truth, provider proof, alert-engine cleanup, and ingestion factory work still need verification.
+4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
+5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
+6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 
 Next control-tower action:
 
-- Intake the three running post-migration windows.
-- Normalize support labels so `alertable` means worker polling plus notification proof.
-- Keep the $10k summer revenue goal tied to trusted paid camper outcomes.
+- Launch or continue Production Worker Smoke with Railway access.
+- Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
+- After heartbeat proof, smoke-test authenticated watch creation and notification delivery.
+- Then resume Alberta/Saskatchewan adapter work and Provider Health/Admin Truth UI/ops.
 
 ## Completion Read
 
 The documentation/control-tower setup is complete enough to operate.
 
-The overall control-tower goal should remain active because its purpose is ongoing coordination of long-running epic reports.
+The overall control-tower goal should remain active because its purpose is ongoing coordination of long-running epic reports and the current production gate is not green.
 
 Do not mark the operational program complete while:
 
-- support labels are still only migration defaults
-- provider alertability remains unverified
-- the running post-migration windows have not reported back
+- Railway worker runtime has no live heartbeat.
+- Active watches exist but polling/notification delivery is not proven.
+- Realtime-alertable campsite counts are still unverified.
+- Provider health/admin truth is route-level, not a completed operator workflow.

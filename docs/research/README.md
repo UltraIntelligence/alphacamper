@@ -75,8 +75,8 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
     - Use this when a window comes back green/yellow/red.
 
 13. `control-tower-artifact-audit.md`
-    - Maps the original control-tower request to the actual docs in this folder.
-    - Use this to check whether the operating system still covers the brief.
+    - Maps the control-tower request to the actual docs, commands, evidence, and remaining gaps.
+    - Use this to audit whether the operating system still covers the brief before calling anything complete.
 
 14. `railway-worker-smoke-runbook.md`
     - The current production worker blocker.
