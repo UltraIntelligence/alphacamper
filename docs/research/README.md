@@ -106,6 +106,11 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
     - The product moat plan for helping campers get the site after an alert.
     - Use this when #15 is ready to move from strategy into paid-loop proof.
 
+20. `current-action-queue.md#8-demand-capture-and-conversion`
+    - The current #19 proof path.
+    - Use `cd alphacamper-site && npm run smoke:demand` for public request -> live aggregate -> cleanup proof.
+    - Use `ALPHACAMPER_ACCESS_TOKEN=<approved-operator-token> npm run smoke:demand` for the final protected operator API/dashboard proof.
+
 ## Current Control-Tower Read
 
 Do not claim broad Canada alertable coverage yet.
@@ -126,6 +131,7 @@ The live catalog schema gate is now cleared:
 - This is not a vanity spreadsheet, but it is also not live customer reliability proof; Railway heartbeat, active polling, alert creation, and notification delivery are still the gate.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` is active every 30 minutes to re-run worker reliability smoke and billing readiness smoke, then report back here. It should comment on #9 or #10 only when a gate changes, turns green, or reveals a new blocker.
 - Operator unblock plan is documented in `docs/research/control-tower-operator-unblock-pack.md`: Railway heartbeat and Stripe revenue proof can move in parallel; customer notification proof and Manitoba/Nova Scotia live-label sync wait on worker reliability.
+- Demand capture is stronger but still not revenue/reliability proof: `npm run smoke:demand` is green for public request -> live aggregate -> cleanup, production has `OPERATOR_EMAIL_ALLOWLIST`, and the final #19 proof needs an approved operator token/session to verify the protected dashboard/API renders live demand.
 
 Major success line:
 
@@ -153,6 +159,7 @@ Already reported back and intaken:
 7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.
 8. Billing Truth And Revenue Reporting: yellow until Stripe production envs, webhook proof, and net/refund truth are green.
 9. Get You The Site Moat: yellow product proof; strategy integrated, full paid loop unproven.
+10. Demand Capture And Conversion: public demand smoke is green and the protected operator route is ready; final proof waits on an approved operator token/session.
 
 Do not relaunch those same windows just because this conversation was forked.
 
@@ -160,7 +167,7 @@ Next high-leverage runs:
 
 1. Production Worker Smoke. High reasoning. Launch/continue now; likely blocked on Railway access.
 2. Billing Truth And Revenue Reporting. High reasoning. Continue after the correct Alphacamper Stripe account and production Vercel env vars are configured.
-3. Demand Capture And Conversion. High reasoning. Safe parallel revenue-intent lane; use only as a lead path, not a paid-revenue or reliability claim.
+3. Demand Capture And Conversion. High reasoning. Safe parallel revenue-intent lane; use only as a lead path, not a paid-revenue or reliability claim. Final command: `ALPHACAMPER_ACCESS_TOKEN=<approved-operator-token> npm run smoke:demand`.
 4. First Paid Cohort Sprint. High reasoning. Hold until #10 is green enough to take payment safely.
 5. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
 6. Manitoba/Nova Scotia Label Sync. High reasoning. Hold until worker heartbeat is green; do not market reliability until notification proof is green.

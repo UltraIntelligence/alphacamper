@@ -170,14 +170,14 @@ Reported windows now reflected in the board:
 10. Alberta/Saskatchewan Adapter Discovery: closed as discovery; live implementation waits for #9/#13.
 11. Parks Canada Province Enrichment: closed after live province search and six production province pages were verified.
 12. Manitoba/Nova Scotia Label Sync: open as a held sync window; live catalog labels wait for #9, and reliability claims still wait for #13.
-13. Demand Capture And Conversion: open as a safe parallel revenue-intent lane; campground interest is green as a signal, not paid revenue or realtime reliability.
+13. Demand Capture And Conversion: open as a safe parallel revenue-intent lane; public request -> live aggregate -> cleanup proof is green, production has `OPERATOR_EMAIL_ALLOWLIST`, and the protected operator API/dashboard proof waits on an approved operator token/session. Campground interest is a lead signal, not paid revenue or realtime reliability.
 
 Next control-tower action:
 
 - Continue #9 Production Worker Smoke with Railway access.
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
 - Continue #10 by configuring production Stripe env vars, verifying one-time price IDs, and proving webhook/revenue truth.
-- Continue #19 by turning existing campground-interest capture into an operator-visible demand queue without counting it as revenue or reliability.
+- Continue #19 by running `ALPHACAMPER_ACCESS_TOKEN=<approved-operator-token> npm run smoke:demand` or verifying the protected dashboard manually with an approved operator session.
 - After #10 is green, run #16 first paid cohort.
 - After #9 is green, run #13 customer watch and notification proof, #18 Manitoba/Nova Scotia label sync, and #11 provider health/admin truth.
 - Then run #15 paid alert-to-assist loop and #17 Canada parity expansion in the documented order.
