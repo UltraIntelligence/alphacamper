@@ -63,9 +63,11 @@ External blocker lane:
 Next epic lane:
 
 - https://github.com/UltraIntelligence/alphacamper/milestone/2
+- #16 First paid cohort sprint.
 - #13 Customer watch and notification delivery.
 - #11 Provider health/admin truth.
-- #15 Get-you-the-site paid assist loop.
+- #15 Paid alert-to-assist loop.
+- #17 Canada parity expansion.
 - #12 Alberta/Saskatchewan adapter discovery is closed; future live implementation waits for #9/#13.
 - #14 Parks Canada enrichment is closed; live province search and six production province pages are verified.
 
@@ -211,4 +213,4 @@ Safe claim:
 - Alphacamper's expanded live catalog search is now working with 461 safe searchable campground rows.
 - New Brunswick is now in the alertable set after provider proof.
 - The first 50,000 Canadian campsite-inventory line has been crossed with 51,997 verified provider campsite IDs, but reliability remains yellow.
-- The next work is Railway worker proof, billing truth, customer notification smoke, provider health/admin truth, get-you-the-site proof, and future Alberta/Saskatchewan live implementation after reliability is green. Parks Canada enrichment is already closed unless the scope changes.
+- The next work is Railway worker proof, billing truth, first paid cohort, customer notification smoke, provider health/admin truth, paid alert-to-assist proof, and Canada parity expansion after reliability is green. Alberta/Saskatchewan discovery and Parks Canada enrichment are already closed unless the scope changes.

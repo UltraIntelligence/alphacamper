@@ -26,7 +26,7 @@ Each separate window should be launched as its own large goal, not a small ticke
 
 The control tower does not redo the window's work. It decides what the report means, updates the board, and launches the next large goal.
 
-Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engine Truth Audit, Provider Roadmap, Catalog Ingestion Factory, and Alberta/Saskatchewan Adapter Sprint. Use high reasoning for Production Worker Smoke, Customer Watch And Notification Smoke, Billing Truth And Revenue Reporting, Canada Coverage Sprint, Parks Canada Enrichment, Provider Health/Admin Truth, and Demand Capture.
+Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engine Truth Audit, Provider Roadmap, Catalog Ingestion Factory, Paid Alert-To-Assist Moat Proof, and Canada Parity Expansion. Use high reasoning for Production Worker Smoke, Customer Watch And Notification Smoke, Billing Truth And Revenue Reporting, First Paid Cohort Sprint, Canada Coverage Sprint, Parks Canada Enrichment, Provider Health/Admin Truth, and Demand Capture.
 
 ## Open First
 
@@ -159,15 +159,17 @@ Next high-leverage runs:
 
 1. Production Worker Smoke. High reasoning. Launch/continue now; likely blocked on Railway access.
 2. Billing Truth And Revenue Reporting. High reasoning. Continue after the correct Alphacamper Stripe account and production Vercel env vars are configured.
-3. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
-4. Provider Health/Admin Truth UI and recurring ops. High reasoning. Continue once live worker heartbeat creates real provider health data.
-5. Get You The Site Moat Proof. Extra-high reasoning. Hold until Railway heartbeat, Stripe revenue proof, and customer notification proof are green.
-6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Future live implementation only after Railway heartbeat and notification proof are green.
-7. Demand Capture And Conversion. High reasoning. Use only as a revenue path, not a reliability claim.
+3. First Paid Cohort Sprint. High reasoning. Hold until #10 is green enough to take payment safely.
+4. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
+5. Provider Health/Admin Truth UI and recurring ops. High reasoning. Continue once live worker heartbeat creates real provider health data.
+6. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Hold until Railway heartbeat, Stripe revenue proof, and customer notification proof are green.
+7. Canada Parity Expansion. Extra-high reasoning. Future live implementation only after Railway heartbeat and notification proof are green.
+8. Demand Capture And Conversion. High reasoning. Use only as a revenue path, not a reliability claim.
 
 Closed unless the scope changes:
 
-1. Parks Canada Enrichment.
+1. Alberta/Saskatchewan Adapter Discovery.
+2. Parks Canada Enrichment.
 
 ## Rule Of Thumb
 
