@@ -7,6 +7,10 @@ import ParkPage, {
   generateMetadata as generateParkMetadata,
   generateStaticParams,
 } from "@/app/parks/[slug]/page";
+import ParksCanadaProvincePage, {
+  generateMetadata as generateParksCanadaProvinceMetadata,
+  generateStaticParams as generateParksCanadaProvinceStaticParams,
+} from "@/app/parks/canada/[province]/page";
 import ParksIndexPage, { metadata as parksIndexMetadata } from "@/app/parks/page";
 import CampnabAlternativePage, {
   metadata as campnabMetadata,
@@ -15,7 +19,7 @@ import CampflareAlternativePage, {
   metadata as campflareMetadata,
 } from "@/app/campflare-alternative/page";
 import sitemap from "@/app/sitemap";
-import { PARK_PAGE_DEFINITIONS } from "@/lib/content";
+import { PARK_PAGE_DEFINITIONS, PARKS_CANADA_PROVINCE_PAGES } from "@/lib/content";
 
 vi.mock("next/link", () => ({
   default: ({
@@ -42,6 +46,15 @@ describe("content routes", () => {
     expect(generatedSlugs).toEqual(expectedSlugs);
   });
 
+  it("lists Parks Canada province pages for static generation", () => {
+    const generatedSlugs = generateParksCanadaProvinceStaticParams()
+      .map((entry) => entry.province)
+      .sort();
+    const expectedSlugs = PARKS_CANADA_PROVINCE_PAGES.map((province) => province.slug).sort();
+
+    expect(generatedSlugs).toEqual(expectedSlugs);
+  });
+
   it("renders every park page with the correct CTA and Place schema", async () => {
     for (const park of PARK_PAGE_DEFINITIONS) {
       const page = await ParkPage({
@@ -64,8 +77,23 @@ describe("content routes", () => {
 
     expect(parksHtml).toContain("Popular parks where booking speed matters");
     expect(parksHtml).toContain("/parks/algonquin");
+    expect(parksHtml).toContain("/parks/canada/alberta");
     expect(campnabHtml).toContain("Campnab deserves respect.");
     expect(campflareHtml).toContain("Campflare is easy to like.");
+  });
+
+  it("renders Parks Canada province pages without overclaiming delivery", async () => {
+    for (const province of PARKS_CANADA_PROVINCE_PAGES) {
+      const page = await ParksCanadaProvincePage({
+        params: Promise.resolve({ province: province.slug }),
+      });
+      const html = renderToStaticMarkup(page);
+
+      expect(html).toContain(`Parks Canada camping in ${province.provinceName}`);
+      expect(html).toContain(`${province.rowCount} province-matched Parks Canada rows`);
+      expect(html).toContain("support status shown before a camper creates a watch");
+      expect(html).toContain(`/watch/new?q=${encodeURIComponent(province.provinceName)}`);
+    }
   });
 
   it("includes the new content pages in the sitemap", () => {
@@ -78,6 +106,10 @@ describe("content routes", () => {
     for (const park of PARK_PAGE_DEFINITIONS) {
       expect(entries).toContain(`http://localhost:3000/parks/${park.slug}`);
     }
+
+    for (const province of PARKS_CANADA_PROVINCE_PAGES) {
+      expect(entries).toContain(`http://localhost:3000/parks/canada/${province.slug}`);
+    }
   });
 
   it("keeps park page metadata within title and description limits", async () => {
@@ -89,6 +121,20 @@ describe("content routes", () => {
       expect((metadata.title as string).length).toBeLessThanOrEqual(60);
       expect((metadata.description as string).length).toBeLessThanOrEqual(155);
       expect(metadata.alternates?.canonical).toBe(`http://localhost:3000/parks/${park.slug}`);
+    }
+  });
+
+  it("keeps Parks Canada province metadata within title and description limits", async () => {
+    for (const province of PARKS_CANADA_PROVINCE_PAGES) {
+      const metadata = await generateParksCanadaProvinceMetadata({
+        params: Promise.resolve({ province: province.slug }),
+      });
+
+      expect((metadata.title as string).length).toBeLessThanOrEqual(60);
+      expect((metadata.description as string).length).toBeLessThanOrEqual(155);
+      expect(metadata.alternates?.canonical).toBe(
+        `http://localhost:3000/parks/canada/${province.slug}`,
+      );
     }
   });
 

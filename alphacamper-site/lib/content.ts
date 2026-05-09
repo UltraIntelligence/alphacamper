@@ -27,6 +27,15 @@ export interface ParkPageDefinition {
   officialUrl?: string;
 }
 
+export interface ParksCanadaProvincePageDefinition {
+  slug: string;
+  provinceName: string;
+  provinceCode: string;
+  rowCount: number;
+  examples: string[];
+  description: string;
+}
+
 const CONTENT_ROOT = path.join(process.cwd(), "content");
 const PARKS_DIR = path.join(CONTENT_ROOT, "parks");
 const COMPARISONS_DIR = path.join(CONTENT_ROOT, "comparisons");
@@ -134,6 +143,63 @@ export const PARK_PAGE_DEFINITIONS: ParkPageDefinition[] = [
   },
 ];
 
+export const PARKS_CANADA_PROVINCE_PAGES: ParksCanadaProvincePageDefinition[] = [
+  {
+    slug: "alberta",
+    provinceName: "Alberta",
+    provinceCode: "AB",
+    rowCount: 22,
+    examples: ["Banff", "Jasper", "Waterton Lakes", "Lake Louise", "Icefields Parkway"],
+    description:
+      "Search Parks Canada campgrounds in Alberta, including Banff, Jasper, Waterton Lakes, Lake Louise, and Icefields Parkway.",
+  },
+  {
+    slug: "british-columbia",
+    provinceName: "British Columbia",
+    provinceCode: "BC",
+    rowCount: 24,
+    examples: ["Pacific Rim", "Kootenay", "Yoho", "Fort Langley", "Fort Rodd Hill"],
+    description:
+      "Search Parks Canada campgrounds in British Columbia, including Pacific Rim, Kootenay, Yoho, and national historic sites.",
+  },
+  {
+    slug: "ontario",
+    provinceName: "Ontario",
+    provinceCode: "ON",
+    rowCount: 13,
+    examples: ["Bruce Peninsula", "Fathom Five", "Rideau Canal", "Trent-Severn", "Bethune Memorial House"],
+    description:
+      "Search Parks Canada campgrounds and visitor stays in Ontario, including Bruce Peninsula, Fathom Five, and canal sites.",
+  },
+  {
+    slug: "new-brunswick",
+    provinceName: "New Brunswick",
+    provinceCode: "NB",
+    rowCount: 9,
+    examples: ["Fundy", "Kouchibouguac", "Fundy Backcountry", "Point Wolfe", "Cannontown"],
+    description:
+      "Search Parks Canada campgrounds in New Brunswick, including Fundy and Kouchibouguac.",
+  },
+  {
+    slug: "prince-edward-island",
+    provinceName: "Prince Edward Island",
+    provinceCode: "PE",
+    rowCount: 2,
+    examples: ["Cavendish", "Stanhope"],
+    description:
+      "Search Parks Canada campgrounds in Prince Edward Island, including Cavendish and Stanhope.",
+  },
+  {
+    slug: "saskatchewan",
+    provinceName: "Saskatchewan",
+    provinceCode: "SK",
+    rowCount: 4,
+    examples: ["Grasslands", "Prince Albert", "Beaver Glen", "Red Deer"],
+    description:
+      "Search Parks Canada campgrounds in Saskatchewan, including Grasslands and Prince Albert.",
+  },
+];
+
 function listContentSlugs(directory: string): string[] {
   if (!fs.existsSync(directory)) {
     return [];
@@ -182,6 +248,12 @@ export function getComparisonSlugsFromFilesystem(): string[] {
 
 export function findParkPageDefinition(slug: string): ParkPageDefinition | undefined {
   return PARK_PAGE_DEFINITIONS.find((park) => park.slug === slug);
+}
+
+export function findParksCanadaProvincePageDefinition(
+  slug: string,
+): ParksCanadaProvincePageDefinition | undefined {
+  return PARKS_CANADA_PROVINCE_PAGES.find((province) => province.slug === slug);
 }
 
 export function readParkSource(slug: string): string | null {

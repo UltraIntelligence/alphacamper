@@ -1637,21 +1637,21 @@ a { color: inherit; text-decoration: none; }
   margin-top: 14px;
   padding: 14px 20px;
   border-radius: 999px;
-  background: var(--dark);
-  color: #ffffff;
+  background: var(--paper);
+  color: var(--forest);
   font-weight: 700;
   line-height: 1.4;
 }
 
 .watch-cta-button:hover {
-  background: var(--paradiso);
+  background: var(--sprig);
 }
 
 .watch-cta-note {
   margin-top: 14px;
   font-size: 0.96rem;
   line-height: 1.6;
-  color: rgba(26, 42, 42, 0.72);
+  color: rgba(244, 247, 246, 0.78);
 }
 
 .related-links-card {

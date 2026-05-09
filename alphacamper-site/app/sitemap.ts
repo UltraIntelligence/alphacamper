@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { PARK_PAGE_DEFINITIONS } from "@/lib/content";
+import { PARK_PAGE_DEFINITIONS, PARKS_CANADA_PROVINCE_PAGES } from "@/lib/content";
 import { buildCanonicalUrl } from "@/lib/content-meta";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -45,5 +45,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...parkRoutes];
+  const parksCanadaProvinceRoutes: MetadataRoute.Sitemap = PARKS_CANADA_PROVINCE_PAGES.map((province) => ({
+    url: buildCanonicalUrl(`/parks/canada/${province.slug}`),
+    lastModified,
+    changeFrequency: "monthly",
+    priority: 0.65,
+  }));
+
+  return [...staticRoutes, ...parkRoutes, ...parksCanadaProvinceRoutes];
 }
