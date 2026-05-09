@@ -59,7 +59,7 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
 | 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Reported yellow; feasible after reliability gates |
+| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
 | 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
 
 ## Status Key
@@ -220,7 +220,7 @@ Current result:
 - Manitoba and Nova Scotia are live in search as verified search-only rows today, but repo-side profiles now mark them alertable/live-polling after clean availability proof.
 - Manitoba adds 5,480 verified campsite IDs from 45/45 countable rows.
 - Nova Scotia adds 1,700 verified campsite IDs from 20/20 countable rows.
-- Alberta and Saskatchewan now have a worker-side Aspira/ReserveAmerica parser proof for official directory and calendar pages, but remain 0 alertable rows.
+- Alberta and Saskatchewan discovery is closed: they have a worker-side Aspira/ReserveAmerica parser proof for official directory and calendar pages, but remain 0 alertable rows.
 - Tests explicitly keep them out of `SUPPORTED_PLATFORMS`, so they cannot be polled for customer alerts yet.
 
 Next prompt:
@@ -331,6 +331,7 @@ Alberta/Saskatchewan adapter intake:
 - Russell reported back and the control tower verified the repo/provider evidence.
 - Live Alberta directory fetch returned `resultTotal = 109` for contract `ABPP`.
 - Live Saskatchewan directory fetch returned `resultTotal = 24` for contract `SKPP`.
+- Tracker #12 is closed as discovery-complete; the implementation sprint should only start after #9/#13 are green.
 - `alphacamper-worker/src/aspira.ts` keeps both provider profiles `search_only`.
 - `alphacamper-worker/src/config.ts` excludes both from active worker polling.
 - `npm test -- aspira.test.ts` passes with 6 tests.

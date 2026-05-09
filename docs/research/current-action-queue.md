@@ -25,7 +25,7 @@ GitHub tracker map:
 | 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
 | 4 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Reported yellow; feasible after reliability gates |
+| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
 | 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
 
 ## Current And Recent Epic Windows
@@ -266,6 +266,7 @@ Current truth:
 - They are intentionally not in active worker `SUPPORTED_PLATFORMS` yet, so customers cannot be misled into live alerts.
 - `npm test -- aspira.test.ts` passes with 6 tests.
 - Intake artifact: `docs/research/alberta-saskatchewan-adapter-intake-2026-05-09.md`.
+- Tracker #12 is closed as discovery-complete; this should not be relaunched until the scope is live implementation after #9/#13 are green.
 
 Next action:
 

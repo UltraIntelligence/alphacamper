@@ -71,7 +71,7 @@ Next recommended windows:
 3. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after production Stripe env vars are configured.
 4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Continue once live worker heartbeat creates real provider health data.
 5. Get You The Site Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Prove one paid alert-to-official-review assist loop.
-6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/12. Reported yellow; Alberta/Saskatchewan look feasible through Aspira-style ABPP/SKPP paths, but live alert launch waits for reliability gates.
+6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/12. Closed discovery; Alberta/Saskatchewan look feasible through Aspira-style ABPP/SKPP paths, but live implementation waits for reliability gates.
 7. Parks Canada Enrichment. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/14. Closed after live province search and six production province pages were verified; do not relaunch unless the scope changes.
 
 ## Prompt 1: Phase 2 Live Catalog Fix
@@ -359,6 +359,9 @@ Recommended control-tower update:
 ## Prompt 8: Alberta/Saskatchewan Adapter Sprint
 
 ```text
+Status:
+Discovery is already closed. Do not relaunch as discovery. Relaunch only after #9/#13 are green and the objective is live implementation proof.
+
 Act as an Alphacamper goal window.
 
 Objective:
