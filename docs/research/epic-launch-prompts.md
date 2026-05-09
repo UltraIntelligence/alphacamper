@@ -71,8 +71,8 @@ Next recommended windows:
 3. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after production Stripe env vars are configured.
 4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Continue once live worker heartbeat creates real provider health data.
 5. Get You The Site Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Prove one paid alert-to-official-review assist loop.
-6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/12. Hold active-alert launch until Railway heartbeat and notification proof are green.
-7. Parks Canada Enrichment. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/14. Run when official source data is chosen.
+6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/12. Running as Russell; hold active-alert launch until Railway heartbeat and notification proof are green.
+7. Parks Canada Enrichment. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/14. Running as Ampere.
 
 ## Prompt 1: Phase 2 Live Catalog Fix
 

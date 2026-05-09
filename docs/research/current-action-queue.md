@@ -25,8 +25,8 @@ GitHub tracker map:
 | 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
 | 4 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Discovery allowed; live alert claims hold until #9 is green |
-| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Ready when a coverage window is available |
+| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Running as Russell; live alert claims hold until #9 is green |
+| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Running as Ampere |
 
 ## Current And Recent Epic Windows
 
@@ -39,6 +39,8 @@ Current and recent goal windows from the control tower on 2026-05-09:
 | Pauli | High | Revenue Readiness Toward $10k Summer Target | Reported yellow; verified and integrated |
 | Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Reported yellow/blocked; verified and integrated |
 | Curie | Extra high | "Get You The Site" Product Moat Plan | Reported yellow product proof; strategy integrated |
+| Russell | Extra high | Alberta/Saskatchewan Adapter Discovery Follow-up | Running; report pending |
+| Ampere | High | Parks Canada Province And Customer Coverage Enrichment | Running; report pending |
 
 Previous windows launched from the control tower on 2026-05-09:
 

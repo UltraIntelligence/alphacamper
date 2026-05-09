@@ -27,6 +27,8 @@ Current epic windows launched from this control-tower thread on 2026-05-09:
 | Pauli | High | Revenue readiness toward $10k summer target | Reported yellow; verified and integrated |
 | Tesla | High | Production ops reliability and Railway heartbeat clarity | Reported yellow/blocked; verified and integrated |
 | Curie | Extra high | "Get you the site" product moat plan | Reported yellow product proof; strategy integrated |
+| Russell | Extra high | Alberta/Saskatchewan adapter discovery follow-up | Running; report pending |
+| Ampere | High | Parks Canada province and customer coverage enrichment | Running; report pending |
 
 Previous windows launched from this control-tower thread on 2026-05-09:
 
@@ -57,8 +59,8 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
 | 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Discovery allowed; live claims hold |
-| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Ready when coverage window is available |
+| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Running as Russell; live claims hold |
+| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Running as Ampere |
 
 ## Status Key
 
