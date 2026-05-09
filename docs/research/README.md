@@ -91,6 +91,8 @@ The live catalog schema gate is now cleared:
 - Verified alertable campground rows: 396.
 - Search-only campground rows: 65.
 - Watch creation guardrails pass local tests, but production watch creation still needs a customer-path smoke test after deploy.
+- Site deploy is live: `/api/check-availability` returns 410 retired.
+- Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
 
 Major success line:
 
@@ -112,14 +114,14 @@ Already reported back:
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
 4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
-5. Alert Engine Cleanup: yellow until production deploy proof.
+5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 
 Do not relaunch those same windows just because this conversation was forked.
 
 Next high-leverage runs:
 
-1. Production Deploy Smoke.
+1. Production Worker Smoke.
 2. Alberta/Saskatchewan Adapter Sprint.
 3. Provider Health/Admin Truth.
 4. Demand Capture And Conversion.

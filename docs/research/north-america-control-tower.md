@@ -60,7 +60,8 @@ The goal windows own:
 - The site can search the Supabase `campgrounds` table and merge static fallback results.
 - The live API now returns live-only rows such as Bamberton and New Brunswick Sugarloaf.
 - Support labels are now normalized for the first six refreshed providers.
-- Production deploy proof is still needed for the updated site route and retired cron behavior.
+- The site deploy is live: `/api/check-availability` returns 410 retired.
+- Railway worker runtime health is still unproven because live `worker_status` currently has no rows.
 
 ### Coverage state
 
@@ -106,7 +107,7 @@ Worker code knows:
 - Newfoundland and Labrador Parks.
 - Recreation.gov.
 
-The older site cron path has been retired in code. Production still needs deploy proof before this is treated as live truth.
+The older site cron path has been retired in code and on the live site. Railway worker runtime still needs heartbeat proof before this is treated as fully live alert-engine truth.
 
 ## Competitor Bar
 
@@ -208,7 +209,7 @@ Goal: Make Alphacamper feel like a Canadian campsite product, not only BC/Ontari
 Order:
 
 1. Lock BC, Ontario, and Parks Canada as trustworthy.
-2. Deploy and smoke-test the unified Railway alert engine.
+2. Smoke-test the unified Railway alert engine and heartbeat.
 3. Add province/source metadata for Parks Canada.
 4. Prove Manitoba and Nova Scotia polling before upgrading them from search-only.
 5. Bring Newfoundland and Labrador live.

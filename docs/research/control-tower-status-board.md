@@ -31,8 +31,8 @@ These gates protect the product from over-promising.
 |---|---|---|---|
 | Live catalog schema | Green | Live Supabase has support labels, provider evidence, and sync tracking | Support-status and catalog-evidence migrations applied and verified 2026-05-09 |
 | Customer campground search | Green | `/api/campgrounds` works against live Supabase and labels support clearly | Live-only Bamberton and New Brunswick Sugarloaf rows now return from `alphacamper.com/api/campgrounds` |
-| Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test after deploy |
-| Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Code now moves Recreation.gov into Railway and retires Vercel cron; production deploy/smoke still pending |
+| Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
+| Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; Railway worker heartbeat is not yet proven in `worker_status` |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Provider sync table now records six live provider refreshes; admin-facing view still not proven |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
 
@@ -74,7 +74,7 @@ Control-tower rule:
 | 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
 | 2026-05-09 | Treat New Brunswick as alertable after provider proof | The New Brunswick CAMIS/GoingToCamp path returned directory and site-level availability evidence | Active |
 | 2026-05-09 | Keep Manitoba and Nova Scotia search-only for now | Their official directories are verified, but live alert polling has not been proven end to end | Active |
-| 2026-05-09 | Move all alert polling toward Railway worker | Recreation.gov worker support now exists in code, so the old Vercel cron can be retired after deploy proof | Active |
+| 2026-05-09 | Move all alert polling toward Railway worker | Recreation.gov worker support now exists in code, and the old Vercel cron is retired live; Railway heartbeat still needs proof | Active |
 
 ## Epic Board
 
@@ -107,12 +107,14 @@ Current result:
 - Verified alertable campground rows: 396.
 - Search-only campground rows: 65.
 - Unsupported stale rows: 3.
-- Live API returns Bamberton and New Brunswick Sugarloaf from Supabase with alertable labels.
+- Live API returns Bamberton and New Brunswick Sugarloaf from Supabase with alertable labels and source evidence.
+- Live `/api/check-availability` now returns 410 retired with `engine: railway-worker`.
+- Live `worker_status` query currently returns no heartbeat rows, so Railway runtime health remains unverified.
 - Realtime-alertable campsite estimate remains unverified; campground rows do not equal campsite count.
 
 Next prompt:
 
-> Deploy the updated site and worker, then smoke-test live watch creation, the retired `/api/check-availability` route, and Railway worker health. Keep campsite-level counts separate from campground-row counts.
+> Smoke-test live watch creation and Railway worker health. Keep campsite-level counts separate from campground-row counts.
 
 ### Epic 2: Canada Coverage Sprint
 
@@ -161,12 +163,13 @@ Current result:
 
 - Code now moves Recreation.gov into the Railway worker.
 - Code retires `/api/check-availability` and removes the Vercel cron schedule.
+- Live `/api/check-availability` now returns the retired Railway-worker message.
 - Local worker/site tests and builds pass.
-- Live production still needs deploy proof; `alphacamper.com/api/check-availability` still shows the old route until deployment lands.
+- Live Supabase `worker_status` currently has no heartbeat row, so worker runtime health still needs Railway-side verification.
 
 Next prompt:
 
-> Deploy and smoke-test the worker/site handoff: `/api/check-availability` should return retired, and Railway worker health should include Recreation.gov.
+> Verify Railway worker deployment/health and confirm the heartbeat includes Recreation.gov.
 
 ### Epic 4: Parks Canada Enrichment
 
@@ -271,7 +274,7 @@ Reported back and integrated:
 
 Next recommended runs:
 
-1. Production Deploy Smoke: verify site deploy, worker deploy, retired Vercel cron, and Railway health.
+1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
 3. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
 4. Demand Capture: let unsupported searches become a prioritization queue.
@@ -314,8 +317,8 @@ Short version:
 - We have the foundation for Canadian expansion.
 - Live Supabase now powers 461 safe searchable rows from official/provider directories.
 - We have 396 verified alertable campground rows, but not a verified campsite-level count yet.
-- We should not claim broad alertable Canada coverage until worker deploy, notification smoke, and campsite-level counts are proven.
-- The next real unlock is production deploy proof plus Alberta/Saskatchewan adapter work.
+- We should not claim broad alertable Canada coverage until worker heartbeat, notification smoke, and campsite-level counts are proven.
+- The next real unlock is Railway worker proof plus Alberta/Saskatchewan adapter work.
 
 ## North Star
 

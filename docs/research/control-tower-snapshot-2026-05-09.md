@@ -30,7 +30,9 @@ The live catalog schema blocker is cleared:
 - The Phase 1 support-status and catalog-evidence migrations were applied and verified on 2026-05-09.
 - `/api/campgrounds?q=Bamberton` now returns a live-only Supabase row.
 - `/api/campgrounds?q=Sugarloaf` returns the New Brunswick provider-proof row.
+- `/api/check-availability` now returns 410 retired on the live site.
 - Support labels are normalized for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
+- Live `worker_status` currently has no heartbeat rows, so Railway runtime health remains unverified.
 - Zero campsites should be counted toward the 50,000 realtime-alertable north-star target until worker polling and notifications are verified by provider.
 
 ## Completed Goal Windows
@@ -58,12 +60,12 @@ What changed:
 
 Decision:
 
-- Deploy and smoke-test the integrated site/worker code.
+- Smoke-test the Railway worker runtime and customer watch path.
 - Do not market campground-row counts as campsite-level coverage.
 
 Next proof:
 
-> Verify production watch creation, Railway worker health, and campsite-level counts.
+> Verify Railway worker health, production watch creation, and campsite-level counts.
 
 ### Epic 3: Alert Engine Truth Audit
 
@@ -76,12 +78,12 @@ What we learned:
 - Vercel cron is a weaker legacy path.
 - Follow-up cleanup moved Recreation.gov into Railway worker in code.
 - Follow-up cleanup retired `/api/check-availability` and removed Vercel cron in code.
-- Production deploy proof is still pending.
+- The site deployment is proven; Railway worker heartbeat is still pending.
 
 Decision:
 
 - Do not count Vercel cron toward the 50,000 Canadian realtime-alertable target.
-- Deploy the worker/site changes before treating this as live truth.
+- Verify the Railway worker heartbeat before treating this as fully live truth.
 - Alertable should mean search + watch creation + worker polling + notification path are verified.
 
 ### Epic 5: North America Provider Roadmap
@@ -155,4 +157,4 @@ Safe claim:
 - Alphacamper has the foundation for Canada-first expansion.
 - Alphacamper's expanded live catalog search is now working with 461 safe searchable campground rows.
 - New Brunswick is now in the alertable set after provider proof.
-- The next work is production deploy proof, campsite-level counts, and Alberta/Saskatchewan adapter work.
+- The next work is Railway worker proof, campsite-level counts, and Alberta/Saskatchewan adapter work.

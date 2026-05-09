@@ -14,30 +14,30 @@ Goal-window rule:
 
 ## Current Gate
 
-### 1. Production Deploy Smoke
+### 1. Production Worker Smoke
 
 Current status:
 
-- Code is locally verified and live data is refreshed.
-- Production still needs the updated site and worker deployed and smoke-tested.
+- Code is locally verified, live data is refreshed, and the site deploy is live.
+- Railway worker runtime still needs heartbeat proof.
 
 Launch status:
 
-- Ready now after Canada Provider Proof, Alert Engine Cleanup, and Catalog Ingestion Factory reported back.
+- Ready now after the site deploy went live.
 
 Goal objective:
 
-- Prove the customer-facing product and alert worker now match the new catalog truth.
+- Prove the alert worker runtime now matches the new catalog truth.
 
 Why this is first:
 
-- The database is ahead of the deployed app until the site/worker code lands.
-- We should not market new alert coverage until the production path is proven.
+- The site path is live, but the worker heartbeat is not yet visible in Supabase.
+- We should not market new alert coverage until the worker path is proven.
 
 Done means:
 
-- `alphacamper.com/api/check-availability` returns the retired Railway-worker message.
-- Vercel no longer has the alert polling cron.
+- `alphacamper.com/api/check-availability` returns the retired Railway-worker message. Done.
+- Vercel no longer has the alert polling cron. Done.
 - Railway worker owns BC, Ontario, Parks Canada, GoingToCamp providers, New Brunswick, and Recreation.gov.
 - New Brunswick can be searched and watched as alertable.
 - Manitoba and Nova Scotia show as search-only, not alertable.
@@ -48,13 +48,15 @@ Current result:
 - Local verification is green: worker tests/build, site tests/build, and `git diff --check`.
 - Live schema is green.
 - Live catalog refresh is green for six providers.
-- Live code deploy is not yet proven in production.
+- Live site deploy is green: `/api/check-availability` returns 410 retired.
+- Live catalog API now returns evidence fields for Bamberton and Sugarloaf.
+- Supabase `worker_status` currently returns no heartbeat rows.
 
 Next action:
 
-- Commit and push the integrated work.
-- Watch the site and worker deploys.
-- Smoke-test the customer path and worker health.
+- Get Railway deploy/runtime access or confirm the worker service is running.
+- Verify `worker_status` heartbeat and `/health` output if a public/internal worker URL exists.
+- Smoke-test the customer path once the worker heartbeat is real.
 
 Use runbook for evidence:
 
@@ -98,7 +100,7 @@ Next action:
 
 Launch status:
 
-- Integrated in code 2026-05-09; production deploy proof pending.
+- Integrated in code 2026-05-09; live site route is deployed, Railway worker heartbeat proof pending.
 
 Goal objective:
 
@@ -125,7 +127,7 @@ Current result:
 
 Next action:
 
-- After deploy, verify `/api/check-availability` returns 410 retired and Railway worker health includes Recreation.gov.
+- Verify Railway worker health includes Recreation.gov.
 
 ## Next Big Runs
 

@@ -29,7 +29,7 @@ Use extra-high reasoning for:
 
 Use high reasoning for:
 
-- Production Deploy Smoke.
+- Production Worker Smoke.
 - Canada Coverage Sprint.
 - Parks Canada Enrichment.
 - Provider Health/Admin Truth.
@@ -51,14 +51,14 @@ Already reported back:
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
 4. Canada Provider Proof: yellow; New Brunswick alertable, Alberta/Saskatchewan need adapter work.
-5. Alert Engine Cleanup: yellow until production deploy proof.
+5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 
 Do not relaunch those same windows unless the scope changes.
 
 Next recommended windows:
 
-1. Production Deploy Smoke.
+1. Production Worker Smoke.
 2. Alberta/Saskatchewan Adapter Sprint.
 3. Provider Health/Admin Truth.
 4. Demand Capture And Conversion.
@@ -302,13 +302,13 @@ Recommended control-tower update:
 - ...
 ```
 
-## Prompt 7: Production Deploy Smoke
+## Prompt 7: Production Worker Smoke
 
 ```text
 Act as an Alphacamper goal window.
 
 Objective:
-Verify that the integrated site and worker changes are live and safe for customers. Confirm the site deploy includes the retired /api/check-availability route, the worker owns Recreation.gov plus Canadian providers, New Brunswick can be searched/watched as alertable, and Manitoba/Nova Scotia remain search-only. Report exact production evidence and any rollback risk.
+Verify that the worker changes are live and safe for customers. The site deploy is already proven: /api/check-availability returns 410 retired. Confirm the Railway worker owns Recreation.gov plus Canadian providers, New Brunswick can be watched as alertable, and Manitoba/Nova Scotia remain search-only. Report exact production evidence and any rollback risk.
 
 Context:
 - Repo: /Users/ryan/Code/Alphacamper
@@ -316,11 +316,12 @@ Context:
 - Worker app: alphacamper-worker
 - Live site: https://alphacamper.com
 - Current expected live catalog: 461 searchable rows, 396 alertable campground rows, 65 search-only rows, 3 unsupported stale rows.
+- Current known gap: live worker_status currently has no heartbeat rows.
 
 Rules:
 - Treat this as production verification, not new feature work.
 - Do not overclaim campsite-level totals.
-- If a deploy is not live yet, say exactly what is pending and keep watching if possible.
+- If the worker is not live yet, say exactly what is pending and keep watching if possible.
 
 Report back:
 Epic:
