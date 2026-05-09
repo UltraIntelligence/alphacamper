@@ -23,9 +23,9 @@ Current epic windows launched from this control-tower thread on 2026-05-09:
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
 | Ohm | Extra high | 50k verified campsite coverage proof | Running |
-| Pauli | High | Revenue readiness toward $10k summer target | Running |
-| Tesla | High | Production ops reliability and Railway heartbeat clarity | Running |
-| Curie | Extra high | "Get you the site" product moat plan | Running |
+| Pauli | High | Revenue readiness toward $10k summer target | Reported yellow; verified and integrated |
+| Tesla | High | Production ops reliability and Railway heartbeat clarity | Reported yellow/blocked; verified and integrated |
+| Curie | Extra high | "Get you the site" product moat plan | Reported yellow product proof; strategy integrated |
 
 Previous windows launched from this control-tower thread on 2026-05-09:
 
@@ -61,8 +61,9 @@ These gates protect the product from over-promising.
 | Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
-| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout now uses one-time payment mode in code and live DB tables exist; operator revenue-quality view is built; production Stripe env vars and net Stripe reporting are still missing |
+| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Billing smoke is secret-safe and reports 0 paid active passes, 0 gross app revenue, missing production Stripe env vars, and missing net/refund truth |
 | Demand capture | Green | Unsupported searches become a prioritization queue | Campground-interest capture is built, deployed, live-proven with a synthetic row, and cleaned up after proof |
+| Get-the-site moat | Yellow | A paid camper can move from alert to official review step faster | Product plan is defined; extension pieces exist, but one paid alert-to-assist loop still needs proof |
 
 ## Current Count Ledger
 
@@ -330,14 +331,44 @@ Current result:
 - `/api/stripe/webhook` now stores one-time pass purchases in the existing access table.
 - Legacy subscription webhook handling remains for any older subscription-mode sessions.
 - Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`; current counts are 0 rows for paid passes and funnel events.
-- Production Vercel is missing Stripe env vars, so live checkout is not green yet.
-- `npm run smoke:billing` now gives a repeatable secret-safe billing proof.
+- Production Vercel is missing `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, so live checkout is not green yet.
+- `npm run smoke:billing -- --allow-yellow` now gives a repeatable secret-safe billing proof with paid active passes, summer/year split, payment-mode pass count, and gross app-recorded revenue.
+- Latest verified smoke result: 0 subscriptions, 0 paid active passes, 0 funnel events, 0 webhook events, and no gross app revenue.
 - `/api/admin/revenue-quality` and the dashboard operator panel now provide a protected revenue-quality view for allowlisted operator accounts.
 - `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
+- `docs/research/revenue-readiness-runbook.md` now defines the path from zero live revenue proof to first paid customer proof without doing a fake live charge.
 
 Next prompt:
 
 > Configure production Stripe env vars, prove one checkout/webhook path, then wire net/refund reporting from Stripe into the operator revenue view.
+
+### Epic 8: Get You The Site Moat
+
+Status: Yellow
+
+Customer promise affected:
+
+- Whether Alphacamper feels more powerful than a normal campsite-alert app.
+
+Must prove:
+
+- A paid camper can create a watch for a supported park.
+- The extension is connected before the alert.
+- Booking details are saved before the race starts.
+- The camper receives an alert, taps it, and Alphacamper opens the official booking page.
+- Alphacamper fills safe details and gets the camper to a review-ready state.
+- Final confirmation stays with the camper.
+
+Current result:
+
+- `docs/research/get-the-site-moat-plan.md` defines the moat as alert-to-booking handoff, not more passive alert features.
+- The recommended summer promise is: set a watch, save details once, tap the alert, let Alphacamper open the official booking page, fill the boring parts, and leave final confirm to the camper.
+- Launch-critical roadmap: alert-to-assist handoff, saved booking details, safe review-step handoff, rehearsal, honest coverage, outcome tracking, and paid-pass confidence.
+- Product proof is still yellow because no paid loop has been verified end to end.
+
+Next prompt:
+
+> Prove one full paid loop on BC Parks or Ontario Parks: paid watch, extension connected, details saved, alert received, tap alert, booking page opens, assist starts, and review-ready state reached.
 
 ## Current Recommended Next Runs
 
@@ -354,15 +385,19 @@ Reported back and integrated:
 1. Canada Provider Proof: New Brunswick alertable; Alberta/Saskatchewan need adapter work.
 2. Alert Engine Cleanup: Recreation.gov moved into Railway in code; Vercel cron retired in code.
 3. Catalog Ingestion Factory: official/provider refresh ran live for six providers.
+4. Revenue Readiness: repo-side billing diagnostics are stronger; production Stripe env vars and first paid checkout proof remain yellow.
+5. Production Ops Reliability: Railway diagnostics now check live heartbeat proof first; Railway auth/deploy proof remains blocked from this shell.
+6. Get You The Site Moat: product strategy is defined around alert-to-official-review handoff; end-to-end paid loop proof remains yellow.
 
 Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-3. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
-4. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
-5. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
-6. Demand Capture: let unsupported searches become a prioritization queue.
+3. 50k Verified Campsite Coverage Proof: finish Ontario, Parks Canada, and New Brunswick campsite-level counts.
+4. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
+5. Paid Alert-To-Assist Loop: after heartbeat and billing are green, prove the first BC/Ontario "get you the site" loop.
+6. Alberta/Saskatchewan Adapter Sprint: build live polling only after Railway heartbeat is green.
+7. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
 
 Keep research-only for now:
 

@@ -13,6 +13,7 @@
 
 import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
@@ -29,6 +30,26 @@ type SmokeStatus = "green" | "yellow" | "red";
 type Options = {
   allowYellow: boolean;
   skipVercel: boolean;
+};
+
+type SubscriptionRow = {
+  product_key: string | null;
+  status: string | null;
+  checkout_mode: string | null;
+  amount_total: number | null;
+  currency: string | null;
+  current_period_end: string | null;
+};
+
+export type BillingSummary = {
+  paidPasses: number;
+  summerPasses: number;
+  yearPasses: number;
+  paymentModePasses: number;
+  subscriptionModePasses: number;
+  pastDuePasses: number;
+  canceledPasses: number;
+  grossRevenueByCurrency: Record<string, number>;
 };
 
 function parseArgs(argv: string[]): Options {
@@ -65,6 +86,49 @@ function printLine(label: string, value: string | number | boolean | null | unde
   console.log(`${label.padEnd(28)} ${value ?? "none"}`);
 }
 
+function formatCentsByCurrency(totals: Record<string, number>) {
+  const entries = Object.entries(totals);
+  if (entries.length === 0) return "none";
+
+  return entries
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([currency, cents]) => `${currency.toUpperCase()} ${(cents / 100).toFixed(2)}`)
+    .join(", ");
+}
+
+function addCents(total: Record<string, number>, currency: string | null, amount: number | null) {
+  if (typeof amount !== "number" || amount <= 0) return;
+  const normalizedCurrency = currency?.trim().toLowerCase() || "unknown";
+  total[normalizedCurrency] = (total[normalizedCurrency] ?? 0) + amount;
+}
+
+function isActivePass(row: SubscriptionRow, now = Date.now()) {
+  if (row.status !== "active") return false;
+  if (!row.current_period_end) return true;
+  const endTime = new Date(row.current_period_end).getTime();
+  return !Number.isNaN(endTime) && endTime > now;
+}
+
+export function summarizeBillingRows(rows: SubscriptionRow[], now = Date.now()): BillingSummary {
+  const activePasses = rows.filter((row) => isActivePass(row, now));
+  const grossRevenueByCurrency: Record<string, number> = {};
+
+  for (const row of activePasses) {
+    addCents(grossRevenueByCurrency, row.currency, row.amount_total);
+  }
+
+  return {
+    paidPasses: activePasses.length,
+    summerPasses: activePasses.filter((row) => row.product_key === "summer_pass_2026").length,
+    yearPasses: activePasses.filter((row) => row.product_key === "year_pass_2026").length,
+    paymentModePasses: activePasses.filter((row) => row.checkout_mode === "payment").length,
+    subscriptionModePasses: activePasses.filter((row) => row.checkout_mode === "subscription").length,
+    pastDuePasses: rows.filter((row) => row.status === "past_due").length,
+    canceledPasses: rows.filter((row) => row.status === "canceled").length,
+    grossRevenueByCurrency,
+  };
+}
+
 function runVercelEnvList(): {
   configured: boolean;
   error: string | null;
@@ -99,6 +163,7 @@ function runVercelEnvList(): {
 async function checkSupabaseBillingTables(): Promise<{
   configured: boolean;
   subscriptionsCount: number | null;
+  billingSummary: BillingSummary | null;
   funnelEventsCount: number | null;
   webhookEventsCount: number | null;
   error: string | null;
@@ -109,6 +174,7 @@ async function checkSupabaseBillingTables(): Promise<{
     return {
       configured: false,
       subscriptionsCount: null,
+      billingSummary: null,
       funnelEventsCount: null,
       webhookEventsCount: null,
       error: null,
@@ -119,9 +185,8 @@ async function checkSupabaseBillingTables(): Promise<{
   const [subscriptions, funnelEvents, webhookEvents] = await Promise.all([
     supabase
       .from("subscriptions")
-      .select("id, product_key, status, checkout_mode, amount_total, currency", {
+      .select("id, product_key, status, checkout_mode, amount_total, currency, current_period_end", {
         count: "exact",
-        head: true,
       }),
     supabase
       .from("funnel_events")
@@ -140,6 +205,9 @@ async function checkSupabaseBillingTables(): Promise<{
   return {
     configured: true,
     subscriptionsCount: subscriptions.count ?? null,
+    billingSummary: subscriptions.data
+      ? summarizeBillingRows(subscriptions.data as SubscriptionRow[])
+      : null,
     funnelEventsCount: funnelEvents.count ?? null,
     webhookEventsCount: webhookEvents.count ?? null,
     error,
@@ -226,6 +294,11 @@ async function main() {
   printLine("Status", status);
   printLine("Supabase direct read", supabase.configured ? "configured" : "missing env");
   printLine("Subscriptions rows", supabase.subscriptionsCount);
+  printLine("Paid active passes", supabase.billingSummary?.paidPasses);
+  printLine("Summer passes", supabase.billingSummary?.summerPasses);
+  printLine("Year passes", supabase.billingSummary?.yearPasses);
+  printLine("Payment-mode passes", supabase.billingSummary?.paymentModePasses);
+  printLine("Gross app revenue", supabase.billingSummary ? formatCentsByCurrency(supabase.billingSummary.grossRevenueByCurrency) : null);
   printLine("Funnel event rows", supabase.funnelEventsCount);
   printLine("Webhook event rows", supabase.webhookEventsCount);
   printLine("Supabase error", supabase.error);
@@ -246,7 +319,9 @@ async function main() {
   process.exit(status === "yellow" && options.allowYellow ? 0 : 1);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

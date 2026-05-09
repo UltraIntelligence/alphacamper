@@ -31,6 +31,7 @@ This is the current blocker for calling alert coverage production-ready.
 - Worker deploy config now exists at `alphacamper-worker/railway.json`.
 - Worker `/health` now listens on Railway's `PORT` when provided, with `8080` as the local/default fallback.
 - Worker health now goes degraded if the `worker_status` heartbeat write fails, so a Railway green healthcheck is closer to real alert readiness.
+- `npm run smoke:railway` now includes live production heartbeat proof. Railway startup logs alone cannot mark the gate green if the live provider-quality route or Supabase heartbeat is still missing.
 
 ## Success Criteria
 
@@ -125,7 +126,6 @@ Run from `alphacamper-worker/` after Railway login/link:
 
 ```bash
 npm run smoke:railway
-npm run smoke:production
 ```
 
 Current expected result before Railway is fixed: yellow with `missing_worker_heartbeat`.
@@ -161,9 +161,10 @@ npm run smoke:railway -- --service alphacamper-worker --environment production
 npm run smoke:production
 ```
 
-The first green proof we need is not an alert. It is a recent live
-`worker_status` heartbeat with the expected platforms listed. Only after that
-should the customer notification smoke move from setup proof to delivery proof.
+The first green proof we need is not an alert. It is `npm run smoke:railway`
+showing Railway auth/config/logs are clean and a recent live `worker_status`
+heartbeat exists with the expected platforms listed. Only after that should the
+customer notification smoke move from setup proof to delivery proof.
 
 If the service is running but no heartbeat appears, inspect logs:
 
@@ -184,13 +185,25 @@ cd alphacamper-worker
 npm run smoke:railway
 ```
 
-If Railway is not authenticated or linked, the command reports `blocked` and tells you to run `railway login` or `railway link`.
+If Railway is not authenticated or linked, the command still prints live
+production heartbeat proof first, then reports `blocked` and tells you to run
+`railway login` or `railway link`.
 
 If the Railway project has multiple services or environments, pass explicit names:
 
 ```bash
 npm run smoke:railway -- --service alphacamper-worker --environment production
 ```
+
+If you only want to confirm the local shell is blocked without failing an
+automation step:
+
+```bash
+npm run smoke:railway -- --service alphacamper-worker --environment production --allow-blocked
+```
+
+Treat `blocked` as operator-only. It means the repo-side command cannot inspect
+Railway service settings from this shell, not that the worker is healthy.
 
 ## Live Supabase Checks
 

@@ -19,9 +19,9 @@ Currently running from the control tower on 2026-05-09:
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
 | Ohm | Extra high | 50k Verified Campsite Coverage Proof | Running |
-| Pauli | High | Revenue Readiness Toward $10k Summer Target | Running |
-| Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Running |
-| Curie | Extra high | "Get You The Site" Product Moat Plan | Running |
+| Pauli | High | Revenue Readiness Toward $10k Summer Target | Reported yellow; verified and integrated |
+| Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Reported yellow/blocked; verified and integrated |
+| Curie | Extra high | "Get You The Site" Product Moat Plan | Reported yellow product proof; strategy integrated |
 
 Previous windows launched from the control tower on 2026-05-09:
 
@@ -87,6 +87,8 @@ Current result:
 - Railway CLI is not authenticated in this shell.
 - Repo now includes `alphacamper-worker/railway.json` to make the worker's Railway build/deploy settings explicit.
 - Worker health now listens on Railway's `PORT` when provided, with `8080` as the fallback.
+- `npm run smoke:railway -- --allow-blocked` now prints live production heartbeat proof before Railway auth/log checks.
+- Latest verified result remains yellow/blocked: active watches 5, delivered alerts 0, no Supabase heartbeat, missing worker platforms, and Railway CLI not authenticated.
 
 Next action:
 
@@ -201,6 +203,9 @@ Current truth:
 - The protected operator revenue-quality view is built in the site dashboard for allowlisted operator accounts.
 - The live tables currently have 0 billing/conversion rows.
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
+- `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, and gross app-recorded revenue.
+- Latest verified smoke result is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, and the five production Stripe env vars missing.
+- `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.
 
 Next action:
 
@@ -237,7 +242,7 @@ Next action:
 
 Launch status:
 
-- Launched as Curie on 2026-05-09.
+- Launched as Curie on 2026-05-09; reported back and integrated.
 
 Goal objective:
 
@@ -250,11 +255,13 @@ Why it matters:
 Current truth:
 
 - The repo already has alerts, watch creation, and a Chrome extension with autofill/rehearsal pieces.
-- The control tower still needs a ranked product plan that separates launch-critical trust features from later "all powerful app" ideas.
+- `docs/research/get-the-site-moat-plan.md` now ranks the moat around alert-to-official-review handoff.
+- Launch-critical moat features are alert-to-assist handoff, saved booking details, safe review-step handoff, rehearsal, honest coverage, outcome tracking, and paid-pass confidence.
+- Product proof is still yellow until one paid BC/Ontario alert-to-assist loop is proven.
 
 Next action:
 
-- Use Curie's report to choose the next implementation task after Railway heartbeat, customer notification proof, and billing truth are unblocked.
+- After Railway heartbeat, customer notification proof, and billing truth are unblocked, prove one full paid loop: paid watch, extension connected, details saved, alert received, tap alert, official booking page opened, assist started, and review-ready state reached.
 
 ### 7. Provider Health/Admin Truth
 
