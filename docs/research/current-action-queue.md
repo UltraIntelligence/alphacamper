@@ -19,7 +19,7 @@ Launched from the control tower on 2026-05-09:
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
 | Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Reported yellow; parser proof under intake |
-| Feynman | Extra high | Realtime Campsite Inventory Count Proof | Running |
+| Feynman | Extra high | Realtime Campsite Inventory Count Proof | Reported yellow; BC-only count under intake |
 | Noether | High | Production Worker Heartbeat Recovery | Reported yellow; heartbeat hardening landed |
 | Nash | High | Customer Watch And Notification Smoke | Reported yellow; smoke helper under intake |
 | Descartes | High | Demand Capture And Search-Only Revenue Path | Reported green for scoped change; under intake |
@@ -121,6 +121,7 @@ Current result:
 - Live known catalog rows: 464.
 - Live customer-searchable rows: 461.
 - Verified alertable campground rows: 396.
+- Verified realtime-alertable campsite IDs: 10,410 from BC Parks only.
 - Search-only campground rows: 65.
 - Unsupported stale rows: 3.
 
@@ -128,7 +129,7 @@ Next action:
 
 - Add recurring provider refresh and an admin-facing provider health view.
 - Keep the live provider-quality route wired into the operator/admin experience.
-- Get campsite-level counts for alertable providers; do not use campground-row counts as the 50k success metric.
+- Finish campsite-level counts for Ontario, Parks Canada, and New Brunswick; do not use campground-row counts as the 50k success metric.
 
 ### 3. Alert Engine Cleanup
 

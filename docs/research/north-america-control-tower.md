@@ -83,13 +83,15 @@ Verified live Supabase rows after catalog refresh:
 - New Brunswick: 9 alertable.
 - Manitoba: 45 search-only.
 - Nova Scotia: 20 search-only.
+- BC Parks campsite-level IDs: 10,410 verified from provider availability responses.
 
 Still not counted as realtime success:
 
 - Manitoba and Nova Scotia until polling is proven.
 - Alberta and Saskatchewan until the new adapter is built.
 - Newfoundland and Labrador and Ontario regional systems until refreshed and proven.
-- Any campsite-level total until provider campsite counts and polling health are verified.
+- Ontario, Parks Canada, and New Brunswick campsite-level totals until provider counts finish.
+- Worker heartbeat and notification delivery remain separate proof gates before marketing realtime reliability.
 
 ### Alert engine state
 

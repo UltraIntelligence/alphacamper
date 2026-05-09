@@ -41,7 +41,8 @@ The live catalog schema blocker is cleared:
 - Checkout code now uses one-time Stripe payment mode to match the one-time pass copy.
 - Live Supabase now has `subscriptions` and `funnel_events`, both currently with 0 rows.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
-- Zero campsites should be counted toward the 50,000 realtime-alertable north-star target until worker polling and notifications are verified by provider.
+- 10,410 BC Parks campsite IDs are now verified from provider availability responses, but the full Canada campsite count remains yellow until Ontario, Parks Canada, and New Brunswick finish.
+- Worker polling and notifications are still not proven, so do not use this count as a reliability claim.
 
 ## Completed Goal Windows
 
