@@ -240,6 +240,9 @@ describe('campgrounds route', () => {
         provider_key: 'alberta_parks',
         source_url: 'https://shop.albertaparks.ca',
         last_verified_at: '2026-05-09T00:00:00.000Z',
+        availability_mode: 'directory_only',
+        confidence: 'verified',
+        source_evidence: { source_url: 'https://shop.albertaparks.ca' },
       }],
       error: null,
     })
@@ -262,6 +265,54 @@ describe('campgrounds route', () => {
         provider_key: 'alberta_parks',
         source_url: 'https://shop.albertaparks.ca',
         last_verified_at: '2026-05-09T00:00:00.000Z',
+        availability_mode: 'directory_only',
+        confidence: 'verified',
+        source_evidence: { source_url: 'https://shop.albertaparks.ca' },
+      }],
+    })
+  })
+
+  it('falls back while catalog evidence columns are still rolling out', async () => {
+    const evidenceQueryChain = buildSelectChain({
+      data: null,
+      error: { message: 'column campgrounds.availability_mode does not exist' },
+    })
+    const baseQueryChain = buildSelectChain({
+      data: [{
+        id: 'camp-1',
+        platform: 'bc_parks',
+        root_map_id: null,
+        name: 'Alice Lake',
+        short_name: null,
+        province: 'BC',
+        support_status: 'alertable',
+        provider_key: null,
+        source_url: null,
+        last_verified_at: null,
+      }],
+      error: null,
+    })
+    mockFrom
+      .mockReturnValueOnce(evidenceQueryChain)
+      .mockReturnValueOnce(baseQueryChain)
+
+    const response = await campgroundsRoute.GET(
+      new Request('https://alphacamper.test/api/campgrounds?q=Alice')
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      campgrounds: [{
+        id: 'camp-1',
+        platform: 'bc_parks',
+        root_map_id: null,
+        name: 'Alice Lake',
+        short_name: null,
+        province: 'BC',
+        support_status: 'alertable',
+        provider_key: null,
+        source_url: null,
+        last_verified_at: null,
       }],
     })
   })

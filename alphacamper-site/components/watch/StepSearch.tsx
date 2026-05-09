@@ -29,6 +29,7 @@ const PLATFORM_LABEL: Record<string, string> = {
   gtc_maitland: 'Maitland Valley',
   gtc_stclair: 'St. Clair Region',
   gtc_nlcamping: 'Newfoundland & Labrador Parks',
+  gtc_new_brunswick: 'New Brunswick Parks',
   alberta_parks: 'Alberta Parks',
   saskatchewan_parks: 'Saskatchewan Parks',
   pei_parks: 'PEI Parks',

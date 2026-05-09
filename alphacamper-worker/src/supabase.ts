@@ -183,6 +183,15 @@ export async function upsertCampgrounds(
     name: string;
     short_name: string | null;
     province: string | null;
+    support_status?: string;
+    provider_key?: string;
+    source_url?: string;
+    last_verified_at?: string;
+    availability_mode?: string;
+    confidence?: string;
+    source_evidence?: Record<string, unknown>;
+    raw_payload?: Record<string, unknown>;
+    synced_at?: string;
   }>
 ): Promise<boolean> {
   if (rows.length === 0) return true;
@@ -191,6 +200,106 @@ export async function upsertCampgrounds(
     .upsert(rows, { onConflict: "id,platform" });
   if (error) {
     log.error("upsertCampgrounds failed", { error: error.message, count: rows.length });
+    return false;
+  }
+  return true;
+}
+
+export async function markMissingCatalogRowsUnsupported(
+  platform: string,
+  activeIds: string[],
+  options: { sourceUrl: string; checkedAt: string },
+): Promise<number> {
+  const { data, error } = await getClient()
+    .from("campgrounds")
+    .select("id")
+    .eq("platform", platform);
+
+  if (error) {
+    log.error("markMissingCatalogRowsUnsupported fetch failed", {
+      platform,
+      error: error.message,
+    });
+    return 0;
+  }
+
+  const active = new Set(activeIds);
+  const staleIds = (data ?? [])
+    .map(row => String(row.id))
+    .filter(id => !active.has(id));
+
+  if (staleIds.length === 0) return 0;
+
+  const BATCH_SIZE = 200;
+  let marked = 0;
+  for (let i = 0; i < staleIds.length; i += BATCH_SIZE) {
+    const ids = staleIds.slice(i, i + BATCH_SIZE);
+    const { error: updateError } = await getClient()
+      .from("campgrounds")
+      .update({
+        support_status: "unsupported",
+        availability_mode: "directory_only",
+        confidence: "unknown",
+        source_url: options.sourceUrl,
+        last_verified_at: options.checkedAt,
+        source_evidence: {
+          source_type: "provider_directory_stale",
+          source_url: options.sourceUrl,
+          checked_at: options.checkedAt,
+          stale_reason: "Row was not returned by the latest provider directory import.",
+        },
+        synced_at: options.checkedAt,
+      })
+      .eq("platform", platform)
+      .in("id", ids);
+
+    if (updateError) {
+      log.error("markMissingCatalogRowsUnsupported update failed", {
+        platform,
+        error: updateError.message,
+        count: ids.length,
+      });
+      continue;
+    }
+    marked += ids.length;
+  }
+
+  if (marked > 0) {
+    log.warn("Marked stale catalog rows unsupported", { platform, count: marked });
+  }
+  return marked;
+}
+
+export async function recordCatalogProviderSync(record: {
+  provider_key: string;
+  provider_name: string;
+  source_url: string;
+  support_status: string;
+  availability_mode: string;
+  confidence: string;
+  status: "succeeded" | "failed";
+  row_count: number;
+  last_attempted_at: string;
+  last_success_at: string | null;
+  last_error: string | null;
+  stale_after_hours: number;
+  metadata_json: Record<string, unknown>;
+}): Promise<boolean> {
+  const { error } = await getClient()
+    .from("catalog_provider_syncs")
+    .upsert(
+      {
+        ...record,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "provider_key" },
+    );
+
+  if (error) {
+    log.error("recordCatalogProviderSync failed", {
+      providerKey: record.provider_key,
+      error: error.message,
+    });
     return false;
   }
   return true;

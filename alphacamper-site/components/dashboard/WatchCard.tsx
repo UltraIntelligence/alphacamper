@@ -52,6 +52,7 @@ function platformLabel(platform: string): string {
     gtc_maitland: 'Maitland Valley',
     gtc_stclair: 'St. Clair Region',
     gtc_nlcamping: 'Newfoundland & Labrador Parks',
+    gtc_new_brunswick: 'New Brunswick Parks',
   }
   return labels[platform] || platform
 }

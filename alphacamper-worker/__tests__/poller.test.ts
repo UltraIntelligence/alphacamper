@@ -55,6 +55,26 @@ describe("getCart", () => {
     expect(cart).toEqual({ cartUid: "cart-1", cartTransactionUid: "txn-1" });
   });
 
+  it("sends a browser user agent when requesting a cart", async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => makeCartResponse(),
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await getCart("reservations.parcsnbparks.ca", "");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://reservations.parcsnbparks.ca/api/cart",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "User-Agent": expect.stringContaining("Mozilla"),
+        }),
+      }),
+    );
+  });
+
   it("returns null when cart request fails", async () => {
     mockFetch([{ ok: false, status: 401 }]);
 

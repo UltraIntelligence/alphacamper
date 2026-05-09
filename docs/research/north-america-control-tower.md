@@ -56,33 +56,39 @@ The goal windows own:
 ### Product state
 
 - Phase 1 code is on `main` at `98f9d4fc6 Add Canadian campground support status`.
-- The live Supabase migration was applied and verified on 2026-05-09.
+- The live Supabase support-status and catalog-evidence migrations were applied and verified on 2026-05-09.
 - The site can search the Supabase `campgrounds` table and merge static fallback results.
-- The live API now returns live-only rows such as Bamberton.
-- Existing live rows defaulted to `alertable`; this must be normalized before broad alertable coverage claims.
+- The live API now returns live-only rows such as Bamberton and New Brunswick Sugarloaf.
+- Support labels are now normalized for the first six refreshed providers.
+- Production deploy proof is still needed for the updated site route and retired cron behavior.
 
 ### Coverage state
 
 Safest customer-facing number today:
 
-- Live searchable catalog: 387 Canadian campgrounds.
+- Live customer-searchable catalog: 461 Canadian campgrounds.
 - Static fallback search remains available for 174 campgrounds.
 
-Verified live Supabase rows after Phase 1 migration:
+Verified live Supabase rows after catalog refresh:
 
-- 387 Canadian campgrounds.
-- BC Parks: 144.
+- 464 known catalog rows total.
+- 461 customer-searchable rows excluding unsupported stale rows.
+- 396 verified alertable campground rows.
+- 65 verified search-only campground rows.
+- 3 unsupported stale rows.
+- BC Parks: 145 alertable.
 - Ontario Parks: 129.
-- Parks Canada: 114, with province blank.
+- Parks Canada: 113 alertable, with province enrichment still weak.
+- New Brunswick: 9 alertable.
+- Manitoba: 45 search-only.
+- Nova Scotia: 20 search-only.
 
-Seeded future coverage in repo:
+Still not counted as realtime success:
 
-- Manitoba: 26.
-- Nova Scotia: 20.
-- Newfoundland and Labrador: 13.
-- New Brunswick: 10.
-- Ontario regional systems: 17.
-- Total seeded future coverage: 86.
+- Manitoba and Nova Scotia until polling is proven.
+- Alberta and Saskatchewan until the new adapter is built.
+- Newfoundland and Labrador and Ontario regional systems until refreshed and proven.
+- Any campsite-level total until provider campsite counts and polling health are verified.
 
 ### Alert engine state
 
@@ -93,12 +99,14 @@ Worker code knows:
 - Parks Canada.
 - Manitoba Parks.
 - Nova Scotia Parks.
+- New Brunswick Parks.
 - Long Point Region.
 - Maitland Valley.
 - St. Clair Region.
 - Newfoundland and Labrador Parks.
+- Recreation.gov.
 
-The older site cron path is narrower. Control-tower recommendation: Railway worker should become the one real alert engine, and the older Vercel cron path should be audited, demoted, or retired.
+The older site cron path has been retired in code. Production still needs deploy proof before this is treated as live truth.
 
 ## Competitor Bar
 
@@ -200,12 +208,12 @@ Goal: Make Alphacamper feel like a Canadian campsite product, not only BC/Ontari
 Order:
 
 1. Lock BC, Ontario, and Parks Canada as trustworthy.
-2. Add province/source metadata for Parks Canada.
-3. Bring Manitoba live.
-4. Bring Nova Scotia live.
+2. Deploy and smoke-test the unified Railway alert engine.
+3. Add province/source metadata for Parks Canada.
+4. Prove Manitoba and Nova Scotia polling before upgrading them from search-only.
 5. Bring Newfoundland and Labrador live.
 6. Bring Long Point, Maitland, and St. Clair live.
-7. Bring New Brunswick live if the provider path is verified.
+7. Build Alberta and Saskatchewan adapter proof.
 
 Main output:
 

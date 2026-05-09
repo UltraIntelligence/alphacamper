@@ -75,6 +75,10 @@ describe('getPlatformDomain', () => {
     expect(getPlatformDomain('parks_canada')).toBe('reservation.pc.gc.ca')
   })
 
+  it('returns domain for New Brunswick Parks', () => {
+    expect(getPlatformDomain('gtc_new_brunswick')).toBe('reservations.parcsnbparks.ca')
+  })
+
   it('returns null for unsupported platform', () => {
     expect(getPlatformDomain('unknown')).toBeNull()
   })

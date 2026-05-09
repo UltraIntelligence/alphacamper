@@ -9,6 +9,7 @@ export type CampgroundPlatform =
   | 'gtc_maitland'
   | 'gtc_stclair'
   | 'gtc_nlcamping'
+  | 'gtc_new_brunswick'
   | 'alberta_parks'
   | 'saskatchewan_parks'
   | 'pei_parks'
@@ -44,6 +45,7 @@ const PLATFORM_DOMAINS: Record<string, string> = {
   gtc_maitland: 'maitlandvalley.goingtocamp.com',
   gtc_stclair: 'stclair.goingtocamp.com',
   gtc_nlcamping: 'nlcamping.ca',
+  gtc_new_brunswick: 'reservations.parcsnbparks.ca',
 }
 
 const ALERTABLE_PLATFORMS = new Set<string>([
@@ -51,12 +53,11 @@ const ALERTABLE_PLATFORMS = new Set<string>([
   'ontario_parks',
   'recreation_gov',
   'parks_canada',
-  'gtc_manitoba',
-  'gtc_novascotia',
   'gtc_longpoint',
   'gtc_maitland',
   'gtc_stclair',
   'gtc_nlcamping',
+  'gtc_new_brunswick',
 ])
 
 const SUPPORT_STATUS_LABELS: Record<CampgroundSupportStatus, string> = {

@@ -29,11 +29,11 @@ These gates protect the product from over-promising.
 
 | Gate | Status | What Must Be True | Current Read |
 |---|---|---|---|
-| Live catalog schema | Green | Live Supabase has `support_status`, `provider_key`, `source_url`, and `last_verified_at` | Migration applied and verified 2026-05-09 |
-| Customer campground search | Green | `/api/campgrounds` works against live Supabase and labels support clearly | Live-only Bamberton row now returns from `alphacamper.com/api/campgrounds` |
-| Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
-| Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Pasteur recommends Railway worker as Canadian alert-engine owner; Recreation.gov still blocks full cleanup |
-| Provider health/admin truth | Red | Admin can see alertable/search-only/stale/broken providers | Not proven in beta |
+| Live catalog schema | Green | Live Supabase has support labels, provider evidence, and sync tracking | Support-status and catalog-evidence migrations applied and verified 2026-05-09 |
+| Customer campground search | Green | `/api/campgrounds` works against live Supabase and labels support clearly | Live-only Bamberton and New Brunswick Sugarloaf rows now return from `alphacamper.com/api/campgrounds` |
+| Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test after deploy |
+| Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Code now moves Recreation.gov into Railway and retires Vercel cron; production deploy/smoke still pending |
+| Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Provider sync table now records six live provider refreshes; admin-facing view still not proven |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
 
 ## Current Count Ledger
@@ -43,12 +43,17 @@ These numbers should be treated differently depending on their evidence level.
 | Count | Value | Evidence Level | Product Meaning | Next Verification Needed |
 |---|---:|---|---|---|
 | Static fallback campgrounds | 174 | Verified by Avicenna report | Safest current customer-facing searchable fallback | Recount from `alphacamper-site/lib/parks.ts` when needed |
-| Live Supabase campgrounds | 387 | Verified live read after migration | Bigger Canadian catalog now powers customer search, but support labels still need provider truth | Normalize provider support/source metadata before marketing |
-| BC Parks live rows | 144 | Verified live read after migration | Strong BC catalog base now searchable from live DB | Verify campsite-level alertability count |
-| Ontario Parks live rows | 129 | Verified live read after migration | Strong Ontario catalog base now searchable from live DB | Verify campsite-level alertability count |
-| Parks Canada live rows | 114 | Verified live read after migration | Useful Parks Canada base, but province/source enrichment remains weak | Add/verify province/source enrichment |
-| Default `alertable` support labels | 387 | Verified live read after migration | Migration default only; not customer truth by itself | Provider proof must confirm or downgrade labels |
-| Seeded future GoingToCamp rows | 86 | Repo seed-reported | Near-term Canada expansion inventory | Sync into live catalog and verify provider health |
+| Live known catalog rows | 464 | Verified live read after catalog refresh | Official/provider directory rows are now in live Supabase, including stale rows marked unsupported | Keep refreshing from official sources |
+| Live customer-searchable rows | 461 | Verified live read after catalog refresh | Safe searchable inventory excluding unsupported stale rows | Deploy updated UI/API evidence fields |
+| Verified alertable campground rows | 396 | Verified live read after provider proof and refresh | BC, Ontario, Parks Canada, and New Brunswick are marked alertable with live-polling evidence | Convert this into campsite-level counts and health |
+| Search-only campground rows | 65 | Verified live read after provider proof and refresh | Manitoba and Nova Scotia are visible but not marketed as realtime alertable yet | Prove or build live polling before upgrading |
+| Unsupported stale rows | 3 | Verified live read after refresh | Carmanah Walbran, Grand-Pre, and Internet are not treated as alert inventory | Keep stale rows out of customer claims |
+| BC Parks alertable rows | 145 | Verified live provider refresh | Strong BC catalog base with source evidence | Verify campsite-level alertability count |
+| Ontario Parks alertable rows | 129 | Verified live provider refresh | Strong Ontario catalog base with source evidence | Verify campsite-level alertability count |
+| Parks Canada alertable rows | 113 | Verified live provider refresh | Useful Parks Canada base, but province enrichment remains weak | Add/verify province enrichment |
+| New Brunswick alertable rows | 9 | Verified provider proof and live refresh | First Atlantic realtime-alertable province slice | Deploy worker support and smoke-test alerts |
+| Manitoba search-only rows | 45 | Verified live provider refresh | Searchable, honest expansion inventory | Prove worker polling before upgrading |
+| Nova Scotia search-only rows | 20 | Verified live provider refresh | Searchable, honest expansion inventory | Prove worker polling before upgrading |
 
 Control-tower rule:
 
@@ -62,11 +67,14 @@ Control-tower rule:
 | 2026-05-09 | Keep Canada-first as the immediate wedge | Campnab is the Canadian parity target and Alphacamper already has Canadian provider bones | Active |
 | 2026-05-09 | Treat searchable and alertable as separate product states | Prevents misleading customers while allowing broader discovery | Active |
 | 2026-05-09 | Make live catalog trust the first gate | More coverage is risky until Supabase schema/search/watch behavior are verified | Active |
-| 2026-05-09 | Prefer Railway worker as likely alert-engine owner | Epic 3 found Railway worker is the right Canadian alert-engine owner; Recreation.gov still blocks retiring Vercel cron | Active |
+| 2026-05-09 | Prefer Railway worker as likely alert-engine owner | Epic 3 found Railway worker is the right Canadian alert-engine owner; Recreation.gov has now been moved into the worker in code | Active |
 | 2026-05-09 | Build a catalog ingestion factory, not a hand-curated list | Competitor-scale coverage requires repeatable official/provider data pipelines | Planned |
-| 2026-05-09 | Do not count Vercel cron toward the 50,000 Canadian north-star target | Pasteur found Vercel cron is a weaker legacy path and Recreation.gov-only gap blocks retiring it today | Active |
+| 2026-05-09 | Do not count Vercel cron toward the 50,000 Canadian north-star target | Pasteur found Vercel cron is a weaker legacy path; cleanup code retires it once deployed | Active |
 | 2026-05-09 | Operate autonomously unless a move is unusually destructive or risky | Ryan wants the control tower to move like an owner, not wait on normal execution approvals | Active |
 | 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
+| 2026-05-09 | Treat New Brunswick as alertable after provider proof | The New Brunswick CAMIS/GoingToCamp path returned directory and site-level availability evidence | Active |
+| 2026-05-09 | Keep Manitoba and Nova Scotia search-only for now | Their official directories are verified, but live alert polling has not been proven end to end | Active |
+| 2026-05-09 | Move all alert polling toward Railway worker | Recreation.gov worker support now exists in code, so the old Vercel cron can be retired after deploy proof | Active |
 
 ## Epic Board
 
@@ -93,18 +101,22 @@ Current result:
 - Migration applied to live Supabase project `tbdrmcdrfgunbcevslqf` on 2026-05-09.
 - Verified columns now exist: `support_status`, `provider_key`, `source_url`, and `last_verified_at`.
 - Verified index exists: `idx_campgrounds_support_status`.
-- Live base catalog remains 387 rows: BC Parks 144, Ontario Parks 129, Parks Canada 114.
-- Live API now returns the live-only Bamberton row at `/api/campgrounds?q=Bamberton`.
-- All 387 rows defaulted to `alertable`; this is schema truth, not final customer/provider truth.
-- Realtime-alertable campsite estimate remains unverified until provider proof confirms worker polling and notifications.
+- Live base catalog was refreshed from official/provider sources on 2026-05-09.
+- Live known catalog now has 464 rows.
+- Live customer-searchable rows excluding unsupported stale rows: 461.
+- Verified alertable campground rows: 396.
+- Search-only campground rows: 65.
+- Unsupported stale rows: 3.
+- Live API returns Bamberton and New Brunswick Sugarloaf from Supabase with alertable labels.
+- Realtime-alertable campsite estimate remains unverified; campground rows do not equal campsite count.
 
 Next prompt:
 
-> Normalize support labels and provider metadata so `alertable` means search + watch creation + worker polling + notification path are verified. Downgrade any unproven rows to `search_only` or `coming_soon`.
+> Deploy the updated site and worker, then smoke-test live watch creation, the retired `/api/check-availability` route, and Railway worker health. Keep campsite-level counts separate from campground-row counts.
 
 ### Epic 2: Canada Coverage Sprint
 
-Status: Not started
+Status: Yellow
 
 Customer promise affected:
 
@@ -117,13 +129,15 @@ Must prove:
 - Worker can poll the provider or the product labels it honestly as not alertable yet.
 - No unsupported provider is marketed as working.
 
-Current blocker:
+Current result:
 
-- Wait for Epic 1 unless this work is done in a safe preview/local environment.
+- New Brunswick provider proof is green enough to mark 9 campground rows alertable.
+- Manitoba and Nova Scotia are live in search as verified search-only rows: 45 and 20.
+- Alberta and Saskatchewan were researched as likely shared Aspira/ReserveAmerica-style adapter work, but remain 0 alertable rows.
 
 Next prompt:
 
-> Bring Manitoba and Nova Scotia GoingToCamp campgrounds live in Alphacamper search and watch creation, then verify worker alertability end to end. If those are clean, continue to Newfoundland and Labrador plus Long Point, Maitland, and St. Clair. Report exact counts, provider failures, and customer-facing gaps.
+> Build the next provider adapter proof: Alberta first, then Saskatchewan if the adapter pattern transfers. In parallel, prove Manitoba/Nova Scotia live polling before upgrading them from search-only.
 
 ### Epic 3: Alert Engine Truth Audit
 
@@ -143,18 +157,20 @@ Must prove:
 - Recommended ownership model.
 - Cleanup/routing plan.
 
-Current blocker:
+Current result:
 
-- Railway worker should be the Canadian alert-engine owner, but Recreation.gov is still only covered by the older Vercel cron path.
-- BC/Ontario may be checked by both engines today, which creates duplicate traffic and alert-risk ambiguity.
+- Code now moves Recreation.gov into the Railway worker.
+- Code retires `/api/check-availability` and removes the Vercel cron schedule.
+- Local worker/site tests and builds pass.
+- Live production still needs deploy proof; `alphacamper.com/api/check-availability` still shows the old route until deployment lands.
 
 Next prompt:
 
-> Move Recreation.gov into the Railway worker or explicitly mark it as Vercel-cron-only/search-limited until it is moved. Then narrow or retire `/api/check-availability` so customer alerts have one true engine.
+> Deploy and smoke-test the worker/site handoff: `/api/check-availability` should return retired, and Railway worker health should include Recreation.gov.
 
 ### Epic 4: Parks Canada Enrichment
 
-Status: Not started
+Status: Yellow
 
 Customer promise affected:
 
@@ -225,13 +241,17 @@ Must prove:
 - Rows include support status, availability mode, last verified date, and confidence.
 - Exact counts, failed providers, stale rows, and safe customer exposure are reported.
 
-Current blocker:
+Current result:
 
-- Epic 1 should define the live catalog shape first.
+- Catalog ingestion factory exists in code for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
+- Live refresh completed from official/provider directories on 2026-05-09.
+- Provider sync records show six succeeded refreshes.
+- Stale rows were marked unsupported instead of counted as alertable.
+- Not green yet because the recurring deploy/ops path is not proven.
 
 Next prompt:
 
-> Build Alphacamper's catalog ingestion factory. Start from official/provider data, not competitor data. Create or verify jobs that import provider directories, normalize park/campground/campsite rows, store source URLs and raw payloads, dedupe names, attach province/state, and mark `support_status`, `availability_mode`, `last_verified_at`, and confidence. Start with BC, Ontario, Parks Canada, Manitoba, and Nova Scotia. Report exact counts, failed providers, stale rows, and what is safe to expose to customers.
+> Turn the importer into an operational job with provider health surfaced to admins, then extend it to Newfoundland/Labrador and the Ontario regional systems.
 
 ## Current Recommended Next Runs
 
@@ -243,11 +263,18 @@ Already reported:
 
 Do not relaunch those same windows unless the scope changes.
 
-Running now:
+Reported back and integrated:
 
-1. Canada Provider Proof: New Brunswick alertability, then Alberta/Saskatchewan adapter discovery.
-2. Alert Engine Cleanup: move Recreation.gov into Railway worker or isolate the legacy Vercel cron path.
-3. Catalog Ingestion Factory: build the official/provider-data pipeline once provider proof teaches the real shape.
+1. Canada Provider Proof: New Brunswick alertable; Alberta/Saskatchewan need adapter work.
+2. Alert Engine Cleanup: Recreation.gov moved into Railway in code; Vercel cron retired in code.
+3. Catalog Ingestion Factory: official/provider refresh ran live for six providers.
+
+Next recommended runs:
+
+1. Production Deploy Smoke: verify site deploy, worker deploy, retired Vercel cron, and Railway health.
+2. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
+3. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
+4. Demand Capture: let unsupported searches become a prioritization queue.
 
 Keep research-only for now:
 
@@ -285,9 +312,10 @@ Recommended control-tower update:
 Short version:
 
 - We have the foundation for Canadian expansion.
-- Live Supabase now powers the expanded campground search.
-- We should not claim broad alertable Canada coverage until provider proof verifies worker polling and notifications.
-- The next real unlock is turning default support labels into honest provider truth.
+- Live Supabase now powers 461 safe searchable rows from official/provider directories.
+- We have 396 verified alertable campground rows, but not a verified campsite-level count yet.
+- We should not claim broad alertable Canada coverage until worker deploy, notification smoke, and campsite-level counts are proven.
+- The next real unlock is production deploy proof plus Alberta/Saskatchewan adapter work.
 
 ## North Star
 

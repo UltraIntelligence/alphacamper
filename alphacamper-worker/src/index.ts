@@ -9,9 +9,11 @@ import {
   expireStaleAlerts,
   updateWorkerStatus,
   fetchUserContact,
+  type WatchedTarget,
 } from "./supabase.js";
 import { sendAlertEmail, sendAlertSMS } from "./notify.js";
-import { checkCampground, delay, clearCartCache } from "./poller.js";
+import { checkCampground, delay, clearCartCache, type PollOutcome, type PollResult } from "./poller.js";
+import { checkRecreationGovCampground } from "./recreation-gov.js";
 import {
   fetchCampgroundMap,
   resolveCampground,
@@ -23,17 +25,22 @@ import {
   POLL_INTERVAL_FAST_MS,
   REQUEST_DELAY_MS,
   MAX_CAMPGROUNDS_PER_CYCLE,
+  RECREATION_GOV_PLATFORM,
   getDisabledPlatforms,
 } from "./config.js";
 import { log } from "./logger.js";
 import { alertOperator } from "./alerter.js";
-import { syncDirectoryForDomain } from "./directory-sync.js";
+import {
+  recordCatalogProviderSyncFailure,
+  syncDirectoryForDomain,
+} from "./directory-sync.js";
 
 // ─── Health state ─────────────────────────────────────────────────────────────
 
 let lastCycleAt: string | null = null;
 let platformsHealthy: Record<string, boolean> = {};
 const consecutive403: Record<string, number> = {};
+let recreationGovConsecutiveFailures = 0;
 
 // Initialize 403 counters for each domain
 for (const domain of Object.values(DOMAINS)) {
@@ -44,7 +51,9 @@ for (const domain of Object.values(DOMAINS)) {
 
 const server = http.createServer((req, res) => {
   if (req.url === "/health") {
-    const anyUnhealthy = Object.values(consecutive403).some(c => c >= 5);
+    const anyUnhealthy =
+      Object.values(consecutive403).some(c => c >= 5) ||
+      recreationGovConsecutiveFailures >= 5;
     const stale = lastCycleAt
       ? Date.now() - new Date(lastCycleAt).getTime() > 30 * 60 * 1000
       : true;
@@ -70,6 +79,120 @@ server.listen(8080, () => log.info("Health check server on :8080"));
 // ─── Cookie manager (singleton across cycles) ─────────────────────────────────
 
 const cookieManager = new CookieManager();
+
+function buildPlatformHealth(): Record<string, boolean> {
+  return {
+    ...Object.fromEntries(
+      Object.entries(DOMAINS).map(([platform, domain]) => [
+        platform,
+        (consecutive403[domain] || 0) < 3,
+      ]),
+    ),
+    [RECREATION_GOV_PLATFORM]: recreationGovConsecutiveFailures < 3,
+  };
+}
+
+function sendCustomerNotifications(watch: WatchedTarget, result: PollResult): void {
+  void (async () => {
+    try {
+      const contact = await fetchUserContact(result.userId);
+      if (contact.email) {
+        try {
+          await sendAlertEmail({
+            email: contact.email,
+            campgroundName: watch.campground_name,
+            campgroundId: watch.campground_id,
+            platform: watch.platform,
+            arrivalDate: watch.arrival_date,
+            departureDate: watch.departure_date,
+            sites: result.sites,
+          });
+        } catch (err) {
+          log.error("Email send failed", {
+            error: String(err),
+            watchId: result.watchId,
+            userId: result.userId,
+            campground: watch.campground_name,
+            platform: watch.platform,
+          });
+        }
+      }
+      if (contact.phone) {
+        try {
+          await sendAlertSMS({
+            phone: contact.phone,
+            campgroundName: watch.campground_name,
+            campgroundId: watch.campground_id,
+            platform: watch.platform,
+            sites: result.sites,
+          });
+        } catch (err) {
+          log.error("SMS send failed", {
+            error: String(err),
+            watchId: result.watchId,
+            userId: result.userId,
+            campground: watch.campground_name,
+            platform: watch.platform,
+          });
+        }
+      }
+    } catch (err) {
+      log.error("Failed to fetch user contact for notification", {
+        error: String(err),
+        watchId: result.watchId,
+        userId: result.userId,
+        campground: watch.campground_name,
+        platform: watch.platform,
+      });
+    }
+  })();
+}
+
+async function createConfirmedAlerts(
+  groupWatches: WatchedTarget[],
+  results: PollResult[],
+  confirmWatch: (watch: WatchedTarget) => Promise<PollOutcome>,
+): Promise<number> {
+  let alertsCreated = 0;
+
+  for (const result of results) {
+    if (!shouldCreateAlert(result.sites)) continue;
+
+    const watch = groupWatches.find(w => w.id === result.watchId);
+    if (!watch) continue;
+
+    log.info("Availability detected — confirming in 2s", {
+      watchId: result.watchId,
+      siteCount: result.sites.length,
+    });
+
+    await delay(2000);
+
+    const confirmOutcome = await confirmWatch(watch);
+    const confirmResult = confirmOutcome.results.find(r => r.watchId === result.watchId);
+
+    if (!confirmResult || !shouldCreateAlert(confirmResult.sites)) {
+      log.info("Availability not confirmed on re-check — skipping alert", {
+        watchId: result.watchId,
+      });
+      continue;
+    }
+
+    const created = await createAlert(result.watchId, result.userId, confirmResult.sites);
+    if (!created) continue;
+
+    alertsCreated++;
+    log.info("Alert created after confirmation", {
+      watchId: result.watchId,
+      userId: result.userId,
+      siteCount: confirmResult.sites.length,
+    });
+
+    sendCustomerNotifications(watch, confirmResult);
+  }
+
+  return alertsCreated;
+}
 
 // ─── Main cycle ───────────────────────────────────────────────────────────────
 
@@ -97,16 +220,61 @@ async function runCycle(): Promise<void> {
   // Step 4: Iterate each group
   for (const [groupKey, groupWatches] of groups) {
     const [platform, campgroundId] = groupKey.split(":") as [string, string];
-    const domain = DOMAINS[platform];
-
-    if (!domain) {
-      log.warn("Unknown platform — skipping group", { platform, campgroundId });
-      continue;
-    }
 
     // Step 4a: Kill switch — skip disabled platforms
     if (disabledPlatforms.has(platform)) {
       log.info("Platform disabled — skipping", { platform });
+      continue;
+    }
+
+    if (platform === RECREATION_GOV_PLATFORM) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30_000);
+      let outcome: PollOutcome;
+
+      try {
+        outcome = await checkRecreationGovCampground(groupWatches, controller.signal);
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      if (outcome.httpStatus === 429) {
+        recreationGovConsecutiveFailures++;
+        log.warn("429 received from Recreation.gov — skipping group", { campgroundId });
+        continue;
+      }
+
+      if (outcome.httpStatus !== 200 && outcome.httpStatus !== null) {
+        recreationGovConsecutiveFailures++;
+        log.warn("Recreation.gov check failed — skipping alert creation", {
+          campgroundId,
+          httpStatus: outcome.httpStatus,
+        });
+        await updateLastChecked(groupWatches.map(w => w.id));
+        continue;
+      }
+
+      if (outcome.httpStatus === null) {
+        recreationGovConsecutiveFailures++;
+      } else {
+        recreationGovConsecutiveFailures = 0;
+      }
+
+      totalChecked++;
+      totalAlerts += await createConfirmedAlerts(
+        groupWatches,
+        outcome.results,
+        watch => checkRecreationGovCampground([watch]),
+      );
+      await updateLastChecked(groupWatches.map(w => w.id));
+      await delay(REQUEST_DELAY_MS);
+      continue;
+    }
+
+    const domain = DOMAINS[platform];
+
+    if (!domain) {
+      log.warn("Unknown platform — skipping group", { platform, campgroundId });
       continue;
     }
 
@@ -188,103 +356,16 @@ async function runCycle(): Promise<void> {
 
     totalChecked++;
 
-    // Step 4h: Confirm-before-alert — wait 2s, re-check for each result with availability
-    for (const result of outcome.results) {
-      if (!shouldCreateAlert(result.sites)) continue;
-
-      log.info("Availability detected — confirming in 2s", {
-        watchId: result.watchId,
-        siteCount: result.sites.length,
-      });
-
-      await delay(2000);
-
-      // Re-check the same campground to confirm
-      const confirmOutcome = await checkCampground(
+    totalAlerts += await createConfirmedAlerts(
+      groupWatches,
+      outcome.results,
+      watch => checkCampground(
         domain,
         mapId,
-        groupWatches.filter(w => w.id === result.watchId),
-        cookieManager.getCookieHeader(domain)
-      );
-
-      const confirmResult = confirmOutcome.results.find(r => r.watchId === result.watchId);
-
-      if (!confirmResult || !shouldCreateAlert(confirmResult.sites)) {
-        log.info("Availability not confirmed on re-check — skipping alert", {
-          watchId: result.watchId,
-        });
-        continue;
-      }
-
-      // Step 4i: Create alert for confirmed availability
-      const created = await createAlert(result.watchId, result.userId, confirmResult.sites);
-      if (created) {
-        totalAlerts++;
-        log.info("Alert created after confirmation", {
-          watchId: result.watchId,
-          userId: result.userId,
-          siteCount: confirmResult.sites.length,
-        });
-
-        // Step 4i-b: Send notifications (non-blocking — fire and forget)
-        const watch = groupWatches.find(w => w.id === result.watchId);
-        if (watch) {
-          void (async () => {
-            try {
-              const contact = await fetchUserContact(result.userId);
-              if (contact.email) {
-                try {
-                  await sendAlertEmail({
-                    email: contact.email,
-                    campgroundName: watch.campground_name,
-                    campgroundId: watch.campground_id,
-                    platform: watch.platform,
-                    arrivalDate: watch.arrival_date,
-                    departureDate: watch.departure_date,
-                    sites: confirmResult.sites,
-                  });
-                } catch (err) {
-                  log.error("Email send failed", {
-                    error: String(err),
-                    watchId: result.watchId,
-                    userId: result.userId,
-                    campground: watch.campground_name,
-                    platform: watch.platform,
-                  });
-                }
-              }
-              if (contact.phone) {
-                try {
-                  await sendAlertSMS({
-                    phone: contact.phone,
-                    campgroundName: watch.campground_name,
-                    campgroundId: watch.campground_id,
-                    platform: watch.platform,
-                    sites: confirmResult.sites,
-                  });
-                } catch (err) {
-                  log.error("SMS send failed", {
-                    error: String(err),
-                    watchId: result.watchId,
-                    userId: result.userId,
-                    campground: watch.campground_name,
-                    platform: watch.platform,
-                  });
-                }
-              }
-            } catch (err) {
-              log.error("Failed to fetch user contact for notification", {
-                error: String(err),
-                watchId: result.watchId,
-                userId: result.userId,
-                campground: watch.campground_name,
-                platform: watch.platform,
-              });
-            }
-          })();
-        }
-      }
-    }
+        [watch],
+        cookieManager.getCookieHeader(domain),
+      ),
+    );
 
     // Step 4j: Update last_checked_at for all watches in this group
     await updateLastChecked(groupWatches.map(w => w.id));
@@ -299,9 +380,7 @@ async function runCycle(): Promise<void> {
     watches_checked: totalChecked,
     alerts_created: totalAlerts,
     consecutive_403: consecutive403,
-    platforms_healthy: Object.fromEntries(
-      Object.entries(DOMAINS).map(([platform, domain]) => [platform, (consecutive403[domain] || 0) < 3])
-    ),
+    platforms_healthy: buildPlatformHealth(),
   });
 
   // Step 6: Check for persistent 403s — alert operator
@@ -312,6 +391,13 @@ async function runCycle(): Promise<void> {
         count >= 5 ? "critical" : "warn"
       );
     }
+  }
+
+  if (recreationGovConsecutiveFailures >= 3) {
+    await alertOperator(
+      `Persistent Recreation.gov polling failures (${recreationGovConsecutiveFailures} consecutive)`,
+      recreationGovConsecutiveFailures >= 5 ? "critical" : "warn",
+    );
   }
 
   log.info("Cycle complete", { totalChecked, totalAlerts });
@@ -335,9 +421,7 @@ async function loop() {
   } finally {
     clearTimeout(timeout);
     lastCycleAt = new Date().toISOString();
-    platformsHealthy = Object.fromEntries(
-      Object.entries(DOMAINS).map(([p, d]) => [p, (consecutive403[d] || 0) < 3])
-    );
+    platformsHealthy = buildPlatformHealth();
     setTimeout(loop, interval);
   }
 }
@@ -357,6 +441,10 @@ async function syncAllDirectories(): Promise<void> {
         const ok = await cookieManager.refreshCookies(domain);
         if (!ok) {
           log.warn("Cookie refresh failed — skipping directory sync for platform", { platform });
+          await recordCatalogProviderSyncFailure(
+            platform,
+            "Cookie refresh failed during worker startup directory sync",
+          );
           continue;
         }
       }
@@ -364,6 +452,7 @@ async function syncAllDirectories(): Promise<void> {
       await syncDirectoryForDomain(platform, cookieHeader);
     } catch (err) {
       log.error("Directory sync failed for platform", { platform, error: String(err) });
+      await recordCatalogProviderSyncFailure(platform, String(err));
     }
   }
 }

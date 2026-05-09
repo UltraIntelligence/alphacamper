@@ -1,11 +1,12 @@
 import { log } from "./logger.js";
 import { CAMIS_APP_VERSION, USER_AGENT } from "./config.js";
 
-interface CamisCampground {
+export interface CamisCampground {
   resourceLocationId: number;
   rootMapId: number;
   shortName: string;
   fullName: string;
+  rawPayload?: Record<string, unknown>;
 }
 
 // Cache per domain: key -> CamisCampground
@@ -55,6 +56,7 @@ export async function fetchCampgroundMap(
       rootMapId: item.rootMapId,
       shortName: short,
       fullName: full,
+      rawPayload: item,
     };
     // Index by multiple keys for flexible lookup
     map.set(String(item.resourceLocationId), entry);

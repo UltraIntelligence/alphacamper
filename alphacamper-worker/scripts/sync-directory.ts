@@ -49,9 +49,13 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
 }
 
 import { CookieManager } from "../src/cookie-manager.js";
-import { syncDirectoryForDomain } from "../src/directory-sync.js";
-import { DOMAINS, SUPPORTED_PLATFORMS } from "../src/config.js";
+import {
+  recordCatalogProviderSyncFailure,
+  syncDirectoryForDomain,
+} from "../src/directory-sync.js";
+import { DOMAINS } from "../src/config.js";
 import { fetchCampgroundMap } from "../src/id-resolver.js";
+import { buildCatalogCampgroundRows } from "../src/catalog-ingestion.js";
 
 interface RunOptions {
   platforms: string[];
@@ -61,15 +65,16 @@ interface RunOptions {
 function parseArgs(argv: string[]): RunOptions {
   const dryRun = argv.includes("--dry-run");
   const positional = argv.filter((a) => !a.startsWith("--"));
+  const directoryPlatforms = Object.keys(DOMAINS);
 
   let platforms: string[];
   if (positional.length === 0) {
-    platforms = SUPPORTED_PLATFORMS;
+    platforms = directoryPlatforms;
   } else {
     const unknown = positional.filter((p) => !DOMAINS[p]);
     if (unknown.length > 0) {
       console.error(
-        `Unknown platform(s): ${unknown.join(", ")}. Supported: ${SUPPORTED_PLATFORMS.join(", ")}`,
+        `Unknown directory platform(s): ${unknown.join(", ")}. Supported: ${directoryPlatforms.join(", ")}`,
       );
       process.exit(2);
     }
@@ -79,14 +84,22 @@ function parseArgs(argv: string[]): RunOptions {
   return { platforms, dryRun };
 }
 
+interface PlatformRunSummary {
+  platform: string;
+  cookieOk: boolean;
+  rows: number;
+  wrote: boolean;
+  error: string | null;
+}
+
 async function runOnePlatform(
   platform: string,
   cookieManager: CookieManager,
   dryRun: boolean,
-): Promise<{ platform: string; cookieOk: boolean; rows: number; wrote: boolean }> {
+): Promise<PlatformRunSummary> {
   const domain = DOMAINS[platform];
 
-  const summary = { platform, cookieOk: false, rows: 0, wrote: false };
+  const summary: PlatformRunSummary = { platform, cookieOk: false, rows: 0, wrote: false, error: null };
 
   console.log(`\n─── ${platform} · ${domain} ───`);
   console.log("1/3  Refreshing cookies via Playwright…");
@@ -94,9 +107,11 @@ async function runOnePlatform(
   const ok = await cookieManager.refreshCookies(domain);
   summary.cookieOk = ok;
   if (!ok) {
-    console.error(
-      `     FAILED. Cookie refresh did not complete — likely CAPTCHA or WAF block.`,
-    );
+    summary.error = "Cookie refresh did not complete — likely CAPTCHA or WAF block.";
+    console.error(`     FAILED. ${summary.error}`);
+    if (!dryRun) {
+      await recordCatalogProviderSyncFailure(platform, summary.error);
+    }
     return summary;
   }
   const header = cookieManager.getCookieHeader(domain);
@@ -106,23 +121,27 @@ async function runOnePlatform(
     console.log("2/3  Dry-run: fetching campground map but not upserting…");
     try {
       const map = await fetchCampgroundMap(domain, header);
-      const ids = new Set<number>();
-      for (const entry of map.values()) ids.add(entry.resourceLocationId);
-      summary.rows = ids.size;
-      console.log(`     Directory returned ${ids.size} unique facilities.`);
+      const rows = buildCatalogCampgroundRows(platform, map);
+      summary.rows = rows.length;
+      console.log(`     Directory returned ${rows.length} unique facilities.`);
     } catch (err) {
-      console.error(`     fetchCampgroundMap threw: ${String(err)}`);
+      summary.error = String(err);
+      console.error(`     fetchCampgroundMap threw: ${summary.error}`);
     }
     return summary;
   }
 
   console.log("2/3  Running directory sync → campgrounds table…");
   try {
-    await syncDirectoryForDomain(platform, header);
-    summary.wrote = true;
-    console.log("3/3  Done.");
+    const result = await syncDirectoryForDomain(platform, header);
+    summary.rows = result.rows;
+    summary.wrote = result.status === "succeeded";
+    summary.error = result.error;
+    console.log(`3/3  Done. ${result.rows} facilities upserted, ${result.staleRows} stale rows marked unsupported.`);
   } catch (err) {
-    console.error(`     syncDirectoryForDomain threw: ${String(err)}`);
+    summary.error = String(err);
+    await recordCatalogProviderSyncFailure(platform, summary.error);
+    console.error(`     syncDirectoryForDomain threw: ${summary.error}`);
   }
   return summary;
 }
@@ -153,8 +172,8 @@ async function main() {
         ? `${r.rows} facilities would be upserted`
         : "cookie refresh failed"
       : r.wrote
-        ? "upsert complete (see logs above)"
-        : "FAILED";
+        ? `${r.rows} facilities upserted`
+        : `FAILED${r.error ? ` — ${r.error}` : ""}`;
     console.log(`  ${r.platform.padEnd(16)} ${status}`);
   }
 

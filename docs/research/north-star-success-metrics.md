@@ -135,6 +135,15 @@ For the next three weeks, aim for:
 
 That is the first success line.
 
+Current 2026-05-09 baseline:
+
+- 461 live customer-searchable Canadian campground rows.
+- 396 verified alertable Canadian campground rows.
+- 65 verified search-only Canadian campground rows.
+- 0 verified campsite-level total counted toward the 50,000 target yet.
+
+The campground-row count is progress, but the success metric is campsite inventory with polling and notification proof.
+
 For the business, aim for:
 
 > $10k revenue by the end of summer from campers who trust Alphacamper enough to pay for better odds.

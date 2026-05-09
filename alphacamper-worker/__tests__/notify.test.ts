@@ -163,6 +163,7 @@ describe("buildAlertHtml", () => {
     ["gtc_maitland", "maitlandvalley.goingtocamp.com"],
     ["gtc_stclair", "stclair.goingtocamp.com"],
     ["gtc_nlcamping", "nlcamping.ca"],
+    ["gtc_new_brunswick", "reservations.parcsnbparks.ca"],
   ])("includes booking link for GoingToCamp platform %s", (platform, domain) => {
     const html = buildAlertHtml({
       email: "test@example.com",

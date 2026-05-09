@@ -14,149 +14,171 @@ Goal-window rule:
 
 ## Current Gate
 
-### 1. Phase 2 Live Catalog Fix
+### 1. Production Deploy Smoke
 
 Current status:
 
-- Migration applied and verified; Epic 1 moved from red to yellow.
+- Code is locally verified and live data is refreshed.
+- Production still needs the updated site and worker deployed and smoke-tested.
 
 Launch status:
 
-- Reported back 2026-05-09 as red, then unblocked by approved live migration.
+- Ready now after Canada Provider Proof, Alert Engine Cleanup, and Catalog Ingestion Factory reported back.
 
 Goal objective:
 
-- Make the live catalog safe enough to trust for customer search and watch creation.
+- Prove the customer-facing product and alert worker now match the new catalog truth.
 
 Why this is first:
 
-- The live catalog schema is the gate for every customer-facing coverage claim.
+- The database is ahead of the deployed app until the site/worker code lands.
+- We should not market new alert coverage until the production path is proven.
 
 Done means:
 
-- Live Supabase has the Phase 1 columns.
-- `/api/campgrounds` works against live Supabase.
-- Watch creation respects support status.
-- Counts by provider and support status are verified.
+- `alphacamper.com/api/check-availability` returns the retired Railway-worker message.
+- Vercel no longer has the alert polling cron.
+- Railway worker owns BC, Ontario, Parks Canada, GoingToCamp providers, New Brunswick, and Recreation.gov.
+- New Brunswick can be searched and watched as alertable.
+- Manitoba and Nova Scotia show as search-only, not alertable.
+- A real authenticated watch-creation smoke test confirms unsupported/search-only rows do not create misleading alerts.
 
 Current result:
 
-- Live Supabase now has the Phase 1 support-status columns.
-- Live base catalog is verified at 387 rows: BC Parks 144, Ontario Parks 129, Parks Canada 114.
-- `/api/campgrounds?q=Bamberton` now returns the live-only Supabase row.
-- All existing rows defaulted to `alertable`, so provider truth still needs normalization before marketing claims.
+- Local verification is green: worker tests/build, site tests/build, and `git diff --check`.
+- Live schema is green.
+- Live catalog refresh is green for six providers.
+- Live code deploy is not yet proven in production.
 
 Next action:
 
-- Normalize support labels and provider metadata.
-- Verify worker polling and notification path before counting rows toward realtime-alertable success.
+- Commit and push the integrated work.
+- Watch the site and worker deploys.
+- Smoke-test the customer path and worker health.
 
 Use runbook for evidence:
 
 - `docs/research/live-catalog-migration-runbook.md`.
 - Use `docs/research/live-catalog-verification.sql` for repeat checks.
 
-### 2. Alert Engine Truth Audit
+### 2. Live Catalog Truth
 
 Launch status:
 
-- Reported back 2026-05-09 as yellow.
+- Integrated 2026-05-09.
 
 Goal objective:
 
-- Decide which alert engine actually owns customer alerts and what should happen to weaker/older paths.
+- Keep the live catalog honest as coverage grows.
 
 Why this result matters:
 
-- It does not need the catalog migration to answer the ownership question.
+- Searchable coverage helps customers discover parks, but alertable coverage is what we can charge trust around.
 
 Done means:
 
-- We know whether Railway worker is the real alert engine.
-- We know what the Vercel cron path still does.
-- We know what should be kept, hidden, retired, or rerouted.
+- Every row has support status, source evidence, availability mode, confidence, and last verified date.
+- Stale rows are downgraded instead of marketed.
+- Counts stay separated between searchable rows, alertable campground rows, and realtime-alertable campsite inventory.
 
 Current result:
 
-- Railway worker should be the Canadian alert-engine source of truth.
-- Vercel cron is a weaker legacy path and should not count toward the 50,000 realtime-alertable Canadian campsite target.
-- Recreation.gov still depends on Vercel cron, so do not retire it until Recreation.gov moves into the worker or is deliberately marked differently.
+- Live known catalog rows: 464.
+- Live customer-searchable rows: 461.
+- Verified alertable campground rows: 396.
+- Search-only campground rows: 65.
+- Unsupported stale rows: 3.
 
 Next action:
 
-- Launch a follow-up goal after catalog migration: move Recreation.gov into Railway worker or narrow/retire Vercel cron safely.
+- Add recurring provider refresh and an admin-facing provider health view.
+- Get campsite-level counts for alertable providers; do not use campground-row counts as the 50k success metric.
 
-Use prompt only if rerunning with changed scope:
-
-- `docs/research/epic-launch-prompts.md` → Prompt 2.
-
-### 3. North America Provider Roadmap
+### 3. Alert Engine Cleanup
 
 Launch status:
 
-- Reported back 2026-05-09 as yellow.
+- Integrated in code 2026-05-09; production deploy proof pending.
 
 Goal objective:
 
-- Rank the next provider systems so Alphacamper knows where to spend the next three weeks.
+- Make Railway worker the one real alert engine.
 
 Why this result matters:
 
-- It is research and ranking, not production exposure.
+- Customers should not have hidden differences between alert engines.
 
 Done means:
 
-- Top five next provider bets are clear.
-- The next 20 provider systems are ranked.
-- Risks and build difficulty are documented.
+- Recreation.gov is checked by Railway worker.
+- Vercel cron is retired.
+- Alerts are not double-polled.
+- Worker health tells us when a provider is stale or broken.
 
 Current result:
 
-- Top five bets are Alberta, Saskatchewan, Atlantic quick win with New Brunswick then PEI, US GoingToCamp cluster, then ReserveCalifornia.
-- New Brunswick + Alberta/Saskatchewan adapter proof is the recommended next workstream after the live catalog is unblocked.
-- SEPAQ should stay research-only until Cloudflare and French-first UX risk are solved.
-- Broad US rollout should wait until Canada parity providers are visibly searchable and verified alertable.
+- Code now moves Recreation.gov into Railway worker.
+- Code retires `/api/check-availability`.
+- Code removes the Vercel cron schedule.
+- Local verification passed.
+- Production still needs deploy/smoke proof.
 
-Use prompt only if rerunning with changed scope:
+Next action:
 
-- `docs/research/epic-launch-prompts.md` → Prompt 3.
-- Use scoring model: `docs/research/provider-scoring-rubric.md`.
+- After deploy, verify `/api/check-availability` returns 410 retired and Railway worker health includes Recreation.gov.
 
-## Running Now
+## Next Big Runs
 
-Epic 1 is no longer red, so the next huge goal windows are running.
+These should be separate goal windows when launched.
 
-### 4. Canada Coverage Sprint
-
-Goal objective:
-
-- Turn verified Canadian provider support into visible, honest customer coverage.
-
-Why it matters:
-
-- New coverage should not go customer-facing until provider polling and notification truth are proven.
-
-Use prompt after Epic 1:
-
-- `docs/research/epic-launch-prompts.md` → Prompt 4.
-
-### 5. Catalog Ingestion Factory
+### 4. Alberta/Saskatchewan Adapter Sprint
 
 Goal objective:
 
-- Build the repeatable pipeline that lets Alphacamper grow from official/provider data instead of hand-curated lists.
+- Build the shared adapter proof for Alberta first, then Saskatchewan.
 
 Why it matters:
 
-- The factory should target the confirmed live catalog shape.
+- These are the biggest visible Canada parity gaps after BC/Ontario/Parks Canada.
 
-Use prompt after Epic 1:
+Current truth:
 
-- `docs/research/epic-launch-prompts.md` → Prompt 5.
+- Alberta and Saskatchewan are searchable roadmap targets, not alertable product coverage yet.
+- Provider proof suggests they likely share an Aspira/ReserveAmerica-style adapter shape.
+
+### 5. Provider Health/Admin Truth
+
+Goal objective:
+
+- Give operators a clear view of alertable, search-only, stale, and broken providers.
+
+Why it matters:
+
+- A tier-one alert product needs to know when a provider silently goes bad.
+
+Current truth:
+
+- `catalog_provider_syncs` now records provider refresh status.
+- Worker health exists, but an admin-facing view is not proven.
+
+### 6. Demand Capture And Conversion
+
+Goal objective:
+
+- Turn unsupported and search-only interest into a prioritization queue and revenue path.
+
+Why it matters:
+
+- The $10k summer revenue goal needs paid camper outcomes, not only infrastructure.
+
+Current truth:
+
+- Unsupported searches are not yet a strong prioritization signal.
+- The product still needs clearer "we can help you get this site" flows.
 
 ## Run When Source Data Is Chosen
 
-### 6. Parks Canada Enrichment
+### 7. Parks Canada Enrichment
 
 Goal objective:
 

@@ -11,9 +11,15 @@ export const DOMAINS: Record<string, string> = {
   gtc_maitland: "maitlandvalley.goingtocamp.com",
   gtc_stclair: "stclair.goingtocamp.com",
   gtc_nlcamping: "nlcamping.ca",
+  gtc_new_brunswick: "reservations.parcsnbparks.ca",
 };
 
-export const SUPPORTED_PLATFORMS = Object.keys(DOMAINS);
+export const RECREATION_GOV_PLATFORM = "recreation_gov";
+
+export const SUPPORTED_PLATFORMS = [
+  ...Object.keys(DOMAINS),
+  RECREATION_GOV_PLATFORM,
+];
 
 export const COOKIE_TTLS: Record<string, number> = {
   "camping.bcparks.ca": 25 * 60 * 1000,
@@ -25,6 +31,7 @@ export const COOKIE_TTLS: Record<string, number> = {
   "maitlandvalley.goingtocamp.com": 20 * 60 * 1000,
   "stclair.goingtocamp.com": 20 * 60 * 1000,
   "nlcamping.ca": 20 * 60 * 1000,
+  "reservations.parcsnbparks.ca": 20 * 60 * 1000,
 };
 
 export const POLL_INTERVAL_FAST_MS = Number(process.env.POLL_INTERVAL_FAST_MS) || 5 * 60 * 1000;

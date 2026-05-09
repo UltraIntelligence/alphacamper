@@ -25,11 +25,15 @@ Use extra-high reasoning for:
 - Alert Engine Truth Audit.
 - North America Provider Roadmap.
 - Catalog Ingestion Factory.
+- Alberta/Saskatchewan Adapter Sprint.
 
 Use high reasoning for:
 
+- Production Deploy Smoke.
 - Canada Coverage Sprint.
 - Parks Canada Enrichment.
+- Provider Health/Admin Truth.
+- Demand Capture And Conversion.
 
 Use medium or lower only for narrow follow-up chores like formatting docs, recounting known files, or small copy changes.
 
@@ -46,23 +50,19 @@ Already reported back:
 1. Phase 2 Live Catalog Fix: yellow after live migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
+4. Canada Provider Proof: yellow; New Brunswick alertable, Alberta/Saskatchewan need adapter work.
+5. Alert Engine Cleanup: yellow until production deploy proof.
+6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 
 Do not relaunch those same windows unless the scope changes.
 
-Running now:
+Next recommended windows:
 
-1. Canada Provider Proof.
-2. Alert Engine Cleanup.
-3. Catalog Ingestion Factory.
-
-Start or continue after provider proof reports:
-
-1. Canada Coverage Sprint.
-2. Parks Canada Enrichment.
-
-Start when official Parks Canada source data is selected:
-
-1. Parks Canada Enrichment.
+1. Production Deploy Smoke.
+2. Alberta/Saskatchewan Adapter Sprint.
+3. Provider Health/Admin Truth.
+4. Demand Capture And Conversion.
+5. Parks Canada Enrichment when official source data is chosen.
 
 ## Prompt 1: Phase 2 Live Catalog Fix
 
@@ -297,6 +297,146 @@ After counts:
 Verified source data:
 - ...
 Uncertain rows:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 7: Production Deploy Smoke
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+Verify that the integrated site and worker changes are live and safe for customers. Confirm the site deploy includes the retired /api/check-availability route, the worker owns Recreation.gov plus Canadian providers, New Brunswick can be searched/watched as alertable, and Manitoba/Nova Scotia remain search-only. Report exact production evidence and any rollback risk.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Site app: alphacamper-site
+- Worker app: alphacamper-worker
+- Live site: https://alphacamper.com
+- Current expected live catalog: 461 searchable rows, 396 alertable campground rows, 65 search-only rows, 3 unsupported stale rows.
+
+Rules:
+- Treat this as production verification, not new feature work.
+- Do not overclaim campsite-level totals.
+- If a deploy is not live yet, say exactly what is pending and keep watching if possible.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Production evidence:
+- ...
+Customer path smoke:
+- ...
+Worker health:
+- ...
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 8: Alberta/Saskatchewan Adapter Sprint
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+Build or prove the shared Alberta/Saskatchewan reservation adapter. Start with Alberta, then confirm whether the same pattern works for Saskatchewan. Keep both providers search-only or coming-soon until site-level availability polling and notification behavior are proven.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Provider proof found Alberta uses contract ABPP and Saskatchewan uses SKPP.
+- Likely adapter family: Aspira/ReserveAmerica-style.
+- North star: 50,000 verified realtime-alertable Canadian campsites.
+
+Rules:
+- Use official reservation systems.
+- Do not scrape competitor data.
+- Do not mark a provider alertable until search, watch creation, worker polling, and notification path are proven.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Providers:
+- Alberta:
+- Saskatchewan:
+Adapter proof:
+- ...
+Counts:
+- Searchable:
+- Alertable:
+- Search-only:
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 9: Provider Health/Admin Truth
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+Create or verify an operator view that shows provider sync status, worker health, alertable/search-only/unsupported counts, stale providers, and recent failures. The admin/operator should know when a provider silently breaks before customers are misled.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Provider sync table: catalog_provider_syncs
+- Worker health endpoint: alphacamper-worker/src/index.ts
+- Site admin routes already include provider-quality and catalog-refresh surfaces.
+
+Rules:
+- Keep the view operational and simple.
+- Show customer-impact language, not only technical errors.
+- Do not expose service-role data to public users.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Admin/operator evidence:
+- ...
+Provider health fields:
+- ...
+Customer-impact states:
+- ...
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 10: Demand Capture And Conversion
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+Turn unsupported, search-only, and coming-soon campground interest into a demand queue and revenue path. Customers should be able to request support, see nearby alertable alternatives where possible, and understand why paying improves their odds.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Business target: $10k revenue by end of summer.
+- Product distinction: not just finding the site, but helping the camper get the site.
+- Current gap: unsupported searches are not yet a strong prioritization signal.
+
+Rules:
+- Keep language honest about what is alertable now.
+- Do not make unsupported coverage look like a live alert.
+- Prioritize regular camper clarity over internal labels.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Customer flow:
+- ...
+Demand data captured:
+- ...
+Revenue/conversion impact:
+- ...
+Risks:
 - ...
 Recommended control-tower update:
 - ...

@@ -8,13 +8,19 @@ describe("DOMAINS registry", () => {
     expect(DOMAINS.parks_canada).toBe("reservation.pc.gc.ca");
   });
 
-  it("includes the six GoingToCamp white-label platforms", () => {
+  it("includes the seven GoingToCamp white-label platforms", () => {
     expect(DOMAINS.gtc_manitoba).toBe("manitoba.goingtocamp.com");
     expect(DOMAINS.gtc_novascotia).toBe("novascotia.goingtocamp.com");
     expect(DOMAINS.gtc_longpoint).toBe("longpoint.goingtocamp.com");
     expect(DOMAINS.gtc_maitland).toBe("maitlandvalley.goingtocamp.com");
     expect(DOMAINS.gtc_stclair).toBe("stclair.goingtocamp.com");
     expect(DOMAINS.gtc_nlcamping).toBe("nlcamping.ca");
+    expect(DOMAINS.gtc_new_brunswick).toBe("reservations.parcsnbparks.ca");
+  });
+
+  it("tracks Recreation.gov as a worker-owned non-Camis platform", () => {
+    expect(DOMAINS.recreation_gov).toBeUndefined();
+    expect(SUPPORTED_PLATFORMS).toContain("recreation_gov");
   });
 
   it("has a cookie TTL entry for every domain", () => {

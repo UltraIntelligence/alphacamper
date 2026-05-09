@@ -85,9 +85,12 @@ Do not claim broad Canada alertable coverage yet.
 The live catalog schema gate is now cleared:
 
 - Phase 1 code is pushed.
-- The live Supabase migration was applied and verified on 2026-05-09.
-- Customer search now returns live-only rows such as Bamberton.
-- Watch creation guardrails pass local tests, but provider alertability still needs worker/notification proof.
+- The live Supabase support-status and catalog-evidence migrations were applied and verified on 2026-05-09.
+- Customer search now returns live-only rows such as Bamberton and New Brunswick Sugarloaf.
+- Live catalog refresh from official/provider directories now has 461 safe searchable rows.
+- Verified alertable campground rows: 396.
+- Search-only campground rows: 65.
+- Watch creation guardrails pass local tests, but production watch creation still needs a customer-path smoke test after deploy.
 
 Major success line:
 
@@ -108,14 +111,18 @@ Already reported back:
 1. Phase 2 Live Catalog Fix: yellow after migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
+4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
+5. Alert Engine Cleanup: yellow until production deploy proof.
+6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
 
 Do not relaunch those same windows just because this conversation was forked.
 
-Running now:
+Next high-leverage runs:
 
-1. Canada Provider Proof.
-2. Alert Engine Cleanup.
-3. Catalog Ingestion Factory.
+1. Production Deploy Smoke.
+2. Alberta/Saskatchewan Adapter Sprint.
+3. Provider Health/Admin Truth.
+4. Demand Capture And Conversion.
 
 Run when official Parks Canada source data is selected:
 

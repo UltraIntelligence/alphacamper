@@ -3,9 +3,31 @@ import { getSupabase } from '@/lib/supabase'
 import { normalizeSupportStatus, searchCampgrounds } from '@/lib/parks'
 
 const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' }
+const BASE_COLUMNS = 'id, platform, root_map_id, name, short_name, province, support_status, provider_key, source_url, last_verified_at'
+const EVIDENCE_COLUMNS = `${BASE_COLUMNS}, availability_mode, confidence, source_evidence`
+
+type CampgroundRow = {
+  id: string
+  platform: string
+  root_map_id: number | null
+  name: string
+  short_name: string | null
+  province: string | null
+  support_status?: string | null
+  provider_key?: string | null
+  source_url?: string | null
+  last_verified_at?: string | null
+  availability_mode?: string | null
+  confidence?: string | null
+  source_evidence?: Record<string, unknown> | null
+}
 
 function cachedJson(body: unknown) {
   return NextResponse.json(body, { headers: CACHE_HEADERS })
+}
+
+function shouldRetryWithoutEvidenceColumns(error: { message?: string } | null | undefined) {
+  return Boolean(error?.message?.match(/availability_mode|confidence|source_evidence/))
 }
 
 function normalizeCampgroundKey(value: string | null | undefined) {
@@ -30,26 +52,6 @@ export async function GET(request: Request) {
 
   const supabase = getSupabase()
 
-  let query = supabase
-    .from('campgrounds')
-    .select('id, platform, root_map_id, name, short_name, province, support_status, provider_key, source_url, last_verified_at')
-    .limit(limit)
-
-  if (id) {
-    query = query.eq('id', id)
-    if (platform) query = query.eq('platform', platform)
-    const { data, error } = await query
-    if (error) {
-      console.error('[campgrounds] Supabase exact lookup failed:', error.message)
-      return cachedJson({ campgrounds: [] })
-    }
-    const campgrounds = (data ?? []).map((result: { support_status?: string | null; platform: string }) => ({
-      ...result,
-      support_status: normalizeSupportStatus(result.support_status, result.platform),
-    }))
-    return cachedJson({ campgrounds })
-  }
-
   const escapedQuery = q
     .replace(/\\/g, '\\\\')
     .replace(/[%_]/g, '\\$&')
@@ -58,34 +60,50 @@ export async function GET(request: Request) {
 
   // After stripping punctuation, query might be empty (e.g., ".." or "(),").
   // An empty pattern would produce a match-all `%%` ILIKE — return empty instead.
-  if (escapedQuery.length < 2) {
+  if (!id && escapedQuery.length < 2) {
     return cachedJson({ campgrounds: [] })
   }
 
-  query = query.or(
-    `name.ilike.%${escapedQuery}%,short_name.ilike.%${escapedQuery}%,province.ilike.%${escapedQuery}%`
-  )
+  const buildQuery = (columns: string) => {
+    let query = supabase
+      .from('campgrounds')
+      .select(columns)
+      .limit(limit)
 
-  if (platform) query = query.eq('platform', platform)
+    if (id) {
+      query = query.eq('id', id)
+      if (platform) query = query.eq('platform', platform)
+      return query
+    }
 
-  const { data, error } = await query
-
-  if (error) {
-    console.error('[campgrounds] Supabase query failed:', error.message)
+    query = query.or(
+      `name.ilike.%${escapedQuery}%,short_name.ilike.%${escapedQuery}%,province.ilike.%${escapedQuery}%`
+    )
+    if (platform) query = query.eq('platform', platform)
+    return query
   }
 
-  const dbResults = (error ? [] : (data ?? [])) as Array<{
-    id: string
-    platform: string
-    root_map_id: number | null
-    name: string
-    short_name: string | null
-    province: string | null
-    support_status?: string | null
-    provider_key?: string | null
-    source_url?: string | null
-    last_verified_at?: string | null
-  }>
+  let { data, error } = await buildQuery(EVIDENCE_COLUMNS)
+  if (error && shouldRetryWithoutEvidenceColumns(error)) {
+    const fallback = await buildQuery(BASE_COLUMNS)
+    data = fallback.data
+    error = fallback.error
+  }
+
+  if (error) {
+    console.error(`[campgrounds] Supabase ${id ? 'exact lookup' : 'query'} failed:`, error.message)
+  }
+
+  if (id) {
+    const exactResults = (error ? [] : (data ?? [])) as unknown as CampgroundRow[]
+    const campgrounds = exactResults.map((result) => ({
+      ...result,
+      support_status: normalizeSupportStatus(result.support_status, result.platform),
+    }))
+    return cachedJson({ campgrounds })
+  }
+
+  const dbResults = (error ? [] : (data ?? [])) as unknown as CampgroundRow[]
 
   // Merge static fallback — covers Recreation.gov and pre-sync state for Camis platforms
   const staticResults = searchCampgrounds(q).filter(c => !platform || c.platform === platform).map(c => ({
@@ -99,6 +117,9 @@ export async function GET(request: Request) {
     provider_key: c.platform,
     source_url: null as string | null,
     last_verified_at: null as string | null,
+    availability_mode: null as string | null,
+    confidence: null as string | null,
+    source_evidence: null as Record<string, unknown> | null,
   }))
 
   const dbKeys = new Set(dbResults.map(r => `${r.id}:${r.platform}`))

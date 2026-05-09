@@ -7,7 +7,8 @@ Use this only after the live catalog migration is applied and verified.
 Status:
 
 - Gate cleared on 2026-05-09.
-- These windows are now running.
+- These windows reported back and were integrated on 2026-05-09.
+- Next work should focus on production deploy smoke, Alberta/Saskatchewan adapter proof, provider health/admin truth, and demand capture.
 
 ## Gate Before Launching
 
@@ -86,7 +87,7 @@ Why this is next:
 
 - Railway worker should be the Canadian alert-engine owner.
 - Vercel cron is weaker and should not count toward the 50,000 Canadian realtime target.
-- Recreation.gov currently blocks retiring the older Vercel cron path.
+- Recreation.gov was the blocker for retiring the older Vercel cron path; follow-up cleanup moved it into Railway in code.
 
 Scope:
 
@@ -175,4 +176,10 @@ Recommended control-tower update:
 
 ## Control-Tower Note
 
-If migration verification shows all existing live rows default to `alertable`, do not treat that as customer truth automatically. The next provider proof must decide which providers are truly alertable.
+The first provider-proof and ingestion pass normalized the default labels:
+
+- BC, Ontario, Parks Canada, and New Brunswick are alertable campground rows.
+- Manitoba and Nova Scotia are search-only until polling is proven.
+- Three stale rows are unsupported.
+
+Do not treat the 396 alertable campground rows as the 50,000 campsite success metric. The next count that matters is verified realtime-alertable campsite inventory.

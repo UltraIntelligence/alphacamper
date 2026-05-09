@@ -31,6 +31,7 @@ export async function getCart(domain: string, cookieHeader: string): Promise<Car
         "Content-Type": "application/json",
         "app-language": "en-CA",
         "app-version": CAMIS_APP_VERSION,
+        "User-Agent": USER_AGENT,
         Cookie: cookieHeader,
       },
     });

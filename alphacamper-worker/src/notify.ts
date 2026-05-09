@@ -109,6 +109,7 @@ const CAMIS_BOOKING_DOMAINS: Record<string, string> = {
   gtc_maitland: "maitlandvalley.goingtocamp.com",
   gtc_stclair: "stclair.goingtocamp.com",
   gtc_nlcamping: "nlcamping.ca",
+  gtc_new_brunswick: "reservations.parcsnbparks.ca",
 };
 
 function getBookingUrl(platform: string, campgroundId: string): string | null {
