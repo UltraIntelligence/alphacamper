@@ -81,3 +81,10 @@ Live catalog sync:
 - `npm run sync:parks-canada` upserted 113 Parks Canada facilities and marked 2 stale rows unsupported.
 - Direct Supabase read after sync: 115 Parks Canada rows, 113 with province, 2 null province unsupported rows.
 - Province buckets after sync: AB 22, BC 24, MB 2, NB 9, NL 10, NS 9, NT 1, ON 13, PE 2, QC 15, SK 4, YT 2.
+
+Live customer search verification after deploy:
+
+- `q=Alberta` returns Parks Canada rows for Banff, Jasper, Waterton Lakes, Lake Louise, and Icefields Parkway with `province: AB`.
+- `q=Prince Edward Island` returns Parks Canada rows for Cavendish and Stanhope with `province: PE`.
+- `q=Saskatchewan` returns Parks Canada rows for Grasslands and Prince Albert with `province: SK`.
+- `q=New Brunswick` returns Parks Canada rows for Fundy and Kouchibouguac plus New Brunswick provincial rows.

@@ -60,7 +60,7 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
 | 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Reported yellow; feasible after reliability gates |
-| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Repo patch and live catalog sync complete; deploy verification next |
+| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Live province search verified; province pages next |
 
 ## Status Key
 
@@ -282,11 +282,12 @@ Current blocker:
 - Province derivation from source-backed URL paths gives: AB 22, BC 24, MB 2, NB 9, NL 10, NS 9, NT 1, ON 13, PE 2, QC 15, SK 4, YT 2.
 - Repo-side province enrichment is now implemented in `alphacamper-worker/src/catalog-ingestion.ts`.
 - The live Parks Canada catalog was synced with 113 province-enriched rows; 2 stale rows remain unsupported with null province.
-- The site API now expands full province-name searches to province codes in repo; verify live `q=Alberta` after deploy.
+- The live site API now expands full province-name searches to province codes.
+- Verified live searches: `Alberta`, `Prince Edward Island`, `Saskatchewan`, and `New Brunswick` return province-matched Parks Canada rows.
 
 Next prompt:
 
-> Verify live `q=Alberta` returns Parks Canada rows after deploy, then create province coverage pages only after search is proven.
+> Create province coverage pages now that live province search is proven, but keep reliability claims gated behind Railway heartbeat and notification proof.
 
 ### Epic 5: North America Provider Roadmap
 
