@@ -18,6 +18,7 @@ Currently running from the control tower on 2026-05-09:
 
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
+| Jason | Extra high | 50k Canada Gap Sprint | Running |
 | Ohm | Extra high | 50k Verified Campsite Coverage Proof | Reported green inventory proof; verified and integrated |
 | Pauli | High | Revenue Readiness Toward $10k Summer Target | Reported yellow; verified and integrated |
 | Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Reported yellow/blocked; verified and integrated |

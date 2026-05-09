@@ -22,6 +22,7 @@ Current epic windows launched from this control-tower thread on 2026-05-09:
 
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
+| Jason | Extra high | 50k Canada gap sprint: find/prove the missing 5,183 campsite IDs | Running |
 | Ohm | Extra high | 50k verified campsite coverage proof | Reported green inventory proof; verified and integrated |
 | Pauli | High | Revenue readiness toward $10k summer target | Reported yellow; verified and integrated |
 | Tesla | High | Production ops reliability and Railway heartbeat clarity | Reported yellow/blocked; verified and integrated |
