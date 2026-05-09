@@ -179,7 +179,7 @@ Current result:
 - Live API returns Bamberton and New Brunswick Sugarloaf from Supabase with alertable labels and source evidence.
 - Live `/api/check-availability` now returns 410 retired with `engine: railway-worker`.
 - Worker heartbeat hardening was pushed before the latest docs/ops commits: quiet cycles now write `worker_status`, heartbeat write failures degrade health, and Railway diagnostics look for the heartbeat-write failure marker.
-- GitHub CI is green through `91b0d7fc1`.
+- Latest main CI is green in GitHub Actions after the control-tower docs/ops updates.
 - Live `/api/admin/provider-quality` now reads live Supabase and reports `railway_worker` as degraded with `missing_worker_heartbeat`.
 - The same production route reports 5 active watches.
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.

@@ -19,7 +19,7 @@ This is the current blocker for calling alert coverage production-ready.
 - Worker heartbeat code is pushed:
   - `d7464921c Write worker heartbeat on quiet cycles`.
   - Quiet cycles now write `worker_status`.
-- GitHub CI is green for site, worker, extension, and customer smoke through `91b0d7fc1`.
+- GitHub CI is green for site, worker, extension, and customer smoke.
 - Live provider-quality route is deployed:
   - `https://alphacamper.com/api/admin/provider-quality` returns `fetchedFrom: live_supabase`.
   - It reports 5 active watches.
