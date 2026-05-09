@@ -166,17 +166,19 @@ Current truth:
 - Checkout copy says the passes are one-time.
 - `/api/checkout` now uses Stripe one-time payment mode in code.
 - Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`.
+- The protected operator revenue-quality view is built in the site dashboard for allowlisted operator accounts.
 - The live tables currently have 0 billing/conversion rows.
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
 
 Next action:
 
-- Configure production Stripe env vars, prove one test checkout/webhook in Stripe test or production-safe mode, and build a simple operator revenue scoreboard.
+- Configure production Stripe env vars, prove one test checkout/webhook in Stripe test or production-safe mode, and wire net/refund reporting from Stripe into the operator revenue-quality view.
 
 Use runbook for framing:
 
 - `docs/research/summer-revenue-scoreboard.md`.
 - `cd alphacamper-site && npm run smoke:billing`.
+- Protected app route: `/api/admin/revenue-quality`.
 
 ### 5. Alberta/Saskatchewan Adapter Sprint
 

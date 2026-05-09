@@ -55,8 +55,9 @@ Live aggregate read on 2026-05-09:
 | Availability alerts | 0 | No verified live alert delivery yet. |
 | Delivered alerts | 0 | `notified_at` proof is still missing. |
 | `subscriptions` table | Exists, 0 rows | Live billing storage exists after the one-time pass migration. |
-| `funnel_events` table | Exists, 0 rows | Live conversion-event storage exists, but operator-wide reporting still needs a view. |
+| `funnel_events` table | Exists, 0 rows | Live conversion-event storage exists and is now included in the operator revenue-quality view. |
 | Production Vercel Stripe env vars | Missing | Live checkout cannot work until Stripe production env vars are configured. |
+| Operator revenue-quality view | Built, not green | `/api/admin/revenue-quality` and the dashboard operator panel read live Supabase, but production Stripe env vars and net Stripe reporting are still missing. |
 
 Important wrinkle:
 
@@ -104,7 +105,7 @@ Green means:
 
 Current status:
 
-- Yellow. The one-time-vs-subscription decision is resolved in code and the live tables exist, but production Stripe env vars and operator revenue reporting are not complete.
+- Yellow. The one-time-vs-subscription decision is resolved in code, the live tables exist, and the operator revenue-quality view is built. Production Stripe env vars are still missing, and net revenue after refunds is not verified from Stripe yet.
 
 Repeatable smoke command:
 
@@ -140,7 +141,7 @@ Green means:
 
 Current status:
 
-- Yellow. Live funnel storage exists, but operator reporting is not proven.
+- Yellow. Live funnel storage exists and the operator revenue-quality view now reads it, but there are still 0 funnel rows and 0 paid-pass rows in production.
 
 ## How This Ties To The Product Strategy
 
@@ -162,6 +163,6 @@ Recommended next epic after the current worker gate:
 
 Objective:
 
-- Configure production Stripe env vars, prove one checkout/webhook path, and create an operator revenue view with gross revenue, net revenue, pass count, refunds, active watches, delivered alerts, and booking outcome events.
+- Configure production Stripe env vars, prove one checkout/webhook path, and finish net/refund reporting against Stripe. The operator revenue-quality view already reports gross app-side revenue, paid passes, active watches, delivered alerts, and booking outcome events from live Supabase.
 
-Do not mark the $10k goal as fully measurable until production Stripe checkout and operator reporting are both proven.
+Do not mark the $10k goal as fully measurable until production Stripe checkout and net/refund reporting are both proven.

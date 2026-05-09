@@ -34,7 +34,7 @@ These gates protect the product from over-promising.
 | Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
-| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout now uses one-time payment mode in code and live DB tables exist; production Stripe env vars and operator revenue reporting are still missing |
+| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout now uses one-time payment mode in code and live DB tables exist; operator revenue-quality view is built; production Stripe env vars and net Stripe reporting are still missing |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
 
 ## Current Count Ledger
@@ -70,7 +70,8 @@ Control-tower rule:
 | Summer-pass path to $10k | 345 passes | Calculated from $29 checkout copy | Shows the size of the short-term sales target | Verify price/mode in Stripe |
 | Year-pass path to $10k | 205 passes | Calculated from $49 checkout copy | Shows the size of the higher-trust sales target | Verify price/mode in Stripe |
 | Verified paid-pass count from app DB | 0 | Live read from `subscriptions` after one-time pass migration | No paid passes recorded in the app DB yet | Configure Stripe env vars and prove checkout webhook |
-| Verified funnel-event count from app DB | 0 | Live read from `funnel_events` after one-time pass migration | No conversion events recorded yet | Build operator reporting and prove event writes |
+| Verified funnel-event count from app DB | 0 | Live read from `funnel_events` after one-time pass migration | No conversion events recorded yet | Prove event writes through a customer-path smoke test |
+| Operator revenue-quality view | Built, yellow | Code path reads `subscriptions`, `stripe_webhook_events`, `funnel_events`, `watched_targets`, and `availability_alerts` | Operator dashboard can show gross app-side revenue and blockers without secret values | Configure production Stripe env vars and wire net/refund truth from Stripe |
 
 ## Decision Log
 
@@ -300,11 +301,12 @@ Current result:
 - Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`; current counts are 0 rows for paid passes and funnel events.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
 - `npm run smoke:billing` now gives a repeatable secret-safe billing proof.
+- `/api/admin/revenue-quality` and the dashboard operator panel now provide a protected revenue-quality view for allowlisted operator accounts.
 - `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
 
 Next prompt:
 
-> Configure production Stripe env vars, prove one checkout/webhook path, then add weekly operator revenue reporting from Stripe and live Supabase.
+> Configure production Stripe env vars, prove one checkout/webhook path, then wire net/refund reporting from Stripe into the operator revenue view.
 
 ## Current Recommended Next Runs
 

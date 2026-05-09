@@ -508,9 +508,11 @@ Context:
 - Checkout API: alphacamper-site/app/api/checkout/route.ts
 - Stripe webhook: alphacamper-site/app/api/stripe/webhook/route.ts
 - Funnel events API: alphacamper-site/app/api/events/route.ts
+- Revenue quality API: alphacamper-site/app/api/admin/revenue-quality/route.ts
+- Revenue quality panel: alphacamper-site/components/dashboard/RevenueQualityPanel.tsx
 - Revenue framing: docs/research/summer-revenue-scoreboard.md
 - Billing smoke command: from alphacamper-site, run npm run smoke:billing
-- Current issue: checkout now uses one-time payment mode in code and live Supabase has billing/conversion tables, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
+- Current issue: checkout now uses one-time payment mode in code and live Supabase has billing/conversion tables. The protected operator revenue-quality view exists for gross app-side reporting, but production Vercel is missing Stripe env vars and net/refund reporting from Stripe is not complete.
 
 Rules:
 - Treat Stripe as the source of truth for real money unless live database reporting is explicitly verified.
