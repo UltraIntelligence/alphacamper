@@ -25,6 +25,48 @@ Still yellow:
 
 Do these in this order.
 
+## Copy-Paste Operator Requests
+
+Use these when the blocker is access to Railway, Vercel, or Stripe. Do not send secret values back into this thread. Only confirm that the values exist, point to production, and the smoke command result.
+
+### Railway Request
+
+```text
+Please verify the Alphacamper Railway worker production service.
+
+Repo: UltraIntelligence/alphacamper
+Service root directory: /alphacamper-worker
+Config file path: /alphacamper-worker/railway.json if Railway does not auto-detect it
+Healthcheck path: /health
+Expected live Supabase project: tbdrmcdrfgunbcevslqf
+
+Please confirm:
+- The service is deployed from current main.
+- The service has SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY set for production.
+- Email/SMS variables exist if we expect notifications to send.
+- Logs do not show worker_status heartbeat write failed.
+- The worker writes a recent worker_status heartbeat.
+
+Do not paste any secret values. Just confirm present/missing and paste the smoke result.
+```
+
+### Vercel/Stripe Request
+
+```text
+Please configure Alphacamper production checkout so the $10k net revenue scoreboard can become measurable.
+
+In Vercel Production, add or verify:
+- STRIPE_SECRET_KEY
+- STRIPE_WEBHOOK_SECRET
+- STRIPE_PRICE_SUMMER
+- STRIPE_PRICE_YEAR
+- NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
+The summer and year prices should be one-time Stripe prices, not recurring subscriptions.
+
+After production is redeployed, do not paste secret values. Just confirm the variables are present and paste the billing smoke result.
+```
+
 ### 1. Fix Railway Worker Heartbeat
 
 This is the first unblock because alerts cannot be trusted until the worker is alive.

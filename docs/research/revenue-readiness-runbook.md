@@ -8,7 +8,7 @@ Get from zero live revenue proof to the first paid customer proof without doing 
 
 Business target:
 
-- $10k revenue by the end of summer.
+- $10k net collected revenue by the end of summer.
 - Treat net collected revenue after refunds as the real finish line.
 - Use gross collected revenue as the fast early signal.
 
