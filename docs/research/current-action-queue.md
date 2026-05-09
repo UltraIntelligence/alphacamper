@@ -22,11 +22,12 @@ GitHub tracker map:
 |---:|---|---|---|
 | 1 | [#9 Production worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | High | Active blocker |
 | 2 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
-| 3 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | High | Hold until #9 is green |
-| 4 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
-| 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
-| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
+| 3 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | High | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
+| 4 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | High | Hold until #9 is green |
+| 5 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
+| 6 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
+| 7 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
+| 8 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
 
 ## Current And Recent Epic Windows
 

@@ -73,7 +73,7 @@ Next recommended windows:
 2. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after the correct Alphacamper Stripe account and production Vercel env vars are confirmed.
 3. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
 4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
-5. First Paid Cohort Sprint. High reasoning. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
+5. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
 6. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
 7. Canada Parity Expansion. Extra-high reasoning. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
 
@@ -580,6 +580,7 @@ Context:
 - Business target: $10k net collected revenue by end of summer
 - Revenue scoreboard: docs/research/summer-revenue-scoreboard.md
 - Revenue runbook: docs/research/revenue-readiness-runbook.md
+- Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16
 - Billing smoke command: from alphacamper-site, run npm run smoke:billing
 - Current rule: gross revenue is an early signal; net collected revenue after refunds/chargebacks is the real target.
 
