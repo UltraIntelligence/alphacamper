@@ -14,6 +14,18 @@ Goal-window rule:
 - The window keeps working until the objective is proven, or until it hits a real blocker.
 - The report back must include evidence, counts where relevant, risks, and the recommended next action.
 
+GitHub tracker map:
+
+| Order | Tracker | Reasoning | Launch status |
+|---:|---|---|---|
+| 1 | [#9 Production worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | High | Active blocker |
+| 2 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | High | Hold until #9 is green |
+| 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
+| 4 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
+| 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
+| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Discovery allowed; live alert claims hold until #9 is green |
+| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Ready when a coverage window is available |
+
 ## Current And Recent Epic Windows
 
 Current and recent goal windows from the control tower on 2026-05-09:
