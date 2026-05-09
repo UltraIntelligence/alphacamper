@@ -59,14 +59,15 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 |---:|---|---|---|
 | 1 | [#9 Railway worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | Blocker | Active external blocker |
 | 2 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
-| 3 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | Next epic | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
-| 4 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
-| 5 | [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | Next epic | Hold until #9 is green; do not market reliability until #13 is green |
-| 6 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
-| 7 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
-| 8 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Next epic | Hold until #9 and #13 are green |
-| 9 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
-| 10 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
+| 3 | [#19 Demand capture and conversion path](https://github.com/UltraIntelligence/alphacamper/issues/19) | Next epic | Safe parallel revenue-intent lane; not revenue green and not reliability green |
+| 4 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | Next epic | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
+| 5 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | Next epic | Hold until #9 is green |
+| 6 | [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | Next epic | Hold until #9 is green; do not market reliability until #13 is green |
+| 7 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
+| 8 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
+| 9 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Next epic | Hold until #9 and #13 are green |
+| 10 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Closed discovery; implementation waits for reliability gates |
+| 11 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Closed; live province search and six province pages verified |
 
 ## Status Key
 
@@ -455,12 +456,13 @@ Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Billing Truth And Revenue Reporting: configure the correct Alphacamper Stripe account/env vars, prove checkout/webhook, and finish the operator revenue view.
-3. First Paid Cohort Sprint: after #10 is green, measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
-4. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-5. Manitoba/Nova Scotia Label Sync: deploy/sync the alertable/live-polling profile update after the worker is alive; do not market reliability until notification proof is green.
-6. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
-7. Paid Alert-To-Assist Loop: after heartbeat, billing, and notification proof are green, prove the first BC/Ontario "get you the site" loop.
-8. Canada Parity Expansion: after heartbeat and notification proof are green, turn Alberta/Saskatchewan or the next Canadian provider systems from search-only into alertable proof.
+3. Demand Capture And Conversion: turn existing campground-interest capture into an operator-visible demand queue and lead signal; do not count it as revenue or reliability.
+4. First Paid Cohort Sprint: after #10 is green, measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
+5. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
+6. Manitoba/Nova Scotia Label Sync: deploy/sync the alertable/live-polling profile update after the worker is alive; do not market reliability until notification proof is green.
+7. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
+8. Paid Alert-To-Assist Loop: after heartbeat, billing, and notification proof are green, prove the first BC/Ontario "get you the site" loop.
+9. Canada Parity Expansion: after heartbeat and notification proof are green, turn Alberta/Saskatchewan or the next Canadian provider systems from search-only into alertable proof.
 
 Keep research-only for now:
 

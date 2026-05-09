@@ -22,14 +22,15 @@ GitHub tracker map:
 |---:|---|---|---|
 | 1 | [#9 Production worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | High | Active blocker |
 | 2 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
-| 3 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | High | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
-| 4 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | High | Hold until #9 is green |
-| 5 | [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | High | Hold until #9 is green; do not market reliability until #13 is green |
-| 6 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
-| 7 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
-| 8 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Extra high | Hold until #9 and #13 are green |
-| 9 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
-| 10 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
+| 3 | [#19 Demand capture and conversion path](https://github.com/UltraIntelligence/alphacamper/issues/19) | High | Safe parallel revenue-intent lane; do not call revenue or reliability green |
+| 4 | [#16 First paid cohort sprint](https://github.com/UltraIntelligence/alphacamper/issues/16) | High | Hold until #10 is green; launch cautiously if #9/#13 are still yellow |
+| 5 | [#13 Customer watch and notification delivery](https://github.com/UltraIntelligence/alphacamper/issues/13) | High | Hold until #9 is green |
+| 6 | [#18 Manitoba/Nova Scotia label sync](https://github.com/UltraIntelligence/alphacamper/issues/18) | High | Hold until #9 is green; do not market reliability until #13 is green |
+| 7 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
+| 8 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
+| 9 | [#17 Canada parity expansion](https://github.com/UltraIntelligence/alphacamper/issues/17) | Extra high | Hold until #9 and #13 are green |
+| 10 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Closed discovery; implementation waits for reliability gates |
+| 11 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Closed; live province search and six province pages verified |
 
 ## Current And Recent Epic Windows
 
@@ -343,6 +344,7 @@ Current intake:
 - Demand capture is green as a campground-interest signal.
 - It must not be described as realtime alert coverage.
 - The captured signal is campground-level interest, not a paid conversion yet.
+- Tracker #19 now owns the next step: turning the signal into an operator-visible demand and conversion queue.
 
 ## Completed And Closed
 

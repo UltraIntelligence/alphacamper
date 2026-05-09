@@ -391,12 +391,13 @@ Continue Billing Truth And Revenue Reporting (#10) in parallel with the Railway 
 
 Then hold the next windows in this order:
 
-1. First Paid Cohort Sprint (#16): after #10 is green enough to take payment safely.
-2. Customer Watch And Notification Smoke (#13): after #9 is green.
-3. Manitoba/Nova Scotia Label Sync (#18): after #9 is green; do not market reliability until #13 is green.
-4. Provider Health/Admin Truth (#11): after #9 has live worker data.
-5. Paid Alert-To-Assist Moat Proof (#15): after #9, #10, and #13 are green.
-6. Canada Parity Expansion (#17): after #9 and #13 are green.
+1. Demand Capture And Conversion (#19): safe parallel lead path; do not count as revenue or reliability.
+2. First Paid Cohort Sprint (#16): after #10 is green enough to take payment safely.
+3. Customer Watch And Notification Smoke (#13): after #9 is green.
+4. Manitoba/Nova Scotia Label Sync (#18): after #9 is green; do not market reliability until #13 is green.
+5. Provider Health/Admin Truth (#11): after #9 has live worker data.
+6. Paid Alert-To-Assist Moat Proof (#15): after #9, #10, and #13 are green.
+7. Canada Parity Expansion (#17): after #9 and #13 are green.
 
 Do not relaunch closed discovery/enrichment scopes #12 or #14 unless the scope changes.
 

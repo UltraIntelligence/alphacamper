@@ -72,12 +72,13 @@ Next recommended windows:
 
 1. Production Worker Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/9. Launch/continue now; likely blocked on Railway access.
 2. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after the correct Alphacamper Stripe account and production Vercel env vars are confirmed.
-3. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
-4. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
-5. Manitoba/Nova Scotia Label Sync. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/18. Hold until worker heartbeat is green; do not market reliability until notification proof is green.
-6. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
-7. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
-8. Canada Parity Expansion. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/17. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
+3. Demand Capture And Conversion. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/19. Safe parallel revenue-intent lane; do not call revenue or reliability green.
+4. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
+5. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
+6. Manitoba/Nova Scotia Label Sync. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/18. Hold until worker heartbeat is green; do not market reliability until notification proof is green.
+7. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
+8. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
+9. Canada Parity Expansion. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/17. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
 
 Closed or future-only scopes:
 
@@ -452,6 +453,7 @@ Context:
 - Repo: /Users/ryan/Code/Alphacamper
 - Business target: $10k net collected revenue by end of summer.
 - Product distinction: not just finding the site, but helping the camper get the site.
+- Tracker: https://github.com/UltraIntelligence/alphacamper/issues/19
 - Current gap: unsupported searches are not yet a strong prioritization signal.
 
 Rules:

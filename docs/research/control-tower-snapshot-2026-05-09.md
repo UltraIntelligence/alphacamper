@@ -63,6 +63,7 @@ External blocker lane:
 Next epic lane:
 
 - https://github.com/UltraIntelligence/alphacamper/milestone/2
+- #19 Demand capture and conversion path.
 - #16 First paid cohort sprint.
 - #13 Customer watch and notification delivery.
 - #18 Manitoba/Nova Scotia label sync.

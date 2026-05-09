@@ -36,7 +36,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
 | Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
-| External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #18, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, first paid cohort, customer notification proof, Manitoba/Nova Scotia label sync, provider health, get-you-the-site proof, and Canada parity expansion remain tracked; Alberta/Saskatchewan discovery and Parks Canada enrichment are closed with evidence | Covered |
+| External blockers and next epic runs have GitHub tracker issues | GitHub milestone #1, GitHub milestone #2, issues #9 through #19, `current-action-queue.md`, `control-tower-status-board.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat, Stripe revenue readiness, demand capture/conversion, first paid cohort, customer notification proof, Manitoba/Nova Scotia label sync, provider health, get-you-the-site proof, and Canada parity expansion remain tracked; Alberta/Saskatchewan discovery and Parks Canada enrichment are closed with evidence | Covered |
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
@@ -137,7 +137,7 @@ Evidence inspected:
 - GitHub issue #10 tracks Stripe production checkout and revenue proof; its body was refreshed with the latest billing evidence and the rule that Stripe can move in parallel with Railway.
 - GitHub milestone #1 groups the current reliability and revenue gates.
 - GitHub milestone #2 groups the next epic goal-window trackers.
-- GitHub trackers #9, #10, #11, #13, #15, #16, #17, and #18 remain open in the expected two milestones; #12 and #14 are closed with intake proof and their issue bodies now say not to relaunch those scopes unless the scope changes.
+- GitHub trackers #9, #10, #11, #13, #15, #16, #17, #18, and #19 remain open in the expected two milestones; #12 and #14 are closed with intake proof and their issue bodies now say not to relaunch those scopes unless the scope changes.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes, only comments on GitHub issues when blocker status changes, and warns that the available Stripe connector is Superpress, not confirmed Alphacamper.
 
 Live smoke evidence:
@@ -170,12 +170,14 @@ Reported windows now reflected in the board:
 10. Alberta/Saskatchewan Adapter Discovery: closed as discovery; live implementation waits for #9/#13.
 11. Parks Canada Province Enrichment: closed after live province search and six production province pages were verified.
 12. Manitoba/Nova Scotia Label Sync: open as a held sync window; live catalog labels wait for #9, and reliability claims still wait for #13.
+13. Demand Capture And Conversion: open as a safe parallel revenue-intent lane; campground interest is green as a signal, not paid revenue or realtime reliability.
 
 Next control-tower action:
 
 - Continue #9 Production Worker Smoke with Railway access.
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
 - Continue #10 by configuring production Stripe env vars, verifying one-time price IDs, and proving webhook/revenue truth.
+- Continue #19 by turning existing campground-interest capture into an operator-visible demand queue without counting it as revenue or reliability.
 - After #10 is green, run #16 first paid cohort.
 - After #9 is green, run #13 customer watch and notification proof, #18 Manitoba/Nova Scotia label sync, and #11 provider health/admin truth.
 - Then run #15 paid alert-to-assist loop and #17 Canada parity expansion in the documented order.

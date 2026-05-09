@@ -159,13 +159,13 @@ Next high-leverage runs:
 
 1. Production Worker Smoke. High reasoning. Launch/continue now; likely blocked on Railway access.
 2. Billing Truth And Revenue Reporting. High reasoning. Continue after the correct Alphacamper Stripe account and production Vercel env vars are configured.
-3. First Paid Cohort Sprint. High reasoning. Hold until #10 is green enough to take payment safely.
-4. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
-5. Manitoba/Nova Scotia Label Sync. High reasoning. Hold until worker heartbeat is green; do not market reliability until notification proof is green.
-6. Provider Health/Admin Truth UI and recurring ops. High reasoning. Continue once live worker heartbeat creates real provider health data.
-7. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Hold until Railway heartbeat, Stripe revenue proof, and customer notification proof are green.
-8. Canada Parity Expansion. Extra-high reasoning. Future live implementation only after Railway heartbeat and notification proof are green.
-9. Demand Capture And Conversion. High reasoning. Use only as a revenue path, not a reliability claim.
+3. Demand Capture And Conversion. High reasoning. Safe parallel revenue-intent lane; use only as a lead path, not a paid-revenue or reliability claim.
+4. First Paid Cohort Sprint. High reasoning. Hold until #10 is green enough to take payment safely.
+5. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
+6. Manitoba/Nova Scotia Label Sync. High reasoning. Hold until worker heartbeat is green; do not market reliability until notification proof is green.
+7. Provider Health/Admin Truth UI and recurring ops. High reasoning. Continue once live worker heartbeat creates real provider health data.
+8. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Hold until Railway heartbeat, Stripe revenue proof, and customer notification proof are green.
+9. Canada Parity Expansion. Extra-high reasoning. Future live implementation only after Railway heartbeat and notification proof are green.
 
 Closed unless the scope changes:
 
