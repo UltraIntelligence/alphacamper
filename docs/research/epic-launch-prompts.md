@@ -26,12 +26,15 @@ Use extra-high reasoning for:
 - North America Provider Roadmap.
 - Catalog Ingestion Factory.
 - Alberta/Saskatchewan Adapter Sprint.
+- Paid Alert-To-Assist Moat Proof.
+- Canada Parity Expansion after reliability proof.
 
 Use high reasoning for:
 
 - Production Worker Smoke.
 - Customer Watch And Notification Smoke.
 - Billing Truth And Revenue Reporting.
+- First Paid Cohort Sprint.
 - Canada Coverage Sprint.
 - Parks Canada Enrichment.
 - Provider Health/Admin Truth.
@@ -70,7 +73,9 @@ Next recommended windows:
 2. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after the correct Alphacamper Stripe account and production Vercel env vars are confirmed.
 3. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
 4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Hold until live worker heartbeat creates real provider health data.
-5. Get You The Site Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
+5. First Paid Cohort Sprint. High reasoning. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
+6. Paid Alert-To-Assist Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Hold until #9, #10, and #13 are green.
+7. Canada Parity Expansion. Extra-high reasoning. Hold until reliability and notification proof are green; keep new providers search-only until watch, poll, alert, and notification proof exists.
 
 Closed or future-only scopes:
 
@@ -528,13 +533,14 @@ Context:
 - Revenue quality panel: alphacamper-site/components/dashboard/RevenueQualityPanel.tsx
 - Revenue framing: docs/research/summer-revenue-scoreboard.md
 - Billing smoke command: from alphacamper-site, run npm run smoke:billing
-- Current issue: checkout now uses one-time payment mode in code and live Supabase has billing/conversion tables. The protected operator revenue-quality view exists for gross app-side reporting, but production Vercel is missing Stripe env vars and net/refund reporting from Stripe is not complete.
+- Current issue: checkout now uses one-time payment mode in code and live Supabase has billing/conversion tables. The protected operator revenue-quality view exists for gross app-side reporting, but production Vercel is missing Stripe env vars, no one-time paid pass exists yet, no `checkout.session.completed` webhook row exists yet, and net/refund reporting from Stripe is not complete.
 
 Rules:
 - Treat Stripe as the source of truth for real money unless live database reporting is explicitly verified.
 - Do not print Stripe keys, Supabase keys, customer emails, or payment details.
 - Keep the customer language clear: if it renews, say subscription; if it does not renew, use one-time payment mode.
 - Prefer the simplest customer-safe path for summer 2026.
+- Do not call this green until the smoke proves a payment-mode pass row, a `checkout.session.completed` webhook row, and Stripe-tied net/refund reporting.
 
 Report back:
 Epic:
@@ -554,6 +560,99 @@ Operator scoreboard:
 - active watches:
 - delivered alerts:
 - booking outcomes:
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 13: First Paid Cohort Sprint
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+After production checkout proof is green, run the first paid cohort sprint. Prove that 10-25 real paid campers can buy a pass, create or keep watches, receive honest status, and be measured against the $10k net revenue goal. The goal is not just sales; it is paid camper trust.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Site app: alphacamper-site
+- Business target: $10k net collected revenue by end of summer
+- Revenue scoreboard: docs/research/summer-revenue-scoreboard.md
+- Revenue runbook: docs/research/revenue-readiness-runbook.md
+- Billing smoke command: from alphacamper-site, run npm run smoke:billing
+- Current rule: gross revenue is an early signal; net collected revenue after refunds/chargebacks is the real target.
+
+Rules:
+- Launch only after the correct Alphacamper Stripe account, production env vars, live one-time prices, webhook, first checkout, and net/refund reporting path are verified.
+- Track real Stripe revenue and app DB rows separately; do not guess if they disagree.
+- Every paid pass should connect to a customer outcome: watch created, alert received, alert acted on, booking submitted, or booking confirmed.
+- Do not paste customer payment details, secrets, or private emails.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Paid cohort:
+- buyers:
+- summer passes:
+- year passes:
+- gross revenue:
+- net revenue:
+- refunds:
+Product usage:
+- active watches:
+- delivered alerts:
+- alert taps:
+- booking submissions:
+- booking confirmations:
+Trust risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
+## Prompt 14: Paid Alert-To-Assist Moat Proof
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+Prove Alphacamper's core distinction: not just finding the site, but helping the camper get the site. Run one controlled paid BC Parks or Ontario Parks loop from watch to alert to official booking-page assist. The final booking confirmation stays with the camper; Alphacamper should get them to the official review-ready step faster and more confidently.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Extension app: alphacamper-extension
+- Site app: alphacamper-site
+- Worker app: alphacamper-worker
+- Moat plan: docs/research/get-the-site-moat-plan.md
+- Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15
+- Prerequisites: #9 Railway worker heartbeat green, #10 checkout/revenue proof green, and #13 customer watch/notification proof green.
+
+Rules:
+- Use a controlled test account or explicitly approved internal paid account.
+- Keep the official reservation site's final confirmation action with the camper.
+- Do not store or expose payment cards, campsite account passwords, or private customer data.
+- Do not mark green unless the alert-to-assist path is proven end to end.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Prerequisites:
+- worker heartbeat:
+- checkout/revenue proof:
+- notification proof:
+Paid loop proof:
+- paid pass:
+- watch:
+- alert:
+- alert tap:
+- extension connected:
+- saved booking details:
+- official page opened:
+- assist/autofill:
+- review-ready handoff:
+Customer truth:
+- ...
 Risks:
 - ...
 Recommended control-tower update:
