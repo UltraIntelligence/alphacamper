@@ -81,6 +81,12 @@ Tooling preflight from this workspace:
 - `alphacamper-site/supabase/.temp/project-ref` points to `tbdrmcdrfgunbcevslqf`.
 - Local Supabase stack is not running; that is not a blocker for the live SQL Editor path.
 
+Tooling caution from the 2026-05-09 control-tower refresh:
+
+- The default Supabase MCP connection did not point at the Alphacamper project; it exposed unrelated tables and `public.campgrounds` did not exist there.
+- Running multiple `supabase db query --linked` checks in parallel hit Supabase pooler auth throttling.
+- Use the Supabase SQL Editor for project `tbdrmcdrfgunbcevslqf` unless the exact MCP/CLI project target is confirmed first.
+
 Reusable read-only verification SQL:
 
 - `docs/research/live-catalog-verification.sql`
