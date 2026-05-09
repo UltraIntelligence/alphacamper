@@ -92,6 +92,16 @@ function buildPlatformHealth(): Record<string, boolean> {
   };
 }
 
+async function writeWorkerHeartbeat(watchesChecked: number, alertsCreated: number): Promise<void> {
+  await updateWorkerStatus({
+    last_cycle_at: new Date().toISOString(),
+    watches_checked: watchesChecked,
+    alerts_created: alertsCreated,
+    consecutive_403: consecutive403,
+    platforms_healthy: buildPlatformHealth(),
+  });
+}
+
 function sendCustomerNotifications(watch: WatchedTarget, result: PollResult): void {
   void (async () => {
     try {
@@ -204,6 +214,7 @@ async function runCycle(): Promise<void> {
   const watches = await fetchActiveWatches(MAX_CAMPGROUNDS_PER_CYCLE);
   if (watches.length === 0) {
     log.info("No active watches — skipping cycle");
+    await writeWorkerHeartbeat(0, 0);
     return;
   }
 
@@ -375,13 +386,7 @@ async function runCycle(): Promise<void> {
   }
 
   // Step 5: Update worker_status
-  await updateWorkerStatus({
-    last_cycle_at: new Date().toISOString(),
-    watches_checked: totalChecked,
-    alerts_created: totalAlerts,
-    consecutive_403: consecutive403,
-    platforms_healthy: buildPlatformHealth(),
-  });
+  await writeWorkerHeartbeat(totalChecked, totalAlerts);
 
   // Step 6: Check for persistent 403s — alert operator
   for (const [domain, count] of Object.entries(consecutive403)) {
