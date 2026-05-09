@@ -58,10 +58,13 @@ Current result:
 - Supabase `worker_status` still returns no heartbeat rows after the fix.
 - GitHub deployment metadata shows the push deployed to Vercel, not proof of Railway worker deployment.
 - Railway CLI is not authenticated in this shell.
+- Repo now includes `alphacamper-worker/railway.json` to make the worker's Railway build/deploy settings explicit.
+- Worker health now listens on Railway's `PORT` when provided, with `8080` as the fallback.
 
 Next action:
 
 - Get Railway deploy/runtime access or confirm the worker service is running.
+- Confirm Railway service root directory is `/alphacamper-worker` and config file path is `/alphacamper-worker/railway.json` if it is not auto-detected.
 - Verify `worker_status` heartbeat and `/health` output if a public/internal worker URL exists.
 - Smoke-test the customer path once the worker heartbeat is real.
 - Intake heartbeat reports from `alphacamper-worker-heartbeat-watch`; do not mark this gate green until smoke is green and notification proof exists.
@@ -221,7 +224,7 @@ Current truth:
 
 ## Run When Source Data Is Chosen
 
-### 7. Parks Canada Enrichment
+### 8. Parks Canada Enrichment
 
 Goal objective:
 

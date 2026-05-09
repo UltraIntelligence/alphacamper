@@ -26,7 +26,7 @@ const NOTIFICATION_VARIABLES = [
 
 const STARTUP_MARKERS = [
   "Alphacamper Worker starting",
-  "Health check server on :8080",
+  "Health check server on :",
 ];
 
 const FAILURE_MARKERS = [

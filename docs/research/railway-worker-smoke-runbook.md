@@ -27,12 +27,17 @@ This is the current blocker for calling alert coverage production-ready.
 - Live Supabase still has no `worker_status` heartbeat row.
 - GitHub deployment metadata shows Vercel site deploys, not Railway worker deploy proof.
 - Railway CLI was not authenticated in this shell.
+- Repo inspection found no committed Railway project link.
+- Worker deploy config now exists at `alphacamper-worker/railway.json`.
+- Worker `/health` now listens on Railway's `PORT` when provided, with `8080` as the local/default fallback.
 
 ## Success Criteria
 
 Green means all of these are true:
 
 - Railway service is deployed from the current `main` commit or a commit at/after `d7464921c`.
+- Railway service root directory is `/alphacamper-worker`.
+- Railway config file path is `/alphacamper-worker/railway.json` if the service does not auto-detect it.
 - Railway service has the expected live variables:
   - `SUPABASE_URL`
   - `SUPABASE_SERVICE_ROLE_KEY`
@@ -40,7 +45,7 @@ Green means all of these are true:
   - `SENTDM_API_KEY` if SMS/WhatsApp/RCS alerts should send.
 - Railway logs show the worker starting:
   - `Alphacamper Worker starting`
-  - `Health check server on :8080`
+  - `Health check server on :<port>`
 - Live Supabase `worker_status` has a recent row.
 - `worker_status.platforms_healthy` includes:
   - `bc_parks`
@@ -63,6 +68,54 @@ Red means:
 - Worker points at the wrong Supabase project.
 
 ## Commands
+
+## Railway Service Setup Checklist
+
+Use this when the local CLI reports `blocked` because it is not authenticated.
+
+In Railway, the worker service should be configured like this:
+
+| Setting | Expected value |
+|---|---|
+| GitHub repo | `UltraIntelligence/alphacamper` |
+| Service root directory | `/alphacamper-worker` |
+| Config file path | `/alphacamper-worker/railway.json` if Railway does not auto-detect it |
+| Builder | Dockerfile |
+| Dockerfile | `alphacamper-worker/Dockerfile` through the service root |
+| Healthcheck path | `/health` |
+| Restart policy | On failure |
+| Watch path | `/alphacamper-worker/**` |
+
+Why these matter:
+
+- Railway monorepo services need the worker app as the root directory.
+- Railway uses a `Dockerfile` at the source root, so the source root must be `alphacamper-worker`.
+- Railway provides a `PORT` variable for service health/routing; the worker now honors it and falls back to `8080`.
+
+Expected live variables:
+
+| Variable | Required | Notes |
+|---|---|---|
+| `SUPABASE_URL` | Yes | Must point to live project `tbdrmcdrfgunbcevslqf`. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Do not paste the value into reports. |
+| `RESEND_API_KEY` | For email delivery | Needed before customer email notification proof. |
+| `RESEND_FROM_EMAIL` | For production email | Should be a verified sender such as `alerts@alphacamper.com`. |
+| `SENTDM_API_KEY` | For SMS/WhatsApp/RCS delivery | Needed before mobile notification proof. |
+| `SENTDM_TEMPLATE_NAME` | Optional | Defaults to `campsite_alert`. |
+| `DISABLED_PLATFORMS` | Optional | Kill switch only. Should not disable BC, Ontario, Parks Canada, New Brunswick, or Recreation.gov during the smoke. |
+
+After any service setting or variable change:
+
+```bash
+railway redeploy --yes
+```
+
+Official Railway docs checked on 2026-05-09:
+
+- Railway monorepo services should set a root directory for isolated apps: `https://docs.railway.com/deployments/monorepo`.
+- Railway looks for a `Dockerfile` at the source directory root: `https://docs.railway.com/builds/dockerfiles`.
+- Railway config-as-code can set build/deploy settings such as builder, watch paths, healthcheck, and restart policy: `https://docs.railway.com/config-as-code/reference`.
+- Railway healthchecks use the app's health endpoint during deploy, and Railway injects `PORT` for service health/routing: `https://docs.railway.com/guides/healthchecks-and-restarts`.
 
 Run from `alphacamper-worker/` after Railway login/link:
 

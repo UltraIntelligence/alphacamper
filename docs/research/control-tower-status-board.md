@@ -129,6 +129,7 @@ Current result:
 - The same production route reports 5 active watches.
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
 - GitHub deployment metadata for the fix points to Vercel site deployment, not Railway worker deployment.
+- Worker deploy hardening now exists in code: `alphacamper-worker/railway.json`, Railway `PORT` support, and a clearer `/health` starting/degraded response.
 - Realtime-alertable campsite estimate remains unverified; campground rows do not equal campsite count.
 
 Next prompt:

@@ -39,6 +39,7 @@ import {
 
 let lastCycleAt: string | null = null;
 let platformsHealthy: Record<string, boolean> = {};
+let lastCycleError: string | null = null;
 const consecutive403: Record<string, number> = {};
 let recreationGovConsecutiveFailures = 0;
 
@@ -54,16 +55,19 @@ const server = http.createServer((req, res) => {
     const anyUnhealthy =
       Object.values(consecutive403).some(c => c >= 5) ||
       recreationGovConsecutiveFailures >= 5;
+    const starting = lastCycleAt === null && lastCycleError === null;
     const stale = lastCycleAt
       ? Date.now() - new Date(lastCycleAt).getTime() > 30 * 60 * 1000
       : true;
-    const healthy = !anyUnhealthy && !stale;
+    const healthy = starting || (!lastCycleError && !anyUnhealthy && !stale);
 
     res.writeHead(healthy ? 200 : 503, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({
         healthy,
+        status: starting ? "starting" : healthy ? "healthy" : "degraded",
         last_cycle: lastCycleAt,
+        last_cycle_error: lastCycleError,
         platforms: platformsHealthy,
         uptime_seconds: Math.floor(process.uptime()),
       })
@@ -74,7 +78,8 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(8080, () => log.info("Health check server on :8080"));
+const healthPort = Number(process.env.PORT) || 8080;
+server.listen(healthPort, () => log.info(`Health check server on :${healthPort}`));
 
 // ─── Cookie manager (singleton across cycles) ─────────────────────────────────
 
@@ -420,7 +425,9 @@ async function loop() {
 
   try {
     await runCycle();
+    lastCycleError = null;
   } catch (err) {
+    lastCycleError = String(err);
     log.error("Cycle failed", { error: String(err) });
     await alertOperator(`Cycle crashed: ${String(err)}`, "critical");
   } finally {
