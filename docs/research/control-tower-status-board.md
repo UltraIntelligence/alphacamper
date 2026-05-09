@@ -495,7 +495,7 @@ Short version:
 - We have 51,997 verified campsite IDs from provider availability proof, which crosses the first 50,000 inventory line.
 - We should not claim broad reliable alert coverage until worker heartbeat and notification smoke are proven.
 - We should not claim the $10k goal is measurable from the app database until billing mode and live revenue reporting are fixed.
-- The next real unlock is Railway worker proof, then customer watch/notification smoke, then billing truth, then Alberta/Saskatchewan adapter work.
+- The next real unlocks are Railway worker proof and Stripe revenue proof in parallel, then customer watch/notification smoke, then provider health/get-you-the-site proof, then future Alberta/Saskatchewan live implementation.
 
 ## North Star
 

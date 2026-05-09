@@ -8,7 +8,8 @@ Status:
 
 - Gate cleared on 2026-05-09.
 - These windows reported back and were integrated on 2026-05-09.
-- Next work should focus on Railway worker smoke, customer notification proof, billing truth/revenue reporting, Alberta/Saskatchewan adapter proof, provider health/admin truth, and demand capture.
+- This pack is now historical context for the first post-migration goal windows, not the current launch queue.
+- Current next work should focus on Railway worker smoke and Stripe billing truth in parallel, then customer notification proof, provider health/admin truth, get-you-the-site proof, and future Alberta/Saskatchewan live implementation.
 
 ## Gate Before Launching
 
@@ -23,9 +24,15 @@ Do not launch these windows until:
 
 Reasoning level: extra-high.
 
+Current state:
+
+- Reported back and intaken.
+- New Brunswick is alertable after provider proof.
+- Alberta/Saskatchewan discovery is closed; live implementation waits for #9 Railway heartbeat and #13 customer notification proof.
+
 Goal:
 
-> Verify New Brunswick GoingToCamp alertability, then run Alberta/Saskatchewan adapter discovery against official reservation pages. Keep every new provider searchable-only until site-level availability polling is proven.
+> Historical goal: verify New Brunswick GoingToCamp alertability and run Alberta/Saskatchewan adapter discovery against official reservation pages. Future follow-up: build Alberta/Saskatchewan live polling only after Railway heartbeat and notification proof are green.
 
 Why this is next:
 
@@ -78,6 +85,12 @@ Recommended control-tower update:
 ## Launch 2: Alert Engine Cleanup
 
 Reasoning level: extra-high.
+
+Current state:
+
+- Code moved Recreation.gov into the Railway worker.
+- The live site now returns the retired Railway-worker message from `/api/check-availability`.
+- This remains yellow until Railway itself proves the worker deploy/runtime and `worker_status` heartbeat.
 
 Goal:
 
@@ -178,8 +191,8 @@ Recommended control-tower update:
 
 The first provider-proof and ingestion pass normalized the default labels:
 
-- BC, Ontario, Parks Canada, and New Brunswick are alertable campground rows.
-- Manitoba and Nova Scotia are search-only until polling is proven.
+- BC, Ontario, Parks Canada, and New Brunswick are live alertable campground rows.
+- Manitoba and Nova Scotia are repo-ready as alertable/live-polling profiles, but live label sync waits until Railway reliability is green.
 - Three stale rows are unsupported.
 
-Do not treat the 396 alertable campground rows as the 50,000 campsite success metric. The next count that matters is verified realtime-alertable campsite inventory.
+Do not treat the 396 live alertable campground rows as the 50,000 campsite success metric. Current provider-inventory proof is 51,997 campsite IDs, but reliability remains yellow until Railway heartbeat, active-watch polling, alert creation, and notification delivery are green.
