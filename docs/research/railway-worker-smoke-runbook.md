@@ -67,6 +67,12 @@ Red means:
 Run from `alphacamper-worker/` after Railway login/link:
 
 ```bash
+npm run smoke:production
+```
+
+Current expected result before Railway is fixed: yellow with `missing_worker_heartbeat`.
+
+```bash
 railway status
 railway service status
 railway variables --json
@@ -148,6 +154,13 @@ Production operator route:
 
 ```bash
 curl -sS https://alphacamper.com/api/admin/provider-quality | jq '{available, reason, fetchedFrom, providerQuality, alertDelivery, worker: (.providers[]? | select(.provider_id == "railway_worker"))}'
+```
+
+Repo smoke command:
+
+```bash
+cd alphacamper-worker
+npm run smoke:production
 ```
 
 ## Report Back

@@ -9,6 +9,7 @@
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "smoke:production": "tsx scripts/smoke-production.ts",
     "sync:directory": "tsx scripts/sync-directory.ts",
     "sync:canada": "tsx scripts/sync-directory.ts bc_parks ontario_parks parks_canada",
     "sync:parks-canada": "tsx scripts/sync-directory.ts parks_canada"
