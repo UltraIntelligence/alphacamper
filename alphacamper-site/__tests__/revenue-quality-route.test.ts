@@ -126,6 +126,37 @@ describe("revenue quality route", () => {
           { id: "alert-2", claimed: true, notified_at: null },
         ],
       },
+      campground_interest: {
+        data: [
+          {
+            id: "interest-1",
+            platform: "alberta_parks",
+            campground_id: "bow-valley",
+            campground_name: "Bow Valley",
+            support_status: "search_only",
+            source: "watch_search",
+            created_at: "2026-05-09T09:12:00Z",
+          },
+          {
+            id: "interest-2",
+            platform: "alberta_parks",
+            campground_id: "bow-valley",
+            campground_name: "Bow Valley",
+            support_status: "search_only",
+            source: "watch_search",
+            created_at: "2026-05-08T09:12:00Z",
+          },
+          {
+            id: "interest-3",
+            platform: "sepaq",
+            campground_id: "oka",
+            campground_name: "Oka",
+            support_status: "coming_soon",
+            source: "watch_search",
+            created_at: "2026-04-01T09:12:00Z",
+          },
+        ],
+      },
     });
 
     const { GET } = await import("@/app/api/admin/revenue-quality/route");
@@ -168,6 +199,26 @@ describe("revenue quality route", () => {
         delivered_alerts: 1,
         claimed_alerts: 1,
       },
+      demand: {
+        total_requests: 3,
+        unique_campgrounds: 2,
+        by_support_status: {
+          search_only: 2,
+          coming_soon: 1,
+        },
+        by_platform: {
+          alberta_parks: 2,
+          sepaq: 1,
+        },
+      },
+    });
+    expect(body.demand.top_campgrounds[0]).toMatchObject({
+      platform: "alberta_parks",
+      campground_id: "bow-valley",
+      campground_name: "Bow Valley",
+      support_status: "search_only",
+      request_count: 2,
+      last_requested_at: "2026-05-09T09:12:00Z",
     });
     expect(body.blockers).toContain("Net revenue after refunds is not verified from Stripe yet.");
   });
@@ -199,6 +250,34 @@ describe("revenue quality route", () => {
       "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
     ]);
     expect(body.blockers[0]).toContain("Missing runtime Stripe env vars");
+  });
+
+  it("keeps demand capture read errors separate from core revenue availability", async () => {
+    mockGetVerifiedEmailFromRequest.mockResolvedValue("ops@alphacamper.com");
+    vi.stubEnv("OPERATOR_EMAIL_ALLOWLIST", "ops@alphacamper.com");
+    stubStripeEnv();
+
+    mockSupabaseTable({
+      subscriptions: { data: [] },
+      funnel_events: { data: [] },
+      stripe_webhook_events: { data: [] },
+      watched_targets: { data: [] },
+      availability_alerts: { data: [] },
+      campground_interest: { error: { message: "relation does not exist" } },
+    });
+
+    const { GET } = await import("@/app/api/admin/revenue-quality/route");
+    const response = await GET(new Request("https://alphacamper.test/api/admin/revenue-quality"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.available).toBe(true);
+    expect(body.demand).toMatchObject({
+      total_requests: 0,
+      unique_campgrounds: 0,
+      read_error: "campground_interest: relation does not exist",
+    });
+    expect(body.blockers).toContain("campground_interest: relation does not exist");
   });
 
   it("returns a friendly unavailable response when a table cannot be read", async () => {

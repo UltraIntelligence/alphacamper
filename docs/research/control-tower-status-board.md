@@ -457,7 +457,7 @@ Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Billing Truth And Revenue Reporting: configure the correct Alphacamper Stripe account/env vars, prove checkout/webhook, and finish the operator revenue view.
-3. Demand Capture And Conversion: turn existing campground-interest capture into an operator-visible demand queue and lead signal; do not count it as revenue or reliability.
+3. Demand Capture And Conversion: repo-side operator queue is now built in the revenue-quality view; deploy and live-prove the queue with a controlled request before calling this lane green beyond code readiness. Do not count it as revenue or reliability.
 4. First Paid Cohort Sprint: after #10 is green, measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
 5. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
 6. Manitoba/Nova Scotia Label Sync: deploy/sync the alertable/live-polling profile update after the worker is alive; do not market reliability until notification proof is green.

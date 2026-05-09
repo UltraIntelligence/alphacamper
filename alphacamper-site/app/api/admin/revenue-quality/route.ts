@@ -45,6 +45,16 @@ type AvailabilityAlertRow = {
   notified_at: string | null;
 };
 
+type CampgroundInterestRow = {
+  id: string;
+  platform: string | null;
+  campground_id: string | null;
+  campground_name: string | null;
+  support_status: string | null;
+  source: string | null;
+  created_at: string | null;
+};
+
 type TableError = {
   message?: string;
 };
@@ -96,6 +106,22 @@ export interface RevenueQualityResponse {
     claimed_alerts: number;
     unclaimed_alerts: number;
   };
+  demand: {
+    total_requests: number;
+    unique_campgrounds: number;
+    recent_requests_7d: number;
+    by_support_status: Record<string, number>;
+    by_platform: Record<string, number>;
+    top_campgrounds: Array<{
+      platform: string;
+      campground_id: string;
+      campground_name: string;
+      support_status: string;
+      request_count: number;
+      last_requested_at: string | null;
+    }>;
+    read_error: string | null;
+  };
   runtime: {
     stripe_env_ready: boolean;
     missing_stripe_env: string[];
@@ -145,6 +171,15 @@ function emptyResponse(overrides: Partial<RevenueQualityResponse> = {}): Revenue
       delivered_alerts: 0,
       claimed_alerts: 0,
       unclaimed_alerts: 0,
+    },
+    demand: {
+      total_requests: 0,
+      unique_campgrounds: 0,
+      recent_requests_7d: 0,
+      by_support_status: {},
+      by_platform: {},
+      top_campgrounds: [],
+      read_error: null,
     },
     runtime: {
       stripe_env_ready: false,
@@ -221,6 +256,75 @@ function countFunnelEvents(events: FunnelEventRow[]): RevenueQualityResponse["fu
   };
 }
 
+function summarizeDemand(
+  rows: CampgroundInterestRow[],
+  readError: string | null,
+  now = Date.now(),
+): RevenueQualityResponse["demand"] {
+  const byStatus: Record<string, number> = {};
+  const byPlatform: Record<string, number> = {};
+  const campgroundMap = new Map<string, RevenueQualityResponse["demand"]["top_campgrounds"][number]>();
+  const recentCutoff = now - (7 * 24 * 60 * 60 * 1000);
+  let recentRequests = 0;
+
+  for (const row of rows) {
+    const platform = row.platform?.trim() || "unknown";
+    const campgroundId = row.campground_id?.trim() || "unknown";
+    const campgroundName = row.campground_name?.trim() || "Unknown campground";
+    const supportStatus = row.support_status?.trim() || "unknown";
+    const key = `${platform}:${campgroundId}`;
+    const createdAt = row.created_at;
+    const createdTime = createdAt ? new Date(createdAt).getTime() : Number.NaN;
+
+    byStatus[supportStatus] = (byStatus[supportStatus] ?? 0) + 1;
+    byPlatform[platform] = (byPlatform[platform] ?? 0) + 1;
+
+    if (!Number.isNaN(createdTime) && createdTime >= recentCutoff) {
+      recentRequests += 1;
+    }
+
+    const existing = campgroundMap.get(key);
+    if (!existing) {
+      campgroundMap.set(key, {
+        platform,
+        campground_id: campgroundId,
+        campground_name: campgroundName,
+        support_status: supportStatus,
+        request_count: 1,
+        last_requested_at: createdAt,
+      });
+      continue;
+    }
+
+    existing.request_count += 1;
+    const existingTime = existing.last_requested_at
+      ? new Date(existing.last_requested_at).getTime()
+      : Number.NaN;
+
+    if (!Number.isNaN(createdTime) && (Number.isNaN(existingTime) || createdTime > existingTime)) {
+      existing.last_requested_at = createdAt;
+    }
+  }
+
+  const topCampgrounds = [...campgroundMap.values()]
+    .sort((a, b) => (
+      b.request_count - a.request_count ||
+      (new Date(b.last_requested_at ?? 0).getTime() - new Date(a.last_requested_at ?? 0).getTime()) ||
+      a.campground_name.localeCompare(b.campground_name)
+    ))
+    .slice(0, 8);
+
+  return {
+    total_requests: rows.length,
+    unique_campgrounds: campgroundMap.size,
+    recent_requests_7d: recentRequests,
+    by_support_status: byStatus,
+    by_platform: byPlatform,
+    top_campgrounds: topCampgrounds,
+    read_error: readError,
+  };
+}
+
 export async function GET(request: Request) {
   const operatorEmail = await getOperatorEmail(request);
 
@@ -252,6 +356,7 @@ export async function GET(request: Request) {
       webhookEventsResult,
       watchesResult,
       alertsResult,
+      campgroundInterestResult,
     ] = await Promise.all([
       supabase
         .from("subscriptions")
@@ -268,12 +373,16 @@ export async function GET(request: Request) {
       supabase
         .from("availability_alerts")
         .select("id, claimed, notified_at"),
+      supabase
+        .from("campground_interest")
+        .select("id, platform, campground_id, campground_name, support_status, source, created_at"),
     ]) as [
       QueryResult<SubscriptionRow>,
       QueryResult<FunnelEventRow>,
       QueryResult<StripeWebhookEventRow>,
       QueryResult<WatchedTargetRow>,
       QueryResult<AvailabilityAlertRow>,
+      QueryResult<CampgroundInterestRow>,
     ];
 
     const readError = firstError([
@@ -283,6 +392,9 @@ export async function GET(request: Request) {
       ["watched_targets", watchesResult.error],
       ["availability_alerts", alertsResult.error],
     ]);
+    const demandReadError = campgroundInterestResult.error
+      ? `campground_interest: ${campgroundInterestResult.error.message ?? "Unable to read table"}`
+      : null;
 
     if (readError) {
       return json(emptyResponse({
@@ -304,6 +416,7 @@ export async function GET(request: Request) {
     const webhookEvents = webhookEventsResult.data ?? [];
     const watches = watchesResult.data ?? [];
     const alerts = alertsResult.data ?? [];
+    const campgroundInterest = campgroundInterestResult.data ?? [];
     const activePasses = subscriptions.filter((row) => isActivePass(row));
     const grossRevenueByCurrency: Record<string, number> = {};
     const webhookEventsByType: Record<string, number> = {};
@@ -342,12 +455,14 @@ export async function GET(request: Request) {
     };
 
     const funnel = countFunnelEvents(funnelEvents);
+    const demand = summarizeDemand(campgroundInterest, demandReadError);
     const blockers = [
       missingStripeEnv.length
         ? `Missing runtime Stripe env vars: ${missingStripeEnv.join(", ")}`
         : null,
       billing.paid_passes === 0 ? "No paid pass rows recorded yet." : null,
       funnel.total_events === 0 ? "No funnel events recorded yet." : null,
+      demand.read_error,
       productOutcome.delivered_alerts === 0 ? "No delivered availability alerts recorded yet." : null,
       "Net revenue after refunds is not verified from Stripe yet.",
     ].filter((value): value is string => Boolean(value));
@@ -365,6 +480,7 @@ export async function GET(request: Request) {
       billing,
       funnel,
       productOutcome,
+      demand,
       runtime: {
         stripe_env_ready: missingStripeEnv.length === 0,
         missing_stripe_env: missingStripeEnv,

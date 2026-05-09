@@ -342,9 +342,10 @@ Current truth:
 Current intake:
 
 - Demand capture is green as a campground-interest signal.
+- Repo-side operator visibility is now built into the protected revenue-quality view: `campground_interest` is aggregated into total requests, unique requested campgrounds, seven-day requests, support-status mix, platform mix, and top requested campground rows without exposing customer emails.
 - It must not be described as realtime alert coverage.
 - The captured signal is campground-level interest, not a paid conversion yet.
-- Tracker #19 now owns the next step: turning the signal into an operator-visible demand and conversion queue.
+- Tracker #19 now owns the next step: deploy the operator-visible demand queue, prove a controlled live request still appears in the panel/report, then clean up the test row.
 
 ## Completed And Closed
 

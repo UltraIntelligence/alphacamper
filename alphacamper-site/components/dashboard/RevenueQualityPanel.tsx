@@ -22,6 +22,26 @@ function formatPercent(value: number) {
   }).format(value)
 }
 
+function formatShortDate(value: string | null) {
+  if (!value) return 'No date'
+
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(value))
+  } catch {
+    return 'Recent'
+  }
+}
+
+function formatSupportStatus(value: string) {
+  return value
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
 function primaryGrossRevenue(data: RevenueQualityResponse) {
   const targetCurrency = data.target.currency.toLowerCase()
   return data.billing.gross_revenue_by_currency[targetCurrency] ?? 0
@@ -156,7 +176,61 @@ export function RevenueQualityPanel({ token }: RevenueQualityPanelProps) {
                 <strong>{data.billing.net_revenue_verified ? 'Verified' : 'Not yet'}</strong>
                 <p>Gross is visible now. Net after refunds still needs Stripe-side reporting.</p>
               </div>
+              <div className="provider-quality-meta-card">
+                <span className="provider-quality-meta-label">Demand queue</span>
+                <strong>{data.demand.total_requests}</strong>
+                <p>{data.demand.unique_campgrounds} requested campgrounds. This is lead intent, not paid revenue.</p>
+              </div>
+              <div className="provider-quality-meta-card">
+                <span className="provider-quality-meta-label">Last 7 days</span>
+                <strong>{data.demand.recent_requests_7d}</strong>
+                <p>Unsupported and search-only requests are kept separate from alert coverage.</p>
+              </div>
             </div>
+
+            {data.demand.top_campgrounds.length > 0 ? (
+              <div className="provider-quality-list" style={{ marginBottom: '16px' }}>
+                <article className="provider-quality-row">
+                  <div className="provider-quality-row-main">
+                    <div className="provider-quality-row-top">
+                      <div>
+                        <h3>Most requested unsupported campgrounds</h3>
+                        <p>Use this to rank future provider work without counting it as reliability.</p>
+                      </div>
+                      <span className="provider-status-pill provider-status-pill--idle">
+                        Lead signal
+                      </span>
+                    </div>
+                    <div className="provider-quality-pill-row">
+                      {data.demand.top_campgrounds.slice(0, 5).map((campground) => (
+                        <span
+                          key={`${campground.platform}:${campground.campground_id}`}
+                          className="provider-badge provider-badge--confidence provider-badge--inferred"
+                        >
+                          {campground.campground_name} · {campground.request_count}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="provider-quality-row-side">
+                    <span className="provider-quality-side-label">Top request</span>
+                    <strong>{data.demand.top_campgrounds[0].campground_name}</strong>
+                    <p>
+                      {formatSupportStatus(data.demand.top_campgrounds[0].support_status)}
+                      {' · '}
+                      {data.demand.top_campgrounds[0].platform}
+                      {' · '}
+                      last {formatShortDate(data.demand.top_campgrounds[0].last_requested_at)}
+                    </p>
+                  </div>
+                </article>
+              </div>
+            ) : data.demand.read_error ? (
+              <div className="provider-quality-empty" style={{ marginBottom: '16px' }}>
+                <h3>Demand queue is not connected yet</h3>
+                <p>{data.demand.read_error}</p>
+              </div>
+            ) : null}
 
             {data.blockers.length > 0 ? (
               <div className="provider-quality-list">
