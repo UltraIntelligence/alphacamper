@@ -96,6 +96,7 @@ The live catalog schema gate is now cleared:
 - Search-only campground rows: 65.
 - Watch creation guardrails pass local tests, but production watch creation still needs a customer-path smoke test after deploy.
 - Site deploy is live: `/api/check-availability` returns 410 retired.
+- Production provider-quality is live: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` as degraded with `missing_worker_heartbeat`.
 - Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
 
 Major success line:
@@ -127,7 +128,7 @@ Next high-leverage runs:
 
 1. Production Worker Smoke.
 2. Alberta/Saskatchewan Adapter Sprint.
-3. Provider Health/Admin Truth.
+3. Provider Health/Admin Truth UI and recurring ops.
 4. Demand Capture And Conversion.
 
 Run when official Parks Canada source data is selected:

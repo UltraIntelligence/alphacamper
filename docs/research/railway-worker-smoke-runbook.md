@@ -20,6 +20,10 @@ This is the current blocker for calling alert coverage production-ready.
   - `d7464921c Write worker heartbeat on quiet cycles`.
   - Quiet cycles now write `worker_status`.
 - GitHub CI is green for site, worker, extension, and customer smoke.
+- Live provider-quality route is deployed:
+  - `https://alphacamper.com/api/admin/provider-quality` returns `fetchedFrom: live_supabase`.
+  - It reports 5 active watches.
+  - It reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Live Supabase still has no `worker_status` heartbeat row.
 - GitHub deployment metadata shows Vercel site deploys, not Railway worker deploy proof.
 - Railway CLI was not authenticated in this shell.
@@ -138,6 +142,12 @@ SELECT
   last_error
 FROM public.catalog_provider_syncs
 ORDER BY provider_key;
+```
+
+Production operator route:
+
+```bash
+curl -sS https://alphacamper.com/api/admin/provider-quality | jq '{available, reason, fetchedFrom, providerQuality, alertDelivery, worker: (.providers[]? | select(.provider_id == "railway_worker"))}'
 ```
 
 ## Report Back

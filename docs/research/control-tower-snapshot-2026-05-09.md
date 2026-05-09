@@ -31,7 +31,9 @@ The live catalog schema blocker is cleared:
 - `/api/campgrounds?q=Bamberton` now returns a live-only Supabase row.
 - `/api/campgrounds?q=Sugarloaf` returns the New Brunswick provider-proof row.
 - `/api/check-availability` now returns 410 retired on the live site.
+- `/api/admin/provider-quality` now reads live Supabase on production and reports 5 active watches.
 - Support labels are normalized for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
+- Production provider-quality reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Worker heartbeat fix is pushed at `d7464921c`, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
 - Zero campsites should be counted toward the 50,000 realtime-alertable north-star target until worker polling and notifications are verified by provider.
 
@@ -79,6 +81,7 @@ What we learned:
 - Follow-up cleanup moved Recreation.gov into Railway worker in code.
 - Follow-up cleanup retired `/api/check-availability` and removed Vercel cron in code.
 - The site deployment is proven; Railway worker heartbeat is still pending.
+- Production provider-quality now makes that blocker visible without manual SQL.
 
 Decision:
 

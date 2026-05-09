@@ -20,6 +20,7 @@ Current status:
 
 - Code is locally verified, live data is refreshed, and the site deploy is live.
 - Railway worker runtime still needs heartbeat proof.
+- Production provider-quality now exposes live Supabase truth and reports the missing worker heartbeat.
 
 Launch status:
 
@@ -51,6 +52,8 @@ Current result:
 - Live site deploy is green: `/api/check-availability` returns 410 retired.
 - Live catalog API now returns evidence fields for Bamberton and Sugarloaf.
 - Worker heartbeat fix is pushed at `d7464921c` and CI is green.
+- Live `https://alphacamper.com/api/admin/provider-quality` now returns `fetchedFrom: live_supabase`.
+- The same production route reports 5 active watches and `railway_worker` degraded with `missing_worker_heartbeat`.
 - Supabase `worker_status` still returns no heartbeat rows after the fix.
 - GitHub deployment metadata shows the push deployed to Vercel, not proof of Railway worker deployment.
 - Railway CLI is not authenticated in this shell.
@@ -98,6 +101,7 @@ Current result:
 Next action:
 
 - Add recurring provider refresh and an admin-facing provider health view.
+- Keep the live provider-quality route wired into the operator/admin experience.
 - Get campsite-level counts for alertable providers; do not use campground-row counts as the 50k success metric.
 
 ### 3. Alert Engine Cleanup
@@ -127,7 +131,9 @@ Current result:
 - Code retires `/api/check-availability`.
 - Code removes the Vercel cron schedule.
 - Local verification passed.
-- Production still needs deploy/smoke proof.
+- Production site deploy is proven.
+- Production provider-quality reports live Supabase truth and flags the missing Railway worker heartbeat.
+- Railway worker runtime still needs deploy/smoke proof.
 
 Next action:
 
