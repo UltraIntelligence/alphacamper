@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { getNextHighlightedIndex } from '@/lib/search-nav'
 import type { WatchData } from './WatchWizard'
 import {
@@ -53,6 +53,8 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   const [query, setQuery] = useState(initialQuery ?? '')
   const [results, setResults] = useState<Campground[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [interestEmail, setInterestEmail] = useState('')
+  const [interestStatus, setInterestStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const searchSeqRef = useRef(0)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
@@ -107,6 +109,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   const handleSelect = (cg: Campground) => {
     setHighlightedIndex(-1)
     setQuery(cg.name)
+    setInterestStatus('idle')
     onUpdate({
       campgroundId: cg.id,
       campgroundName: cg.name,
@@ -119,11 +122,50 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
   const handleClear = () => {
     setHighlightedIndex(-1)
     setQuery('')
+    setInterestEmail('')
+    setInterestStatus('idle')
     onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '', supportStatus: 'unsupported' })
   }
 
   const isSelected = Boolean(data.campgroundId)
   const showDropdown = !isSelected && query.trim().length > 0 && !isDismissed
+  const selectedIsNotAlertable = isSelected && !isAlertableSupportStatus(data.supportStatus)
+  const alertableAlternatives = selectedIsNotAlertable
+    ? results.filter((cg) => (
+      cg.id !== data.campgroundId &&
+      isAlertableSupportStatus(cg.support_status) &&
+      (!data.province || cg.province === data.province)
+    )).slice(0, 3)
+    : []
+
+  const handleInterestSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (interestStatus === 'saving') return
+
+    setInterestStatus('saving')
+    try {
+      const response = await fetch('/api/campground-interest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: interestEmail,
+          platform: data.platform,
+          campgroundId: data.campgroundId,
+          campgroundName: data.campgroundName,
+          supportStatus: data.supportStatus,
+        }),
+      })
+
+      if (!response.ok) {
+        setInterestStatus('error')
+        return
+      }
+
+      setInterestStatus('saved')
+    } catch {
+      setInterestStatus('error')
+    }
+  }
 
   return (
     <div className="step-pane">
@@ -254,6 +296,74 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
               Change
             </button>
           </div>
+        </div>
+      ) : null}
+
+      {selectedIsNotAlertable ? (
+        <div className="step-interest-panel">
+          <h3 className="step-interest-title">Realtime alerts are not live here yet.</h3>
+          <p className="step-interest-copy">
+            Leave your email and we&apos;ll use it to decide which parks to add next.
+            We&apos;ll only email you if alerts become available.
+          </p>
+          <form className="step-interest-form" onSubmit={handleInterestSubmit}>
+            <label className="step-field-label" htmlFor="campground-interest-email">
+              Email
+            </label>
+            <div className="step-interest-row">
+              <input
+                id="campground-interest-email"
+                className="step-interest-input"
+                type="email"
+                placeholder="you@example.com"
+                value={interestEmail}
+                onChange={(event) => {
+                  setInterestEmail(event.target.value)
+                  if (interestStatus !== 'idle') setInterestStatus('idle')
+                }}
+                required
+              />
+              <button
+                type="submit"
+                className="step-interest-button"
+                disabled={interestStatus === 'saving'}
+              >
+                {interestStatus === 'saving' ? 'Saving…' : 'Tell me when alerts are ready'}
+              </button>
+            </div>
+          </form>
+          {interestStatus === 'saved' ? (
+            <p className="step-interest-message" role="status">
+              Got it. This helps us prioritize {data.campgroundName}.
+            </p>
+          ) : null}
+          {interestStatus === 'error' ? (
+            <p className="step-interest-message" data-tone="error" role="status">
+              We couldn&apos;t save that yet. Please try again.
+            </p>
+          ) : null}
+
+          {alertableAlternatives.length > 0 ? (
+            <div className="step-alternatives">
+              <p className="step-alternatives-label">Alertable alternatives from this search</p>
+              <div className="step-alternatives-list">
+                {alertableAlternatives.map((cg) => (
+                  <button
+                    key={`${cg.platform}:${cg.id}`}
+                    type="button"
+                    className="step-alternative"
+                    onClick={() => handleSelect(cg)}
+                  >
+                    <span>{cg.name}</span>
+                    <small>
+                      {getPlatformLabel(cg.platform)}
+                      {cg.province ? <> · {cg.province}</> : null}
+                    </small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

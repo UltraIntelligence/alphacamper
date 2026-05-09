@@ -34,6 +34,10 @@ Do not run this as a green-path smoke until:
 
 If the worker smoke is still yellow, stop here and keep this runbook queued.
 
+Current expected result while Railway has no heartbeat: yellow. You can still
+prove the customer setup path and the alert/event API surfaces, but you cannot
+claim live notifications until the worker writes a recent `worker_status` row.
+
 ## Smoke Safety Rules
 
 - Use a dedicated operator/test account, not a real customer account.
@@ -96,6 +100,37 @@ Use this when you want to verify the actual customer experience.
 ## API Smoke Path
 
 Use this only with a real Supabase user access token for the test account.
+
+Preferred helper:
+
+```bash
+cd alphacamper-site
+
+# Read-only. Safe to run without creating watches, alerts, or events.
+npm run smoke:customer-watch -- --allow-yellow
+
+# Controlled write smoke. Use a dedicated test account token only.
+# This creates a watch, writes one smoke-tagged funnel event, optionally inserts
+# one smoke-tagged alert row without sending any notification, verifies the API
+# can see them, then cleans up the simulated alert/event and soft-deletes the watch.
+export ALPHACAMPER_ACCESS_TOKEN='paste-test-user-access-token'
+npm run smoke:customer-watch -- --apply --simulate-alert --allow-yellow
+```
+
+What the helper proves:
+
+- `POST /api/watch` can create an alertable watch for the signed-in test customer.
+- `GET /api/watch` can show that watch back to the same customer.
+- `POST /api/events` and `GET /api/events` can write/read a smoke-tagged funnel event.
+- With `--simulate-alert`, `GET /api/alerts` can show a controlled smoke alert row.
+- It does not send Resend, Sent.dm, SMS, WhatsApp, or RCS notifications.
+
+What the helper does not prove while Railway is blocked:
+
+- The worker actually checked the watch.
+- A provider returned availability.
+- A real notification was delivered.
+- A real worker-created `availability_alerts` row was written.
 
 ```bash
 export ALPHACAMPER_ACCESS_TOKEN='paste-test-user-access-token'

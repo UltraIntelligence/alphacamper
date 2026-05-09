@@ -68,10 +68,26 @@ CREATE TABLE IF NOT EXISTS funnel_events (
 CREATE INDEX IF NOT EXISTS idx_funnel_events_user_created_at
   ON funnel_events (user_id, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS campground_interest (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  platform TEXT NOT NULL,
+  campground_id TEXT NOT NULL,
+  campground_name TEXT NOT NULL,
+  support_status TEXT NOT NULL CHECK (support_status IN ('search_only', 'coming_soon', 'unsupported')),
+  source TEXT NOT NULL DEFAULT 'watch_search',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (email, platform, campground_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_campground_interest_campground_created_at
+  ON campground_interest (platform, campground_id, created_at DESC);
+
 -- RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE watched_targets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE availability_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE campground_interest ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION public.rls_dev_override_enabled()
 RETURNS BOOLEAN
@@ -181,3 +197,8 @@ CREATE POLICY "Alerts delete own data" ON availability_alerts
     public.rls_dev_override_enabled()
     OR auth.uid() = user_id
   );
+
+CREATE POLICY "Campground interest public insert" ON campground_interest
+  FOR INSERT WITH CHECK (true);
+CREATE POLICY "Campground interest block public read" ON campground_interest
+  FOR SELECT USING (false);

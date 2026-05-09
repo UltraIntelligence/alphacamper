@@ -30,6 +30,7 @@ import * as watchRoute from '@/app/api/watch/route'
 import * as alertsRoute from '@/app/api/alerts/route'
 import * as registerRoute from '@/app/api/register/route'
 import * as campgroundsRoute from '@/app/api/campgrounds/route'
+import * as campgroundInterestRoute from '@/app/api/campground-interest/route'
 
 function buildInsertChain(result: { data: unknown; error: { message: string } | null }) {
   const chain = {
@@ -314,6 +315,92 @@ describe('campgrounds route', () => {
         source_url: null,
         last_verified_at: null,
       }],
+    })
+  })
+})
+
+describe('campground interest route', () => {
+  it('captures demand for a non-alertable campground', async () => {
+    const insertChain = {
+      insert: vi.fn(async () => ({ error: null })),
+    }
+    mockFrom.mockReturnValue(insertChain)
+
+    const response = await campgroundInterestRoute.POST(
+      new Request('https://alphacamper.test/api/campground-interest', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: ' Camper@Example.com ',
+          platform: 'alberta_parks',
+          campgroundId: 'bow-valley',
+          campgroundName: 'Bow Valley Campground',
+          supportStatus: 'search_only',
+        }),
+      })
+    )
+
+    expect(response.status).toBe(200)
+    expect(mockFrom).toHaveBeenCalledWith('campground_interest')
+    expect(insertChain.insert).toHaveBeenCalledWith({
+      email: 'camper@example.com',
+      platform: 'alberta_parks',
+      campground_id: 'bow-valley',
+      campground_name: 'Bow Valley Campground',
+      support_status: 'search_only',
+      source: 'watch_search',
+    })
+    await expect(response.json()).resolves.toEqual({ success: true })
+  })
+
+  it('does not capture interest for campgrounds that already support alerts', async () => {
+    const insertChain = {
+      insert: vi.fn(async () => ({ error: null })),
+    }
+    mockFrom.mockReturnValue(insertChain)
+
+    const response = await campgroundInterestRoute.POST(
+      new Request('https://alphacamper.test/api/campground-interest', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'camper@example.com',
+          platform: 'bc_parks',
+          campgroundId: 'alice-lake',
+          campgroundName: 'Alice Lake',
+          supportStatus: 'alertable',
+        }),
+      })
+    )
+
+    expect(response.status).toBe(400)
+    expect(insertChain.insert).not.toHaveBeenCalled()
+    await expect(response.json()).resolves.toEqual({
+      error: 'This campground already supports alerts',
+    })
+  })
+
+  it('treats duplicate campground interest as already captured', async () => {
+    const insertChain = {
+      insert: vi.fn(async () => ({ error: { code: '23505', message: 'duplicate key value' } })),
+    }
+    mockFrom.mockReturnValue(insertChain)
+
+    const response = await campgroundInterestRoute.POST(
+      new Request('https://alphacamper.test/api/campground-interest', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'camper@example.com',
+          platform: 'alberta_parks',
+          campgroundId: 'bow-valley',
+          campgroundName: 'Bow Valley Campground',
+          supportStatus: 'coming_soon',
+        }),
+      })
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      success: true,
+      alreadyCaptured: true,
     })
   })
 })

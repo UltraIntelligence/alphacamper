@@ -24,9 +24,9 @@ Launched from this control-tower thread on 2026-05-09:
 |---|---|---|---|
 | Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Running |
 | Feynman | Extra high | Verified campsite-level inventory counts | Running |
-| Noether | High | Railway worker heartbeat recovery | Running |
-| Nash | High | Customer watch and notification smoke | Running |
-| Descartes | High | Demand capture for search-only/unsupported parks | Running |
+| Noether | High | Railway worker heartbeat recovery | Reported yellow; heartbeat hardening landed |
+| Nash | High | Customer watch and notification smoke | Reported yellow; smoke helper under intake |
+| Descartes | High | Demand capture for search-only/unsupported parks | Reported green for scoped change; under intake |
 
 Control-tower intake rule:
 
@@ -53,7 +53,7 @@ These gates protect the product from over-promising.
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
 | Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout now uses one-time payment mode in code and live DB tables exist; operator revenue-quality view is built; production Stripe env vars and net Stripe reporting are still missing |
-| Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
+| Demand capture | Yellow | Unsupported searches become a prioritization queue | Campground-interest capture is built for non-alertable search selections; live route proof pending deploy |
 
 ## Current Count Ledger
 

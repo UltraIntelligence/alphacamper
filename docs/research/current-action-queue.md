@@ -20,9 +20,9 @@ Launched from the control tower on 2026-05-09:
 |---|---|---|---|
 | Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Running |
 | Feynman | Extra high | Realtime Campsite Inventory Count Proof | Running |
-| Noether | High | Production Worker Heartbeat Recovery | Running |
-| Nash | High | Customer Watch And Notification Smoke | Running |
-| Descartes | High | Demand Capture And Search-Only Revenue Path | Running |
+| Noether | High | Production Worker Heartbeat Recovery | Reported yellow; heartbeat hardening landed |
+| Nash | High | Customer Watch And Notification Smoke | Reported yellow; smoke helper under intake |
+| Descartes | High | Demand Capture And Search-Only Revenue Path | Reported green for scoped change; under intake |
 
 Report-back rule:
 
@@ -240,9 +240,15 @@ Why it matters:
 
 Current truth:
 
-- Unsupported searches are not yet a strong prioritization signal.
+- Search-only, coming-soon, and unsupported campground selections now have a proposed email capture path.
 - The product still needs clearer "we can help you get this site" flows.
 - This should build on the revenue scoreboard so demand work is measured against paid conversion and booking outcomes.
+
+Current intake:
+
+- Demand capture should stay yellow until the route is deployed and verified live.
+- It must not be described as realtime alert coverage.
+- The captured signal is campground-level interest, not a paid conversion yet.
 
 ## Run When Source Data Is Chosen
 
