@@ -55,13 +55,15 @@ Live aggregate read on 2026-05-09:
 | Availability alerts | 0 | No verified live alert delivery yet. |
 | Delivered alerts | 0 | `notified_at` proof is still missing. |
 | `subscriptions` table | Exists, 0 rows | Live billing storage exists after the one-time pass migration. |
+| `stripe_webhook_events` checkout-completed rows | Exists, 0 rows | No `checkout.session.completed` webhook has reached the app DB yet. |
 | `funnel_events` table | Exists, 0 rows | Live conversion-event storage exists and is now included in the operator revenue-quality view. |
 | Production Vercel Stripe env vars | Missing | Live checkout cannot work until Stripe production env vars are configured. |
 | Operator revenue-quality view | Built, not green | `/api/admin/revenue-quality` and the dashboard operator panel read live Supabase, but production Stripe env vars and net Stripe reporting are still missing. |
 
-Latest verification at 2026-05-09T14:13:54Z:
+Latest verification after commit `28336c0a6`:
 
-- `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 funnel events, 0 webhook events, no gross app revenue, no checkout/webhook proof, and net/refund reporting not verified.
+- `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 payment-mode passes, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no gross app revenue, no checkout/webhook proof, and net/refund reporting not verified.
+- Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make this gate green.
 - `vercel env ls production` confirms `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are missing.
 - The available Stripe connector is logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), so it should not be used for Alphacamper billing setup unless Ryan confirms that is the intended Stripe account.
 
@@ -108,6 +110,7 @@ Green means:
 - Checkout copy matches Stripe mode.
 - Live database has the billing table the site expects, or reporting intentionally uses Stripe only.
 - We can report paid pass counts without guessing.
+- At least one real one-time payment-mode pass and one `checkout.session.completed` webhook row are recorded.
 
 Current status:
 

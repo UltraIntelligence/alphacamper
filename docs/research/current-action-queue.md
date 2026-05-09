@@ -34,6 +34,9 @@ Current and recent goal windows from the control tower on 2026-05-09:
 
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
+| Linnaeus | High | Worker Reliability Gate Captain | Reported yellow/blocked; Railway/operator access required; no patch |
+| Darwin | High | Revenue Gate Captain | Reported yellow; checkout webhook proof hardening landed in `28336c0a6` |
+| Epicurus | High | Product Moat Captain | Reported yellow; next goal-window order confirmed |
 | Jason | Extra high | 50k Canada Gap Sprint | Reported green inventory proof; repo-side patch complete |
 | Ohm | Extra high | 50k Verified Campsite Coverage Proof | Reported green inventory proof; verified and integrated |
 | Pauli | High | Revenue Readiness Toward $10k Summer Target | Reported yellow; verified and integrated |
@@ -229,7 +232,8 @@ Current truth:
 - The live tables currently have 0 billing/conversion rows.
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
 - `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, gross app-recorded revenue, checkout/webhook proof, and net/refund reporting state.
-- Latest verified smoke result at 2026-05-09T14:13:54Z is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
+- Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make the gate green.
+- Latest verified smoke result after commit `28336c0a6` is yellow: 0 paid active passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
 - Direct `vercel env ls production` confirms the five missing names are not configured in production.
 - The available Stripe connector is currently logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not create or reuse Stripe products from that connector without confirming the correct account first.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.
@@ -237,7 +241,7 @@ Current truth:
 
 Next action:
 
-- Configure production Stripe env vars, prove one test checkout/webhook in Stripe test or production-safe mode, and wire net/refund reporting from Stripe into the operator revenue-quality view.
+- Confirm the correct Alphacamper Stripe account, configure production Stripe env vars and one-time live prices, create the production webhook for `checkout.session.completed`, prove one approved live checkout/webhook path, and wire net/refund reporting from Stripe into the operator revenue-quality view.
 
 Use runbook for framing:
 

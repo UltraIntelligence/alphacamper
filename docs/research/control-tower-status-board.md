@@ -22,6 +22,9 @@ Current epic windows launched from this control-tower thread on 2026-05-09:
 
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
+| Linnaeus | High | Worker reliability gate: Railway heartbeat and alert-pipeline unblock | Reported yellow/blocked; Railway/operator access required; no patch |
+| Darwin | High | Revenue gate: Stripe production checkout, webhook, and net proof | Reported yellow; checkout webhook proof hardening landed in `28336c0a6` |
+| Epicurus | High | Product moat and next epic queue | Reported yellow; next goal-window order confirmed |
 | Jason | Extra high | 50k Canada gap sprint: find/prove the missing 5,183 campsite IDs | Reported green inventory proof; repo-side patch complete |
 | Ohm | Extra high | 50k verified campsite coverage proof | Reported green inventory proof; verified and integrated |
 | Pauli | High | Revenue readiness toward $10k summer target | Reported yellow; verified and integrated |
@@ -80,7 +83,7 @@ These gates protect the product from over-promising.
 | Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
-| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Billing smoke is secret-safe and reports 0 paid active passes, 0 gross app revenue, missing production Stripe env vars, and missing net/refund truth |
+| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Billing smoke is secret-safe and now requires a one-time payment-mode pass plus `checkout.session.completed`; current read is 0 paid passes, 0 checkout-completed webhooks, missing production Stripe env vars, and missing net/refund truth |
 | Demand capture | Green | Unsupported searches become a prioritization queue | Campground-interest capture is built, deployed, live-proven with a synthetic row, and cleaned up after proof |
 | Get-the-site moat | Yellow | A paid camper can move from alert to official review step faster | Product plan is defined; extension pieces exist, but one paid alert-to-assist loop still needs proof |
 
@@ -124,6 +127,7 @@ Control-tower rule:
 | Summer-pass path to $10k | 345 passes | Calculated from $29 checkout copy | Shows the size of the short-term sales target | Verify price/mode in Stripe |
 | Year-pass path to $10k | 205 passes | Calculated from $49 checkout copy | Shows the size of the higher-trust sales target | Verify price/mode in Stripe |
 | Verified paid-pass count from app DB | 0 | Live read from `subscriptions` after one-time pass migration | No paid passes recorded in the app DB yet | Configure Stripe env vars and prove checkout webhook |
+| Verified `checkout.session.completed` webhook count from app DB | 0 | Live read from `stripe_webhook_events` after revenue-smoke hardening | No completed checkout webhook has reached the app DB yet | Create production Stripe webhook and prove one approved live checkout |
 | Verified funnel-event count from app DB | 0 | Live read from `funnel_events` after one-time pass migration | No conversion events recorded yet | Prove event writes through a customer-path smoke test |
 | Operator revenue-quality view | Built, yellow | Code path reads `subscriptions`, `stripe_webhook_events`, `funnel_events`, `watched_targets`, and `availability_alerts` | Operator dashboard can show gross app-side revenue and blockers without secret values | Configure production Stripe env vars and wire net/refund truth from Stripe |
 
