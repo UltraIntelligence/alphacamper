@@ -6,6 +6,8 @@ Start here for the North America campsite-alert expansion work.
 
 Current external blocker milestone: https://github.com/UltraIntelligence/alphacamper/milestone/1
 
+Current next-epic milestone: https://github.com/UltraIntelligence/alphacamper/milestone/2
+
 ## What This Folder Is Doing
 
 This folder is now the control tower for the big coverage push:
