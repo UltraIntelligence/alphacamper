@@ -27,16 +27,19 @@ GitHub blocker trackers:
 - Railway reliability: https://github.com/UltraIntelligence/alphacamper/issues/9
 - Stripe revenue readiness: https://github.com/UltraIntelligence/alphacamper/issues/10
 
-## Order Of Operations
+## Parallel Unblock Plan
 
-Do these in this order.
+There are two active external unblocks now. They can move in parallel:
 
-1. Fix Railway worker heartbeat first.
+1. Fix Railway worker heartbeat.
    - This unlocks real alert reliability and protects every customer-facing coverage claim.
 2. Configure the correct Alphacamper Stripe account and Vercel production env vars.
    - This unlocks checkout and the $10k revenue scoreboard.
+
+Then continue in this dependent order:
+
 3. Prove one customer watch and notification path.
-   - This turns coverage inventory into customer value.
+   - Do this after Railway heartbeat is green; this turns coverage inventory into customer value.
 4. Sync Manitoba and Nova Scotia alertable labels only after worker reliability is green.
    - This prevents the app from inviting watches the worker cannot safely service yet.
 
