@@ -4,6 +4,8 @@ Last updated: 2026-05-09
 
 This is the short operational queue for the control tower.
 
+Current external blockers are grouped here: https://github.com/UltraIntelligence/alphacamper/milestone/1
+
 Each item below should be launched as its own large goal in a separate window. Do not combine them unless the control tower explicitly decides to merge scopes.
 
 Goal-window rule:

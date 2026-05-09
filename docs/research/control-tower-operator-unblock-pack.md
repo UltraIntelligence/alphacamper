@@ -23,6 +23,7 @@ Still yellow:
 
 GitHub blocker trackers:
 
+- Milestone: https://github.com/UltraIntelligence/alphacamper/milestone/1
 - Railway reliability: https://github.com/UltraIntelligence/alphacamper/issues/9
 - Stripe revenue readiness: https://github.com/UltraIntelligence/alphacamper/issues/10
 
