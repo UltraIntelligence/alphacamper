@@ -30,7 +30,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, escalation rules, output format | Covered |
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
-| Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state without printing secrets | Covered |
+| Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
 | Existing research is preserved | `canadian-database-parity-plan.md`, `parks-canada-api.md` | Prior research remains in place | Covered |
@@ -51,7 +51,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | "What do we launch after migration?" | `post-migration-launch-pack.md`, `current-action-queue.md` |
 | "Do not overclaim coverage" | `control-tower-status-board.md`, `report-intake-procedure.md` |
 | "Do we need to relaunch the forked windows?" | `README.md`, `epic-launch-prompts.md`, `control-tower-status-board.md` |
-| "Prove the worker is live" | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts` |
+| "Prove the worker is live" | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts` |
 
 ## Current Evidence
 
@@ -72,6 +72,7 @@ Created/updated docs:
 - `docs/research/report-intake-procedure.md`
 - `docs/research/railway-worker-smoke-runbook.md`
 - `alphacamper-worker/scripts/smoke-production.ts`
+- `alphacamper-worker/scripts/railway-diagnostics.ts`
 - `alphacamper-worker/package.json`
 
 Existing supporting docs:
@@ -99,6 +100,7 @@ Evidence inspected:
 - `docs/research/report-intake-procedure.md` defines how reports are classified and folded back into the board.
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
+- `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 
 Live smoke evidence:
 

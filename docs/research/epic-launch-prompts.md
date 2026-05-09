@@ -319,6 +319,7 @@ Context:
 - Current provider-quality proof: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` with `missing_worker_heartbeat`.
 - Current known gap: live `worker_status` currently has no heartbeat rows.
 - Repo smoke command: from `alphacamper-worker`, run `npm run smoke:production`.
+- Railway diagnostic command: from `alphacamper-worker`, run `npm run smoke:railway`.
 
 Rules:
 - Treat this as production verification, not new feature work.

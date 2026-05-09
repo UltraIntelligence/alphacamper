@@ -67,6 +67,7 @@ Red means:
 Run from `alphacamper-worker/` after Railway login/link:
 
 ```bash
+npm run smoke:railway
 npm run smoke:production
 ```
 
@@ -96,6 +97,21 @@ railway logs --since 15m --filter "SUPABASE_URL"
 ```
 
 Do not paste secret values into the report. Only report whether the variables exist and point to the live project.
+
+Secret-safe Railway diagnostic:
+
+```bash
+cd alphacamper-worker
+npm run smoke:railway
+```
+
+If Railway is not authenticated or linked, the command reports `blocked` and tells you to run `railway login` or `railway link`.
+
+If the Railway project has multiple services or environments, pass explicit names:
+
+```bash
+npm run smoke:railway -- --service alphacamper-worker --environment production
+```
 
 ## Live Supabase Checks
 
