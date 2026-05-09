@@ -36,7 +36,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
-| Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns production smoke every 30 minutes and reports back to this thread | Covered |
+| Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns worker reliability smoke and billing readiness smoke every 30 minutes and reports back to this thread | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
 | Existing research is preserved | `canadian-database-parity-plan.md`, `parks-canada-api.md` | Prior research remains in place | Covered |
 | Completed windows will not be relaunched by accident | `README.md`, `epic-launch-prompts.md`, `current-action-queue.md`, `control-tower-status-board.md`, `report-intake-procedure.md` | Completed reports are marked as intaken/reported; current gate is Production Worker Smoke | Covered |
@@ -93,7 +93,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T11:52:52Z.
+Audit timestamp: 2026-05-09T11:58:54Z.
 
 Objective restated as concrete deliverables:
 
@@ -115,7 +115,9 @@ Evidence inspected:
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
 - `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow because production Stripe env vars are missing and no paid rows exist yet.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
-- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` was created to rerun production smoke every 30 minutes.
+- `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
+- Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
+- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes.
 
 Live smoke evidence:
 
