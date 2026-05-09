@@ -56,13 +56,13 @@ The live catalog schema blocker is cleared:
 
 ## Control Tower Tracker Lanes
 
-External blocker lane:
+External blocker lane: Control Tower: Reliability + Revenue Gates
 
 - https://github.com/UltraIntelligence/alphacamper/milestone/1
 - #9 Railway worker heartbeat.
 - #10 Stripe production checkout and revenue proof.
 
-Next epic lane:
+Next epic lane: Control Tower: Next Epic Runs
 
 - https://github.com/UltraIntelligence/alphacamper/milestone/2
 - #19 Demand capture and conversion path.

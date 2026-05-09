@@ -129,14 +129,14 @@ Evidence inspected:
 - `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
 - GitHub Actions is supporting evidence only, not Railway proof or revenue proof; verify the current `main` run with `/Users/ryan/.codex/bin/gh-no-proxy run list --limit 3` before relying on it.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
-- `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
+- `vercel env list production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
 - Local Stripe CLI can read live Stripe objects but is restricted from creating live Alphacamper products/prices/webhooks.
 - Stripe connector account check returned a different account (`Superpress`), so it is not the Alphacamper billing source.
 - GitHub issue #9 tracks Railway heartbeat and live alert reliability; its body was refreshed with the latest smoke evidence and the rule that notification/Manitoba/Nova Scotia label proof waits on Railway.
 - GitHub issue #10 tracks Stripe production checkout and revenue proof; its body was refreshed with the latest billing evidence and the rule that Stripe can move in parallel with Railway.
-- GitHub milestone #1 groups the current reliability and revenue gates.
-- GitHub milestone #2 groups the next epic goal-window trackers.
+- GitHub milestone #1, `Control Tower: Reliability + Revenue Gates`, groups the current Railway and Stripe gates.
+- GitHub milestone #2, `Control Tower: Next Epic Runs`, groups the held next goal-window trackers in launch order.
 - GitHub trackers #9, #10, #11, #13, #15, #16, #17, #18, and #19 remain open in the expected two milestones; #12 and #14 are closed with intake proof and should not be relaunched unless the scope changes.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes, only comments on GitHub issues when blocker status changes, and warns that the available Stripe connector is Superpress, not confirmed Alphacamper.
 

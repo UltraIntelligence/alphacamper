@@ -51,9 +51,13 @@ Control-tower intake rule:
 
 ## GitHub Tracker Ledger
 
-Blocker lane: https://github.com/UltraIntelligence/alphacamper/milestone/1
+Blocker lane: Control Tower: Reliability + Revenue Gates
 
-Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
+https://github.com/UltraIntelligence/alphacamper/milestone/1
+
+Next-epic lane: Control Tower: Next Epic Runs
+
+https://github.com/UltraIntelligence/alphacamper/milestone/2
 
 | Order | Tracker | Lane | Status |
 |---:|---|---|---|
