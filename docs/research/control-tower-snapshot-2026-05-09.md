@@ -48,7 +48,7 @@ The live catalog schema blocker is cleared:
 - Checkout code now uses one-time Stripe payment mode to match the one-time pass copy.
 - Live Supabase now has `subscriptions` and `funnel_events`, both currently with 0 rows.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
-- 51,997 campsite IDs are now verified from provider availability responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
+- 51,997 campsite IDs are now verified from provider availability-matrix responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
 - The first 50,000 Canada inventory line is crossed by 1,997 IDs, but worker heartbeat/notification proof remains separate.
 - Worker polling and notifications are still not proven, so do not use this count as a reliability claim.
 

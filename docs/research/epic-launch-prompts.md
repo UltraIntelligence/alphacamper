@@ -46,7 +46,7 @@ Use medium or lower only for narrow follow-up chores like formatting docs, recou
 North-star metric:
 
 - First success line: 50,000 verified realtime-alertable Canadian campsites.
-- Current provider-inventory proof: 51,997 verified campsite IDs across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
+- Current provider-inventory proof: 51,997 verified campsite IDs from provider availability-matrix responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
 - Longer-term leadership line: 250,000 to 350,000+ realtime-alertable North American campsites.
 - Search-only, coming-soon, unverified seed, and static fallback rows do not count toward realtime success.
 - Reliability is still yellow until Railway heartbeat, active watch polling, alert creation, and notification delivery are proven.
