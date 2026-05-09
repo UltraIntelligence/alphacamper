@@ -25,8 +25,8 @@ GitHub tracker map:
 | 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | High | Active blocker |
 | 4 | [#11 Provider health and admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | High | Hold until #9 is green |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Extra high | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Running as Russell; live alert claims hold until #9 is green |
-| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Running as Ampere |
+| 6 | [#12 Alberta and Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Extra high | Reported yellow; feasible after reliability gates |
+| 7 | [#14 Parks Canada province and customer coverage](https://github.com/UltraIntelligence/alphacamper/issues/14) | High | Reported yellow; province enrichment next |
 
 ## Current And Recent Epic Windows
 
@@ -39,8 +39,8 @@ Current and recent goal windows from the control tower on 2026-05-09:
 | Pauli | High | Revenue Readiness Toward $10k Summer Target | Reported yellow; verified and integrated |
 | Tesla | High | Production Ops Reliability And Railway Heartbeat Clarity | Reported yellow/blocked; verified and integrated |
 | Curie | Extra high | "Get You The Site" Product Moat Plan | Reported yellow product proof; strategy integrated |
-| Russell | Extra high | Alberta/Saskatchewan Adapter Discovery Follow-up | Running; report pending |
-| Ampere | High | Parks Canada Province And Customer Coverage Enrichment | Running; report pending |
+| Russell | Extra high | Alberta/Saskatchewan Adapter Discovery Follow-up | Reported yellow; verified and integrated |
+| Ampere | High | Parks Canada Province And Customer Coverage Enrichment | Reported yellow; verified and integrated |
 
 Previous windows launched from the control tower on 2026-05-09:
 
@@ -255,9 +255,15 @@ Why it matters:
 
 Current truth:
 
+- Russell reported back and the control tower verified the core finding.
 - Alberta and Saskatchewan are searchable roadmap targets, not alertable product coverage yet.
+- Live Alberta directory fetch returned `resultTotal = 109` for contract `ABPP`.
+- Live Saskatchewan directory fetch returned `resultTotal = 24` for contract `SKPP`.
 - Worker-side parser proof confirms they share an Aspira/ReserveAmerica-style directory and calendar shape.
+- `alphacamper-worker/src/aspira.ts` registers both providers as `search_only`.
 - They are intentionally not in active worker `SUPPORTED_PLATFORMS` yet, so customers cannot be misled into live alerts.
+- `npm test -- aspira.test.ts` passes with 6 tests.
+- Intake artifact: `docs/research/alberta-saskatchewan-adapter-intake-2026-05-09.md`.
 
 Next action:
 
@@ -327,7 +333,7 @@ Current intake:
 - It must not be described as realtime alert coverage.
 - The captured signal is campground-level interest, not a paid conversion yet.
 
-## Run When Source Data Is Chosen
+## Ready For Implementation
 
 ### 9. Parks Canada Enrichment
 
@@ -335,13 +341,18 @@ Goal objective:
 
 - Make Parks Canada rows useful for province search and honest province coverage pages without guessing.
 
-Why it waits:
+Current intake:
 
-- We should not guess province/source metadata.
+- Ampere reported back and the control tower verified the core finding.
+- Live Supabase has 115 Parks Canada rows: 113 `alertable` / `live_polling`, 2 `unsupported` / `directory_only`.
+- All 115 live Parks Canada rows have `province = null`.
+- Live `q=Alberta` search returns 0 rows, so province discovery is broken for Parks Canada even though name searches like Banff and Fundy work.
+- Raw Parks Canada payload URLs can safely derive province for 113 alertable rows; only `Grand-Pré` and `Internet` remain uncertain, and both are unsupported.
+- Intake artifact: `docs/research/parks-canada-enrichment-intake-2026-05-09.md`.
 
 Use prompt:
 
-- `docs/research/epic-launch-prompts.md` → Prompt 6.
+- Add Parks Canada province enrichment from official/source-backed URL paths, then add province search tests before creating province coverage pages.
 
 ## Report-Back Rule
 

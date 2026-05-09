@@ -27,8 +27,8 @@ Current epic windows launched from this control-tower thread on 2026-05-09:
 | Pauli | High | Revenue readiness toward $10k summer target | Reported yellow; verified and integrated |
 | Tesla | High | Production ops reliability and Railway heartbeat clarity | Reported yellow/blocked; verified and integrated |
 | Curie | Extra high | "Get you the site" product moat plan | Reported yellow product proof; strategy integrated |
-| Russell | Extra high | Alberta/Saskatchewan adapter discovery follow-up | Running; report pending |
-| Ampere | High | Parks Canada province and customer coverage enrichment | Running; report pending |
+| Russell | Extra high | Alberta/Saskatchewan adapter discovery follow-up | Reported yellow; verified and integrated |
+| Ampere | High | Parks Canada province and customer coverage enrichment | Reported yellow; verified and integrated |
 
 Previous windows launched from this control-tower thread on 2026-05-09:
 
@@ -59,8 +59,8 @@ Next-epic lane: https://github.com/UltraIntelligence/alphacamper/milestone/2
 | 3 | [#10 Stripe production checkout and revenue proof](https://github.com/UltraIntelligence/alphacamper/issues/10) | Blocker | Active external blocker |
 | 4 | [#11 Provider health/admin truth loop](https://github.com/UltraIntelligence/alphacamper/issues/11) | Next epic | Hold until #9 has live data |
 | 5 | [#15 Get-you-the-site paid assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Next epic | Hold until #9, #10, and #13 are green |
-| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Running as Russell; live claims hold |
-| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Running as Ampere |
+| 6 | [#12 Alberta/Saskatchewan adapter discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Next epic | Reported yellow; feasible after reliability gates |
+| 7 | [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Next epic | Reported yellow; province enrichment next |
 
 ## Status Key
 
@@ -274,11 +274,16 @@ Must prove:
 
 Current blocker:
 
-- Can run after or alongside Epic 1, but live exposure depends on Epic 1.
+- Ampere reported back and the control tower verified the core finding.
+- Live Supabase has 115 Parks Canada rows: 113 `alertable` / `live_polling`, 2 `unsupported` / `directory_only`.
+- All 115 live Parks Canada rows have `province = null`.
+- Live search for `Alberta` returns 0 campgrounds, while direct name searches like `Banff` and `Fundy` return Parks Canada rows with blank live province values.
+- Raw Parks Canada payload URLs can safely derive province for the 113 alertable rows. The only uncertain rows are the two unsupported rows: `Grand-Pré` and `Internet`.
+- Province derivation from source-backed URL paths gives: AB 22, BC 24, MB 2, NB 9, NL 10, NS 9, NT 1, ON 13, PE 2, QC 15, SK 4, YT 2.
 
 Next prompt:
 
-> Fix Parks Canada province and source metadata so customers can search by province and Alphacamper can build honest province coverage pages. Use official or verified source data only. Report before/after counts and any rows that remain uncertain.
+> Add Parks Canada province enrichment from official/source-backed URL paths, then test province searches before creating province coverage pages.
 
 ### Epic 5: North America Provider Roadmap
 
@@ -309,11 +314,21 @@ Next prompt:
 
 Top roadmap bets:
 
-- Alberta Parks: biggest Canadian gap, but likely needs a new ReserveAmerica/Aspira-style adapter.
-- Saskatchewan Parks: similar parity value and likely reusable adapter work after Alberta.
+- Alberta Parks: biggest Canadian gap, likely feasible through the Aspira/ReserveAmerica-style `ABPP` path, but not realtime-alertable yet.
+- Saskatchewan Parks: similar parity value through the same Aspira/ReserveAmerica-style `SKPP` path, best after Alberta.
 - New Brunswick, then PEI: Atlantic quick win; NB may fit GoingToCamp, PEI is small but trust-building.
 - US GoingToCamp cluster: Washington, Wisconsin, Michigan, Maryland.
 - ReserveCalifornia: huge marketing value, but build after Canada core because it needs a new UseDirect-style adapter.
+
+Alberta/Saskatchewan adapter intake:
+
+- Russell reported back and the control tower verified the repo/provider evidence.
+- Live Alberta directory fetch returned `resultTotal = 109` for contract `ABPP`.
+- Live Saskatchewan directory fetch returned `resultTotal = 24` for contract `SKPP`.
+- `alphacamper-worker/src/aspira.ts` keeps both provider profiles `search_only`.
+- `alphacamper-worker/src/config.ts` excludes both from active worker polling.
+- `npm test -- aspira.test.ts` passes with 6 tests.
+- Intake artifact: `docs/research/alberta-saskatchewan-adapter-intake-2026-05-09.md`.
 
 ### Epic 6: Catalog Ingestion Factory
 
