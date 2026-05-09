@@ -89,7 +89,8 @@ Expected next result:
 - Stripe env vars: present.
 - Local Stripe price check: green only if local env has matching Stripe values.
 - Live DB rows: still 0 until a real customer pays.
-- `Checkout/webhook proof`: no until a real paid checkout creates both a paid pass row and a webhook-event row.
+- `Checkout completed webhooks`: above 0 after Stripe sends `checkout.session.completed`.
+- `Checkout/webhook proof`: no until a real one-time paid pass row and a `checkout.session.completed` webhook row both exist.
 - `Net/refund reporting`: not verified until Stripe-side net/refund reporting is wired.
 - Overall status: still yellow if no paid customer exists, no webhook proof exists, or net/refund reporting is not wired.
 
@@ -125,7 +126,8 @@ Green:
 
 - Production Stripe env vars are present.
 - Stripe price ids are verified as one-time prices.
-- At least one real paid checkout created a DB pass row through the webhook.
+- At least one real one-time paid checkout created a DB pass row through the webhook.
+- At least one `checkout.session.completed` webhook row is recorded.
 - Operator view shows paid passes and gross revenue.
 - Refund/net reporting is verified from Stripe.
 

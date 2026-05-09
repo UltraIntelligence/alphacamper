@@ -41,6 +41,10 @@ type SubscriptionRow = {
   current_period_end: string | null;
 };
 
+type StripeWebhookEventRow = {
+  event_type: string | null;
+};
+
 export type BillingSummary = {
   paidPasses: number;
   summerPasses: number;
@@ -52,6 +56,12 @@ export type BillingSummary = {
   grossRevenueByCurrency: Record<string, number>;
 };
 
+export type WebhookSummary = {
+  totalEvents: number;
+  checkoutSessionCompletedEvents: number;
+  eventsByType: Record<string, number>;
+};
+
 export type BillingSmokeStatusInput = {
   supabaseError: string | null;
   stripeError: string | null;
@@ -59,11 +69,13 @@ export type BillingSmokeStatusInput = {
   subscriptionsCount: number | null;
   funnelEventsCount: number | null;
   webhookEventsCount: number | null;
+  checkoutSessionCompletedWebhookEvents: number | null;
   vercelConfigured: boolean;
   missingVercelEnvCount: number;
   priceTypesKnown: boolean;
   priceTypesAreOneTime: boolean;
   paidPasses: number | null;
+  paymentModePasses: number | null;
   netRefundReportingVerified: boolean;
 };
 
@@ -144,13 +156,33 @@ export function summarizeBillingRows(rows: SubscriptionRow[], now = Date.now()):
   };
 }
 
+function incrementCount(counts: Record<string, number>, key: string | null | undefined) {
+  const normalized = key?.trim() || "unknown";
+  counts[normalized] = (counts[normalized] ?? 0) + 1;
+}
+
+export function summarizeWebhookRows(rows: StripeWebhookEventRow[]): WebhookSummary {
+  const eventsByType: Record<string, number> = {};
+
+  for (const row of rows) {
+    incrementCount(eventsByType, row.event_type);
+  }
+
+  return {
+    totalEvents: rows.length,
+    checkoutSessionCompletedEvents: eventsByType["checkout.session.completed"] ?? 0,
+    eventsByType,
+  };
+}
+
 export function evaluateBillingSmokeStatus(input: BillingSmokeStatusInput): SmokeStatus {
   if (input.supabaseError || input.stripeError) {
     return "red";
   }
 
   const checkoutWebhookProof =
-    (input.paidPasses ?? 0) > 0 && (input.webhookEventsCount ?? 0) > 0;
+    (input.paymentModePasses ?? 0) > 0 &&
+    (input.checkoutSessionCompletedWebhookEvents ?? 0) > 0;
 
   if (
     !input.supabaseConfigured ||
@@ -207,6 +239,7 @@ async function checkSupabaseBillingTables(): Promise<{
   billingSummary: BillingSummary | null;
   funnelEventsCount: number | null;
   webhookEventsCount: number | null;
+  webhookSummary: WebhookSummary | null;
   error: string | null;
 }> {
   const url = process.env.SUPABASE_URL;
@@ -218,12 +251,13 @@ async function checkSupabaseBillingTables(): Promise<{
       billingSummary: null,
       funnelEventsCount: null,
       webhookEventsCount: null,
+      webhookSummary: null,
       error: null,
     };
   }
 
   const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const [subscriptions, funnelEvents, webhookEvents] = await Promise.all([
+  const [subscriptions, funnelEvents, webhookEvents, checkoutCompletedWebhooks] = await Promise.all([
     supabase
       .from("subscriptions")
       .select("id, product_key, status, checkout_mode, amount_total, currency, current_period_end", {
@@ -234,14 +268,21 @@ async function checkSupabaseBillingTables(): Promise<{
       .select("id, event_name", { count: "exact", head: true }),
     supabase
       .from("stripe_webhook_events")
-      .select("id, event_type", { count: "exact", head: true }),
+      .select("id", { count: "exact", head: true }),
+    supabase
+      .from("stripe_webhook_events")
+      .select("id", { count: "exact", head: true })
+      .eq("event_type", "checkout.session.completed"),
   ]);
 
   const error =
     subscriptions.error?.message ??
     funnelEvents.error?.message ??
     webhookEvents.error?.message ??
+    checkoutCompletedWebhooks.error?.message ??
     null;
+
+  const checkoutCompletedCount = checkoutCompletedWebhooks.count ?? 0;
 
   return {
     configured: true,
@@ -251,6 +292,17 @@ async function checkSupabaseBillingTables(): Promise<{
       : null,
     funnelEventsCount: funnelEvents.count ?? null,
     webhookEventsCount: webhookEvents.count ?? null,
+    webhookSummary:
+      webhookEvents.count === null
+        ? null
+        : {
+            totalEvents: webhookEvents.count,
+            checkoutSessionCompletedEvents: checkoutCompletedCount,
+            eventsByType:
+              checkoutCompletedCount > 0
+                ? { "checkout.session.completed": checkoutCompletedCount }
+                : {},
+          },
     error,
   };
 }
@@ -316,8 +368,8 @@ async function main() {
   const priceTypesAreOneTime =
     priceTypesKnown && stripe.summerType === "one_time" && stripe.yearType === "one_time";
   const checkoutWebhookProof =
-    (supabase.billingSummary?.paidPasses ?? 0) > 0 &&
-    (supabase.webhookEventsCount ?? 0) > 0;
+    (supabase.billingSummary?.paymentModePasses ?? 0) > 0 &&
+    (supabase.webhookSummary?.checkoutSessionCompletedEvents ?? 0) > 0;
   const netRefundReportingVerified = false;
   const status = evaluateBillingSmokeStatus({
     supabaseError: supabase.error,
@@ -326,11 +378,13 @@ async function main() {
     subscriptionsCount: supabase.subscriptionsCount,
     funnelEventsCount: supabase.funnelEventsCount,
     webhookEventsCount: supabase.webhookEventsCount,
+    checkoutSessionCompletedWebhookEvents: supabase.webhookSummary?.checkoutSessionCompletedEvents ?? null,
     vercelConfigured: vercel.configured,
     missingVercelEnvCount: missingVercelEnv.length,
     priceTypesKnown,
     priceTypesAreOneTime,
     paidPasses: supabase.billingSummary?.paidPasses ?? null,
+    paymentModePasses: supabase.billingSummary?.paymentModePasses ?? null,
     netRefundReportingVerified,
   });
 
@@ -344,6 +398,7 @@ async function main() {
   printLine("Gross app revenue", supabase.billingSummary ? formatCentsByCurrency(supabase.billingSummary.grossRevenueByCurrency) : null);
   printLine("Funnel event rows", supabase.funnelEventsCount);
   printLine("Webhook event rows", supabase.webhookEventsCount);
+  printLine("Checkout completed webhooks", supabase.webhookSummary?.checkoutSessionCompletedEvents);
   printLine("Checkout/webhook proof", checkoutWebhookProof ? "yes" : "no");
   printLine("Net/refund reporting", netRefundReportingVerified ? "verified" : "not verified");
   printLine("Supabase error", supabase.error);

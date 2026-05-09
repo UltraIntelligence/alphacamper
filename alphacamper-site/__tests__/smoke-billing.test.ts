@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import { evaluateBillingSmokeStatus, summarizeBillingRows } from "@/scripts/smoke-billing";
+import { evaluateBillingSmokeStatus, summarizeBillingRows, summarizeWebhookRows } from "@/scripts/smoke-billing";
 
 describe("billing smoke diagnostics", () => {
   it("summarizes active paid passes and ignores expired or unpaid rows", () => {
@@ -70,11 +70,13 @@ describe("billing smoke diagnostics", () => {
       subscriptionsCount: 0,
       funnelEventsCount: 0,
       webhookEventsCount: 0,
+      checkoutSessionCompletedWebhookEvents: 0,
       vercelConfigured: true,
       missingVercelEnvCount: 0,
       priceTypesKnown: true,
       priceTypesAreOneTime: true,
       paidPasses: 0,
+      paymentModePasses: 0,
       netRefundReportingVerified: false,
     };
 
@@ -85,6 +87,8 @@ describe("billing smoke diagnostics", () => {
         subscriptionsCount: 1,
         webhookEventsCount: 1,
         paidPasses: 1,
+        paymentModePasses: 1,
+        checkoutSessionCompletedWebhookEvents: 1,
       }),
     ).toBe("yellow");
     expect(
@@ -93,8 +97,48 @@ describe("billing smoke diagnostics", () => {
         subscriptionsCount: 1,
         webhookEventsCount: 1,
         paidPasses: 1,
+        paymentModePasses: 1,
+        checkoutSessionCompletedWebhookEvents: 1,
         netRefundReportingVerified: true,
       }),
     ).toBe("green");
+  });
+
+  it("requires one-time checkout proof, not just a legacy subscription row", () => {
+    expect(
+      evaluateBillingSmokeStatus({
+        supabaseError: null,
+        stripeError: null,
+        supabaseConfigured: true,
+        subscriptionsCount: 1,
+        funnelEventsCount: 1,
+        webhookEventsCount: 1,
+        checkoutSessionCompletedWebhookEvents: 1,
+        vercelConfigured: true,
+        missingVercelEnvCount: 0,
+        priceTypesKnown: true,
+        priceTypesAreOneTime: true,
+        paidPasses: 1,
+        paymentModePasses: 0,
+        netRefundReportingVerified: true,
+      }),
+    ).toBe("yellow");
+  });
+
+  it("counts checkout.session.completed webhook rows separately", () => {
+    expect(
+      summarizeWebhookRows([
+        { event_type: "customer.subscription.updated" },
+        { event_type: "checkout.session.completed" },
+        { event_type: "checkout.session.completed" },
+      ]),
+    ).toEqual({
+      totalEvents: 3,
+      checkoutSessionCompletedEvents: 2,
+      eventsByType: {
+        "customer.subscription.updated": 1,
+        "checkout.session.completed": 2,
+      },
+    });
   });
 });
