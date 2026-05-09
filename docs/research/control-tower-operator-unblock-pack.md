@@ -170,10 +170,13 @@ This is the first unblock because alerts cannot be trusted until the worker is a
 ```bash
 cd /Users/ryan/Code/Alphacamper/alphacamper-worker
 railway login
-railway link
-railway service link alphacamper-worker
+railway link --service alphacamper-worker --environment production
 
 npm run smoke:railway -- --service alphacamper-worker --environment production --allow-blocked
+
+railway service status --service alphacamper-worker --environment production
+railway variable list --service alphacamper-worker --environment production --json
+railway logs --service alphacamper-worker --environment production --lines 100
 
 railway redeploy --service alphacamper-worker --yes
 

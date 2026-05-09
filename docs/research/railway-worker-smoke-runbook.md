@@ -134,10 +134,10 @@ Current expected result before Railway is fixed: yellow with `missing_worker_hea
 
 ```bash
 railway status
-railway service status
-railway variables --json
-railway logs --lines 100
-railway logs --build --lines 100
+railway service status --service alphacamper-worker --environment production
+railway variable list --service alphacamper-worker --environment production --json
+railway logs --service alphacamper-worker --environment production --lines 100
+railway logs --service alphacamper-worker --environment production --build --lines 100
 ```
 
 If the service is stale or not running:
@@ -151,11 +151,15 @@ Fastest operator unblock path:
 ```bash
 cd /Users/ryan/Code/Alphacamper/alphacamper-worker
 railway login
-railway link
-railway service link alphacamper-worker
+railway link --service alphacamper-worker --environment production
 
 # Check service/env without printing secret values.
 npm run smoke:railway -- --service alphacamper-worker --environment production --allow-blocked
+
+# Check service status, variable names, and recent logs without pasting secret values.
+railway service status --service alphacamper-worker --environment production
+railway variable list --service alphacamper-worker --environment production --json
+railway logs --service alphacamper-worker --environment production --lines 100
 
 # If service settings or env vars are fixed in Railway, redeploy and rerun.
 railway redeploy --service alphacamper-worker --yes
@@ -171,11 +175,11 @@ customer notification smoke move from setup proof to delivery proof.
 If the service is running but no heartbeat appears, inspect logs:
 
 ```bash
-railway logs --since 15m --filter "Alphacamper Worker"
-railway logs --since 15m --filter "Cycle failed"
-railway logs --since 15m --filter "updateWorkerStatus failed"
-railway logs --since 15m --filter "worker_status heartbeat write failed"
-railway logs --since 15m --filter "SUPABASE_URL"
+railway logs --service alphacamper-worker --environment production --since 15m --filter "Alphacamper Worker"
+railway logs --service alphacamper-worker --environment production --since 15m --filter "Cycle failed"
+railway logs --service alphacamper-worker --environment production --since 15m --filter "updateWorkerStatus failed"
+railway logs --service alphacamper-worker --environment production --since 15m --filter "worker_status heartbeat write failed"
+railway logs --service alphacamper-worker --environment production --since 15m --filter "SUPABASE_URL"
 ```
 
 Do not paste secret values into the report. Only report whether the variables exist and point to the live project.
