@@ -57,13 +57,13 @@ The goal windows own:
 
 ### Product state
 
-- Phase 1 code is on `main` at `98f9d4fc6 Add Canadian campground support status`.
+- Phase 1 support-status code and later control-tower updates are on `main`.
 - The live Supabase support-status and catalog-evidence migrations were applied and verified on 2026-05-09.
 - The site can search the Supabase `campgrounds` table and merge static fallback results.
 - The live API now returns live-only rows such as Bamberton and New Brunswick Sugarloaf.
 - Support labels are now normalized for the first six refreshed providers.
 - The site deploy is live: `/api/check-availability` returns 410 retired.
-- Worker heartbeat fix is pushed at `d7464921c`, but Railway runtime health is still unproven because live `worker_status` currently has no rows.
+- Worker heartbeat code is pushed, but Railway runtime health is still unproven because live `worker_status` currently has no rows.
 
 ### Coverage state
 
@@ -81,7 +81,7 @@ Verified live Supabase rows after catalog refresh:
 - 3 unsupported stale rows.
 - BC Parks: 145 alertable.
 - Ontario Parks: 129.
-- Parks Canada: 113 alertable, with province enrichment still weak.
+- Parks Canada: 113 alertable, with province enrichment and six production province pages verified.
 - New Brunswick: 9 alertable.
 - Manitoba: 45 live search-only rows; repo-ready alertable/live-polling after deploy/sync.
 - Nova Scotia: 20 live search-only rows; repo-ready alertable/live-polling after deploy/sync.
@@ -382,7 +382,7 @@ Next recommended action:
 
 Continue Production Worker Smoke. The live catalog gate is cleared, but Railway worker heartbeat and notification proof are still the product gate.
 
-After the customer notification path is proven, run Billing Truth And Revenue Reporting so the $10k summer goal is measured from a trustworthy source.
+Continue Billing Truth And Revenue Reporting in parallel with the Railway unblock so the $10k summer goal becomes measurable. Run Customer Watch And Notification Smoke after the worker heartbeat is green.
 
 ## Companion Docs
 

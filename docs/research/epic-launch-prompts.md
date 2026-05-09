@@ -88,7 +88,7 @@ Apply and verify the Phase 1 Supabase migration for Alphacamper. Confirm the liv
 Context:
 - Repo: /Users/ryan/Code/Alphacamper
 - Site app: alphacamper-site
-- Current pushed commit: 98f9d4fc6 Add Canadian campground support status
+- Current branch: main
 - Migration file: alphacamper-site/supabase/migrations/20260509000000_campground_support_status.sql
 - Site API: alphacamper-site/app/api/campgrounds/route.ts
 - Watch API: alphacamper-site/app/api/watch/route.ts

@@ -205,4 +205,4 @@ Safe claim:
 - Alphacamper's expanded live catalog search is now working with 461 safe searchable campground rows.
 - New Brunswick is now in the alertable set after provider proof.
 - The first 50,000 Canadian campsite-inventory line has been crossed with 51,997 verified provider campsite IDs, but reliability remains yellow.
-- The next work is Railway worker proof, customer notification smoke, billing truth, provider health/admin truth, get-you-the-site proof, Alberta/Saskatchewan adapter work, and Parks Canada enrichment.
+- The next work is Railway worker proof, billing truth, customer notification smoke, provider health/admin truth, get-you-the-site proof, and future Alberta/Saskatchewan live implementation after reliability is green. Parks Canada enrichment is already closed unless the scope changes.
