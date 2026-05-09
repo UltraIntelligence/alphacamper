@@ -16,6 +16,18 @@ Turn a report into a clear operating decision:
 
 ## Step 1: Classify The Report
 
+First match the report to its GitHub tracker:
+
+| Tracker | Report type |
+|---|---|
+| [#9 Railway worker heartbeat](https://github.com/UltraIntelligence/alphacamper/issues/9) | Production worker reliability |
+| [#10 Stripe production checkout](https://github.com/UltraIntelligence/alphacamper/issues/10) | Billing and revenue proof |
+| [#11 Provider health/admin truth](https://github.com/UltraIntelligence/alphacamper/issues/11) | Operator/admin visibility |
+| [#12 Alberta/Saskatchewan discovery](https://github.com/UltraIntelligence/alphacamper/issues/12) | Coverage adapter discovery |
+| [#13 Customer watch and notification](https://github.com/UltraIntelligence/alphacamper/issues/13) | End-to-end alert delivery |
+| [#14 Parks Canada enrichment](https://github.com/UltraIntelligence/alphacamper/issues/14) | Coverage enrichment |
+| [#15 Get-you-the-site assist loop](https://github.com/UltraIntelligence/alphacamper/issues/15) | Product moat proof |
+
 Choose one:
 
 - Green: verified end to end and safe for customer-facing truth.
@@ -31,6 +43,13 @@ Do not mark green just because:
 - counts increased
 
 Green requires evidence that the relevant customer/admin path works.
+
+After classifying it, add a short comment to the matching GitHub tracker with:
+
+- status
+- evidence inspected
+- remaining blocker
+- next action
 
 ## Step 2: Update The Status Board
 
@@ -136,14 +155,22 @@ Next best move:
 
 ## Current Intake Priority
 
-The first three reports have already been intaken:
+The control tower is currently organized into two GitHub lanes:
 
-- Epic 1: Phase 2 Live Catalog Fix returned red.
-- Epic 3: Alert Engine Truth Audit returned yellow.
-- Epic 5: North America Provider Roadmap returned yellow.
+- Current external blockers: https://github.com/UltraIntelligence/alphacamper/milestone/1
+- Next epic runs: https://github.com/UltraIntelligence/alphacamper/milestone/2
 
-Reason:
+Active blocker intake order:
 
-- The live catalog migration has now been applied and verified.
-- The control tower is now waiting for the post-migration windows to report back.
-- Do not relaunch the same three initial windows unless their scope changes.
+1. #9 Railway worker heartbeat.
+2. #10 Stripe production checkout and revenue proof.
+
+Next epic intake order after blockers clear:
+
+1. #13 Customer watch and notification delivery.
+2. #11 Provider health/admin truth.
+3. #15 Get-you-the-site paid assist loop.
+4. #12 Alberta/Saskatchewan adapter discovery.
+5. #14 Parks Canada enrichment.
+
+Do not relaunch old windows just because the conversation was forked. Relaunch only when the scope changes or the tracker explicitly needs a new proof pass.
