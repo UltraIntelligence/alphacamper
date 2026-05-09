@@ -48,7 +48,7 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
 
 5. `control-tower-operator-unblock-pack.md`
    - The short operator-facing unblock guide for Railway, Stripe, notification proof, and Manitoba/Nova Scotia label sync.
-   - Use this when the work is blocked on external service access or production configuration.
+   - Use this when the work is blocked on external service access or production configuration, and use its report-back template when someone checks Railway or Stripe/Vercel.
 
 6. `control-tower-snapshot-2026-05-09.md`
    - The current executive snapshot after the latest intaken goal-window reports.
