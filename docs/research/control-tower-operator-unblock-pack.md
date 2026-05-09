@@ -45,6 +45,41 @@ Current smoke result:
 
 Do not paste secret values into Codex, GitHub, Slack, or docs. Only report present/missing and paste the smoke command result.
 
+## Report-Back Template
+
+Use this after Railway or Stripe/Vercel is checked. Keep it secret-safe.
+
+```text
+Control tower report:
+
+Railway:
+- Worker service found: yes/no
+- Deployed from current main: yes/no/unknown
+- Root directory is /alphacamper-worker: yes/no
+- Healthcheck path is /health: yes/no
+- SUPABASE_URL present and points to tbdrmcdrfgunbcevslqf: yes/no
+- SUPABASE_SERVICE_ROLE_KEY present: yes/no
+- Notification env vars present if expected: yes/no/not checked
+- Recent worker_status heartbeat: yes/no
+- Worker smoke result: green/yellow/red
+
+Stripe/Vercel:
+- Correct Alphacamper Stripe account confirmed: yes/no
+- Summer one-time price exists: yes/no
+- Year one-time price exists: yes/no
+- Webhook endpoint exists for https://alphacamper.com/api/stripe/webhook: yes/no
+- Webhook includes checkout.session.completed: yes/no
+- Five Vercel Production Stripe env vars present: yes/no
+- Production redeployed after env changes: yes/no
+- Billing smoke result: green/yellow/red
+
+Notes:
+- New blocker:
+- Next action:
+```
+
+After a report comes back, update the matching tracker only if the gate changes, turns green, or reveals a real new blocker.
+
 ## Parallel Unblock Plan
 
 There are two active external unblocks now. They can move in parallel:
