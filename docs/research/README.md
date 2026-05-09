@@ -98,6 +98,7 @@ The live catalog schema gate is now cleared:
 - Site deploy is live: `/api/check-availability` returns 410 retired.
 - Production provider-quality is live: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` as degraded with `missing_worker_heartbeat`.
 - Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
+- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` is active every 30 minutes to re-run production smoke and report back here.
 
 Major success line:
 

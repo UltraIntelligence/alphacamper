@@ -21,6 +21,7 @@ Current status:
 - Code is locally verified, live data is refreshed, and the site deploy is live.
 - Railway worker runtime still needs heartbeat proof.
 - Production provider-quality now exposes live Supabase truth and reports the missing worker heartbeat.
+- Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns production smoke every 30 minutes.
 
 Launch status:
 
@@ -63,6 +64,7 @@ Next action:
 - Get Railway deploy/runtime access or confirm the worker service is running.
 - Verify `worker_status` heartbeat and `/health` output if a public/internal worker URL exists.
 - Smoke-test the customer path once the worker heartbeat is real.
+- Intake heartbeat reports from `alphacamper-worker-heartbeat-watch`; do not mark this gate green until smoke is green and notification proof exists.
 
 Use runbook for evidence:
 
