@@ -8,6 +8,7 @@
  *
  * Usage:
  *   npm run smoke:demand
+ *   ALPHACAMPER_ACCESS_TOKEN=... npm run smoke:demand
  *   npm run smoke:demand -- --allow-yellow
  *   npm run smoke:demand -- --keep-records
  */
@@ -28,6 +29,7 @@ type Options = {
   campgroundId: string;
   campgroundName: string;
   supportStatus: string;
+  accessToken: string | null;
 };
 
 type InterestRow = {
@@ -45,6 +47,23 @@ type DemandSummary = {
   rowsForSmokeCampground: number;
   supportStatusMix: Record<string, number>;
   platformMix: Record<string, number>;
+};
+
+type RevenueQualityResponse = {
+  available?: boolean;
+  canView?: boolean;
+  reason?: string | null;
+  demand?: {
+    total_requests?: number;
+    unique_campgrounds?: number;
+    top_campgrounds?: Array<{
+      platform?: string;
+      campground_id?: string;
+      campground_name?: string;
+      support_status?: string;
+      request_count?: number;
+    }>;
+  };
 };
 
 function loadLocalEnv() {
@@ -75,6 +94,7 @@ function parseArgs(argv: string[]): Options {
     campgroundId: `codex-demand-smoke-${nonce}`,
     campgroundName: "Codex Demand Smoke Campground",
     supportStatus: "coming_soon",
+    accessToken: process.env.ALPHACAMPER_ACCESS_TOKEN ?? null,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -115,6 +135,11 @@ function parseArgs(argv: string[]): Options {
     }
     if (arg === "--support-status") {
       options.supportStatus = requireValue(argv, index, arg);
+      index += 1;
+      continue;
+    }
+    if (arg === "--access-token") {
+      options.accessToken = requireValue(argv, index, arg);
       index += 1;
       continue;
     }
@@ -178,10 +203,18 @@ function evaluateStatus(input: {
   postOk: boolean;
   verifiedRow: boolean;
   demandAggregateIncludesRow: boolean;
+  operatorCheckRequired: boolean;
+  operatorCheckOk: boolean;
   cleanupOk: boolean;
   keepRecords: boolean;
 }): SmokeStatus {
-  if (input.configError || !input.postOk || !input.verifiedRow || !input.demandAggregateIncludesRow) {
+  if (
+    input.configError ||
+    !input.postOk ||
+    !input.verifiedRow ||
+    !input.demandAggregateIncludesRow ||
+    (input.operatorCheckRequired && !input.operatorCheckOk)
+  ) {
     return "red";
   }
 
@@ -190,6 +223,37 @@ function evaluateStatus(input: {
   }
 
   return "green";
+}
+
+async function verifyOperatorDemand(options: Options) {
+  if (!options.accessToken) {
+    return {
+      checked: false,
+      ok: false,
+      status: null,
+      error: null,
+    };
+  }
+
+  const response = await fetch(`${options.siteUrl}/api/admin/revenue-quality`, {
+    headers: {
+      Authorization: `Bearer ${options.accessToken}`,
+    },
+  });
+  const payload = await response.json().catch(() => ({})) as RevenueQualityResponse;
+  const topCampgrounds = payload.demand?.top_campgrounds ?? [];
+  const containsSmokeRow = topCampgrounds.some((row) => (
+    row.platform === options.platform &&
+    row.campground_id === options.campgroundId &&
+    (row.request_count ?? 0) > 0
+  ));
+
+  return {
+    checked: true,
+    ok: response.ok && payload.available === true && payload.canView === true && containsSmokeRow,
+    status: response.status,
+    error: response.ok ? (containsSmokeRow ? null : "Demand row was not present in operator response") : payload.reason ?? "Operator route rejected the token",
+  };
 }
 
 async function postInterest(options: Options) {
@@ -228,6 +292,7 @@ async function main() {
   printLine("Platform", options.platform);
   printLine("Support status", options.supportStatus);
   printLine("Keep records", options.keepRecords ? "yes" : "no");
+  printLine("Operator token", options.accessToken ? "provided" : "not provided");
 
   if (configError) {
     printLine("Status", "red");
@@ -251,6 +316,10 @@ async function main() {
   let aggregateIncludesRow = false;
   let cleanupOk = options.keepRecords;
   let cleanupError: string | null = null;
+  let operatorCheckRequired = false;
+  let operatorCheckOk = false;
+  let operatorCheckStatus: number | null = null;
+  let operatorCheckError: string | null = null;
   let demandSummary: DemandSummary = {
     totalRows: 0,
     uniqueCampgrounds: 0,
@@ -288,6 +357,12 @@ async function main() {
 
     demandSummary = summarizeDemand(demandRows ?? [], options);
     aggregateIncludesRow = demandSummary.rowsForSmokeCampground > 0;
+
+    const operatorResult = await verifyOperatorDemand(options);
+    operatorCheckRequired = operatorResult.checked;
+    operatorCheckOk = operatorResult.ok;
+    operatorCheckStatus = operatorResult.status;
+    operatorCheckError = operatorResult.error;
   } catch (error) {
     postError = error instanceof Error ? error.message : "Demand smoke failed";
   } finally {
@@ -313,6 +388,8 @@ async function main() {
     postOk,
     verifiedRow,
     demandAggregateIncludesRow: aggregateIncludesRow,
+    operatorCheckRequired,
+    operatorCheckOk,
     cleanupOk,
     keepRecords: options.keepRecords,
   });
@@ -323,6 +400,9 @@ async function main() {
   printLine("Post accepted", postOk ? "yes" : "no");
   printLine("Verified row", verifiedRow ? "yes" : "no");
   printLine("Aggregate has row", aggregateIncludesRow ? "yes" : "no");
+  printLine("Operator API checked", operatorCheckRequired ? "yes" : "no");
+  printLine("Operator API status", operatorCheckStatus);
+  printLine("Operator API has row", operatorCheckRequired ? (operatorCheckOk ? "yes" : "no") : "not checked");
   printLine("Demand total rows", demandSummary.totalRows);
   printLine("Unique campgrounds", demandSummary.uniqueCampgrounds);
   printLine("Smoke campground rows", demandSummary.rowsForSmokeCampground);
@@ -330,6 +410,7 @@ async function main() {
   printLine("Platform mix", formatCounts(demandSummary.platformMix));
   printLine("Cleanup", cleanupOk ? (options.keepRecords ? "kept" : "deleted") : "failed");
   printLine("Post error", postError);
+  printLine("Operator API error", operatorCheckError);
   printLine("Cleanup error", cleanupError);
 
   console.log("");

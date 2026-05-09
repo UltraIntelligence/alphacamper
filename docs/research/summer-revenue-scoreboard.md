@@ -150,7 +150,7 @@ Green means:
 
 Current status:
 
-- Yellow. Live funnel storage exists and the operator revenue-quality view now reads it. Demand ranking now aggregates `campground_interest` without exposing customer emails, the live route exposes the new demand response shape, and `npm run smoke:demand` proved controlled request -> aggregate -> cleanup. There are still 0 funnel rows and 0 paid-pass rows in production, and the demand queue still needs approved-operator dashboard proof.
+- Yellow. Live funnel storage exists and the operator revenue-quality view now reads it. Demand ranking now aggregates `campground_interest` without exposing customer emails, the live route exposes the new demand response shape, `npm run smoke:demand` proved controlled request -> aggregate -> cleanup, and production has `OPERATOR_EMAIL_ALLOWLIST`. There are still 0 funnel rows and 0 paid-pass rows in production, and the demand queue still needs approved-operator dashboard/API proof.
 
 ## How This Ties To The Product Strategy
 
