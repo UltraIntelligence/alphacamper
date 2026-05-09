@@ -103,7 +103,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T13:58:48Z.
+Audit timestamp: 2026-05-09T14:05:52Z.
 
 Objective restated as concrete deliverables:
 
@@ -116,27 +116,27 @@ Evidence inspected:
 
 - `docs/research/README.md` lists the control-tower operating model and where to start.
 - `docs/research/control-tower-status-board.md` lists the master gates, count ledger, decision log, epic board, tracker ledger, and current blockers.
-- `docs/research/current-action-queue.md` says the current first gate is Production Worker Smoke, then Stripe revenue setup, then customer notification proof; #12 and #14 are closed, not active launch windows.
+- `docs/research/current-action-queue.md` says the current active gates are Production Worker Smoke and Stripe revenue setup in parallel, then customer notification proof after Railway is green; #12 and #14 are closed, not active launch windows.
 - `docs/research/epic-launch-prompts.md` includes large goal-window prompts, links the active/held next windows to their GitHub trackers, and marks closed/future-only scopes separately.
 - `docs/research/report-intake-procedure.md` defines how reports are matched to trackers, classified, commented back to GitHub, and folded back into the board.
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
 - `docs/research/north-star-success-metrics.md` and `docs/research/north-america-control-tower.md` capture the tier-one competitor ambition, get-you-the-site distinction, regular-camper-to-Alphacamper framing, and $10k net revenue target.
-- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T13:36:41Z.
-- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T13:36:41Z because production Stripe env vars are missing and no paid rows exist yet.
+- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T14:01:05Z.
+- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T14:01:05Z because production Stripe env vars are missing and no paid rows exist yet.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
-- Latest `main` CI after commit `e2fe32ad1 Refresh post-migration launch context` passed the site, worker, extension, and smoke-check jobs in GitHub Actions run `25602852875`.
+- Latest `main` CI after commit `39b3d16b8 Clarify parallel control tower unblocks` passed the site, worker, extension, and smoke-check jobs in GitHub Actions run `25602976436`.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
 - Local Stripe CLI can read live Stripe objects but is restricted from creating live Alphacamper products/prices/webhooks.
 - Stripe connector account check returned a different account (`Superpress`), so it is not the Alphacamper billing source.
-- GitHub issue #9 tracks Railway heartbeat and live alert reliability.
-- GitHub issue #10 tracks Stripe production checkout and revenue proof.
+- GitHub issue #9 tracks Railway heartbeat and live alert reliability; its body was refreshed with the latest smoke evidence and the rule that notification/Manitoba/Nova Scotia label proof waits on Railway.
+- GitHub issue #10 tracks Stripe production checkout and revenue proof; its body was refreshed with the latest billing evidence and the rule that Stripe can move in parallel with Railway.
 - GitHub milestone #1 groups the current reliability and revenue gates.
 - GitHub milestone #2 groups the next epic goal-window trackers.
-- GitHub trackers #9, #10, #11, #13, and #15 remain open in the expected two milestones; #12 and #14 are closed with intake proof.
+- GitHub trackers #9, #10, #11, #13, and #15 remain open in the expected two milestones; #12 and #14 are closed with intake proof and their issue bodies now say not to relaunch those scopes unless the scope changes.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes, only comments on GitHub issues when blocker status changes, and warns that the available Stripe connector is Superpress, not confirmed Alphacamper.
 
 Live smoke evidence:
