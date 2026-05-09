@@ -18,11 +18,11 @@ Goal-window rule:
 
 Current status:
 
-- Awaiting Ryan approval to apply the live Supabase migration.
+- Migration applied and verified; Epic 1 moved from red to yellow.
 
 Launch status:
 
-- Reported back 2026-05-09 as red.
+- Reported back 2026-05-09 as red, then unblocked by approved live migration.
 
 Goal objective:
 
@@ -41,19 +41,20 @@ Done means:
 
 Current result:
 
-- Live Supabase is missing the Phase 1 support-status columns.
-- Live base catalog is verified at 387 rows, but customer-safe search remains the 174-row fallback.
-- Do not start coverage expansion until the migration is approved, applied, and reverified.
+- Live Supabase now has the Phase 1 support-status columns.
+- Live base catalog is verified at 387 rows: BC Parks 144, Ontario Parks 129, Parks Canada 114.
+- `/api/campgrounds?q=Bamberton` now returns the live-only Supabase row.
+- All existing rows defaulted to `alertable`, so provider truth still needs normalization before marketing claims.
 
 Next action:
 
-- Ask Ryan for approval: "Yes, apply the Phase 1 campground support-status migration to live Supabase project `tbdrmcdrfgunbcevslqf`, then re-run the read-only verification."
-- Use `docs/research/live-catalog-migration-runbook.md` for preflight, apply, and verification.
+- Normalize support labels and provider metadata.
+- Verify worker polling and notification path before counting rows toward realtime-alertable success.
 
-Use runbook now:
+Use runbook for evidence:
 
 - `docs/research/live-catalog-migration-runbook.md`.
-- Use `docs/research/epic-launch-prompts.md` → Prompt 1 only if handing the approved migration verification to a separate goal window.
+- Use `docs/research/live-catalog-verification.sql` for repeat checks.
 
 ### 2. Alert Engine Truth Audit
 
@@ -121,9 +122,9 @@ Use prompt only if rerunning with changed scope:
 - `docs/research/epic-launch-prompts.md` → Prompt 3.
 - Use scoring model: `docs/research/provider-scoring-rubric.md`.
 
-## Hold Until Catalog Is Verified
+## Running Now
 
-When Epic 1 is no longer red, use `docs/research/post-migration-launch-pack.md` to launch the next huge goal windows.
+Epic 1 is no longer red, so the next huge goal windows are running.
 
 ### 4. Canada Coverage Sprint
 
@@ -131,9 +132,9 @@ Goal objective:
 
 - Turn verified Canadian provider support into visible, honest customer coverage.
 
-Why it is held:
+Why it matters:
 
-- New coverage should not go customer-facing until the catalog schema/search/watch path is safe.
+- New coverage should not go customer-facing until provider polling and notification truth are proven.
 
 Use prompt after Epic 1:
 
@@ -145,7 +146,7 @@ Goal objective:
 
 - Build the repeatable pipeline that lets Alphacamper grow from official/provider data instead of hand-curated lists.
 
-Why it is held:
+Why it matters:
 
 - The factory should target the confirmed live catalog shape.
 

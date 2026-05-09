@@ -29,9 +29,9 @@ These gates protect the product from over-promising.
 
 | Gate | Status | What Must Be True | Current Read |
 |---|---|---|---|
-| Live catalog schema | Red | Live Supabase has `support_status`, `provider_key`, `source_url`, and `last_verified_at` | Avicenna verified live Supabase is missing `campgrounds.support_status` |
-| Customer campground search | Red | `/api/campgrounds` works against live Supabase and labels support clearly | Live-only rows are not safely returned; fallback still works |
-| Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Needs live path verification |
+| Live catalog schema | Green | Live Supabase has `support_status`, `provider_key`, `source_url`, and `last_verified_at` | Migration applied and verified 2026-05-09 |
+| Customer campground search | Green | `/api/campgrounds` works against live Supabase and labels support clearly | Live-only Bamberton row now returns from `alphacamper.com/api/campgrounds` |
+| Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Pasteur recommends Railway worker as Canadian alert-engine owner; Recreation.gov still blocks full cleanup |
 | Provider health/admin truth | Red | Admin can see alertable/search-only/stale/broken providers | Not proven in beta |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
@@ -43,10 +43,11 @@ These numbers should be treated differently depending on their evidence level.
 | Count | Value | Evidence Level | Product Meaning | Next Verification Needed |
 |---|---:|---|---|---|
 | Static fallback campgrounds | 174 | Verified by Avicenna report | Safest current customer-facing searchable fallback | Recount from `alphacamper-site/lib/parks.ts` when needed |
-| Live Supabase campgrounds | 387 | Verified live read by Avicenna | Bigger Canadian catalog exists, but missing support columns blocks full trust | Re-query live Supabase after migration |
-| BC Parks live rows | 144 | Verified live read by Avicenna | Strong BC catalog base | Verify support status after migration |
-| Ontario Parks live rows | 129 | Verified live read by Avicenna | Strong Ontario catalog base | Verify support status after migration |
-| Parks Canada live rows | 114 | Verified live read by Avicenna | Useful Parks Canada base, but province blank | Add/verify province/source enrichment |
+| Live Supabase campgrounds | 387 | Verified live read after migration | Bigger Canadian catalog now powers customer search, but support labels still need provider truth | Normalize provider support/source metadata before marketing |
+| BC Parks live rows | 144 | Verified live read after migration | Strong BC catalog base now searchable from live DB | Verify campsite-level alertability count |
+| Ontario Parks live rows | 129 | Verified live read after migration | Strong Ontario catalog base now searchable from live DB | Verify campsite-level alertability count |
+| Parks Canada live rows | 114 | Verified live read after migration | Useful Parks Canada base, but province/source enrichment remains weak | Add/verify province/source enrichment |
+| Default `alertable` support labels | 387 | Verified live read after migration | Migration default only; not customer truth by itself | Provider proof must confirm or downgrade labels |
 | Seeded future GoingToCamp rows | 86 | Repo seed-reported | Near-term Canada expansion inventory | Sync into live catalog and verify provider health |
 
 Control-tower rule:
@@ -64,12 +65,14 @@ Control-tower rule:
 | 2026-05-09 | Prefer Railway worker as likely alert-engine owner | Epic 3 found Railway worker is the right Canadian alert-engine owner; Recreation.gov still blocks retiring Vercel cron | Active |
 | 2026-05-09 | Build a catalog ingestion factory, not a hand-curated list | Competitor-scale coverage requires repeatable official/provider data pipelines | Planned |
 | 2026-05-09 | Do not count Vercel cron toward the 50,000 Canadian north-star target | Pasteur found Vercel cron is a weaker legacy path and Recreation.gov-only gap blocks retiring it today | Active |
+| 2026-05-09 | Operate autonomously unless a move is unusually destructive or risky | Ryan wants the control tower to move like an owner, not wait on normal execution approvals | Active |
+| 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
 
 ## Epic Board
 
 ### Epic 1: Phase 2 Live Catalog Fix
 
-Status: Red
+Status: Yellow
 
 Owner window: launched 2026-05-09 as Avicenna
 
@@ -85,17 +88,19 @@ Must prove:
 - Watch creation respects support status.
 - Exact counts by provider and support status are reported.
 
-Current blocker:
+Current result:
 
-- Avicenna verified live Supabase project `tbdrmcdrfgunbcevslqf` is missing `campgrounds.support_status`; the new support columns are not applied.
-- Live base catalog has 387 rows, but the customer-safe searchable count remains fallback-only at 174.
-- `/api/campgrounds?q=Bamberton` did not return a live-only Supabase row, so the larger catalog is not safe to expose yet.
-- Realtime-alertable campsite estimate remains unverified; count 0 toward the 50,000 north-star target from this pass.
-- Awaiting Ryan approval before applying the live migration.
+- Migration applied to live Supabase project `tbdrmcdrfgunbcevslqf` on 2026-05-09.
+- Verified columns now exist: `support_status`, `provider_key`, `source_url`, and `last_verified_at`.
+- Verified index exists: `idx_campgrounds_support_status`.
+- Live base catalog remains 387 rows: BC Parks 144, Ontario Parks 129, Parks Canada 114.
+- Live API now returns the live-only Bamberton row at `/api/campgrounds?q=Bamberton`.
+- All 387 rows defaulted to `alertable`; this is schema truth, not final customer/provider truth.
+- Realtime-alertable campsite estimate remains unverified until provider proof confirms worker polling and notifications.
 
 Next prompt:
 
-> Yes, apply the Phase 1 campground support-status migration to live Supabase project `tbdrmcdrfgunbcevslqf`, then re-run the read-only verification.
+> Normalize support labels and provider metadata so `alertable` means search + watch creation + worker polling + notification path are verified. Downgrade any unproven rows to `search_only` or `coming_soon`.
 
 ### Epic 2: Canada Coverage Sprint
 
@@ -232,17 +237,13 @@ Next prompt:
 
 Already reported:
 
-1. Phase 2 Live Catalog Fix: red.
+1. Phase 2 Live Catalog Fix: yellow after migration and customer-search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
 
 Do not relaunch those same windows unless the scope changes.
 
-Do next:
-
-1. Get approval to apply and verify the live catalog migration using `live-catalog-migration-runbook.md`.
-
-After Epic 1 is no longer red:
+Running now:
 
 1. Canada Provider Proof: New Brunswick alertability, then Alberta/Saskatchewan adapter discovery.
 2. Alert Engine Cleanup: move Recreation.gov into Railway worker or isolate the legacy Vercel cron path.
@@ -284,9 +285,9 @@ Recommended control-tower update:
 Short version:
 
 - We have the foundation for Canadian expansion.
-- We do not yet have verified live catalog parity.
-- We should not claim broad Canada coverage until Epic 1 and the first coverage sprint are verified.
-- The next real unlock is making live Supabase the trusted catalog.
+- Live Supabase now powers the expanded campground search.
+- We should not claim broad alertable Canada coverage until provider proof verifies worker polling and notifications.
+- The next real unlock is turning default support labels into honest provider truth.
 
 ## North Star
 
@@ -297,5 +298,9 @@ Major success line:
 Longer-term category leadership line:
 
 - 250,000 to 350,000+ realtime-alertable North American campsites, plus a better customer experience for finding realistic openings.
+
+Business line:
+
+- $10k revenue by the end of summer.
 
 Only count realtime-alertable inventory when measuring this goal. Search-only rows, static fallback rows, unverified seeds, and coming-soon providers are useful, but they do not count toward the realtime success number.

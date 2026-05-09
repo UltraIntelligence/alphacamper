@@ -144,5 +144,6 @@ The first three reports have already been intaken:
 
 Reason:
 
-- The control tower is now waiting on approval to apply and verify the live catalog migration.
-- Do not relaunch the same three windows unless their scope changes.
+- The live catalog migration has now been applied and verified.
+- The control tower is now waiting for the post-migration windows to report back.
+- Do not relaunch the same three initial windows unless their scope changes.

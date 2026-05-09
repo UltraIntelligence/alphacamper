@@ -10,6 +10,14 @@ The product should help campers answer:
 
 > Where can I realistically get in, and can Alphacamper alert me fast enough when a spot opens?
 
+The product distinction should become:
+
+> Not just finding the site, but helping the camper get the site.
+
+Business target:
+
+- $10k revenue by the end of summer.
+
 ## What Counts As Success
 
 Success is not only having a big campground list.
@@ -19,6 +27,7 @@ Success means:
 - customers can search the parks they expect
 - the product clearly says what is alertable now
 - active alerts are checked fast enough to matter
+- paid customers believe Alphacamper improves their odds of getting the trip
 - provider health is visible internally
 - coverage pages tell the truth
 - missing parks become demand signals
@@ -126,6 +135,10 @@ For the next three weeks, aim for:
 
 That is the first success line.
 
+For the business, aim for:
+
+> $10k revenue by the end of summer from campers who trust Alphacamper enough to pay for better odds.
+
 Longer term, the category-winning number is:
 
 > 250,000 to 350,000+ realtime-alertable North American campsites, plus a better customer experience for finding realistic openings.
@@ -148,3 +161,7 @@ These can count as searchable coverage, but not realtime alertable coverage.
 The first major goal is:
 
 > Become the best Canada-first campsite-alert product by reaching 50,000 verified realtime-alertable Canadian campsites, then use the ingestion factory to scale toward 250,000+ North American campsites.
+
+The first business goal is:
+
+> Reach $10k revenue by the end of summer by converting the coverage advantage into a paid, high-trust camper outcome.

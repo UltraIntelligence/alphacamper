@@ -10,6 +10,10 @@ The winning promise is not "we monitor everything" yet. The winning promise is:
 
 > Canada-first campsite alerts that clearly show what is alertable now, what is searchable, and what is coming next.
 
+The long-term distinction is:
+
+> Not just finding the site, but helping the camper get the site.
+
 Major success line:
 
 - 50,000 verified realtime-alertable Canadian campsites.
@@ -17,6 +21,10 @@ Major success line:
 Longer-term category leadership line:
 
 - 250,000 to 350,000+ realtime-alertable North American campsites, plus a better customer experience for finding realistic openings.
+
+Business success line:
+
+- $10k revenue by the end of summer.
 
 ## Operating Model
 
@@ -32,6 +40,7 @@ The control tower owns:
 - customer-facing truth
 - avoiding overclaims
 - deciding the next large goal
+- moving autonomously unless a change is unusually destructive, risky, or legally sensitive
 
 The goal windows own:
 
@@ -47,18 +56,19 @@ The goal windows own:
 ### Product state
 
 - Phase 1 code is on `main` at `98f9d4fc6 Add Canadian campground support status`.
+- The live Supabase migration was applied and verified on 2026-05-09.
 - The site can search the Supabase `campgrounds` table and merge static fallback results.
-- The Phase 1 migration exists locally and adds `support_status`, `provider_key`, `source_url`, and `last_verified_at`.
-- Reported blocker: live Supabase has not had that migration applied yet.
-- Until that is applied and verified, customer campground search can fall back to the older static list.
+- The live API now returns live-only rows such as Bamberton.
+- Existing live rows defaulted to `alertable`; this must be normalized before broad alertable coverage claims.
 
 ### Coverage state
 
 Safest customer-facing number today:
 
-- Static fallback search: 174 campgrounds.
+- Live searchable catalog: 387 Canadian campgrounds.
+- Static fallback search remains available for 174 campgrounds.
 
-Reported live Supabase rows before Phase 1 migration:
+Verified live Supabase rows after Phase 1 migration:
 
 - 387 Canadian campgrounds.
 - BC Parks: 144.

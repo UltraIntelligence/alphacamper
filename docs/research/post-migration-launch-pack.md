@@ -4,6 +4,11 @@ Last updated: 2026-05-09
 
 Use this only after the live catalog migration is applied and verified.
 
+Status:
+
+- Gate cleared on 2026-05-09.
+- These windows are now running.
+
 ## Gate Before Launching
 
 Do not launch these windows until:

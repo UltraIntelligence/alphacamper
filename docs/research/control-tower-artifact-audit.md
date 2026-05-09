@@ -79,17 +79,17 @@ The control-tower artifacts are ready.
 
 The first three long-running windows have reported:
 
-1. Phase 2 Live Catalog Fix: red.
+1. Phase 2 Live Catalog Fix: yellow after live migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
 
-The operational program is not done because the live catalog migration still needs approval and verification before the next provider proof windows should launch.
+The operational program is not done because support-label truth, provider proof, alert-engine cleanup, and ingestion factory work still need verification.
 
 Next control-tower action:
 
-- Get approval to apply the live Supabase catalog migration.
-- Use `live-catalog-migration-runbook.md`.
-- After Epic 1 is no longer red, use `post-migration-launch-pack.md`.
+- Intake the three running post-migration windows.
+- Normalize support labels so `alertable` means worker polling plus notification proof.
+- Keep the $10k summer revenue goal tied to trusted paid camper outcomes.
 
 ## Completion Read
 
@@ -99,6 +99,6 @@ The overall control-tower goal should remain active because its purpose is ongoi
 
 Do not mark the operational program complete while:
 
-- the live catalog migration is still awaiting approval
-- Epic 1 remains red
-- provider expansion windows are still blocked behind the catalog gate
+- support labels are still only migration defaults
+- provider alertability remains unverified
+- the running post-migration windows have not reported back

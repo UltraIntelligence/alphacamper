@@ -43,22 +43,22 @@ North-star metric:
 
 Already reported back:
 
-1. Phase 2 Live Catalog Fix: red.
+1. Phase 2 Live Catalog Fix: yellow after live migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
 
 Do not relaunch those same windows unless the scope changes.
 
-Current gate:
+Running now:
 
-1. Get approval to apply and verify the live catalog migration.
-2. Use `live-catalog-migration-runbook.md`.
-3. After Epic 1 is no longer red, use `post-migration-launch-pack.md`.
+1. Canada Provider Proof.
+2. Alert Engine Cleanup.
+3. Catalog Ingestion Factory.
 
-Start after the live catalog is verified:
+Start or continue after provider proof reports:
 
 1. Canada Coverage Sprint.
-2. Catalog Ingestion Factory.
+2. Parks Canada Enrichment.
 
 Start when official Parks Canada source data is selected:
 

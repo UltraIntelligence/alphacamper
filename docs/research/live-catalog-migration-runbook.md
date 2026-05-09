@@ -8,6 +8,11 @@ Unblock the live campground catalog so Alphacamper can safely use support labels
 
 This is the current control-tower gate. Do not start customer-facing coverage expansion until this runbook is complete and verified.
 
+Status:
+
+- Applied and verified on 2026-05-09.
+- The remaining risk is support-label truth, not missing schema.
+
 ## Approval Required
 
 Do not apply this migration without explicit approval from Ryan.
@@ -28,6 +33,41 @@ Epic 1 verified:
   - Parks Canada: 114.
 - Customer-safe search still falls back to 174 static rows.
 - Live-only rows are not safely exposed through `/api/campgrounds`.
+
+## Applied Result
+
+Applied on 2026-05-09 after Ryan approved the live production change.
+
+Verification evidence:
+
+- Live Supabase project: `tbdrmcdrfgunbcevslqf`.
+- Live rows: 387 total.
+- Provider counts:
+  - BC Parks: 144.
+  - Ontario Parks: 129.
+  - Parks Canada: 114.
+- Required columns now exist:
+  - `support_status`
+  - `provider_key`
+  - `source_url`
+  - `last_verified_at`
+- `idx_campgrounds_support_status` exists.
+- Support-status distribution immediately after migration:
+  - `alertable`: 387.
+- Live customer API:
+  - `/api/campgrounds?q=Bamberton` returns Bamberton Provincial Park from live Supabase.
+  - `/api/campgrounds?q=Alice` returns Alice Lake from live Supabase.
+  - `/api/campgrounds?id=-2430&platform=bc_parks` returns empty because that exact live row was not present.
+- Local guardrail tests passed:
+  - `npm test -- __tests__/api-routes.test.ts __tests__/watch-wizard.test.tsx __tests__/step-search.test.tsx`
+  - 3 files passed, 18 tests passed.
+
+Control-tower interpretation:
+
+- Live catalog schema: green.
+- Customer campground search: green.
+- Epic 1 overall: yellow until default `alertable` labels are normalized by provider proof.
+- Do not count the 387 default labels as verified realtime-alertable inventory.
 
 ## Migration File
 
@@ -199,7 +239,7 @@ If verification passes:
 - Change `Live catalog schema` gate from Red to Green.
 - Change `Customer campground search` gate from Red to Yellow or Green depending on live API behavior.
 - Update the count ledger from "verified live read but blocked" to "verified live catalog with support status."
-- Keep Canada Coverage Sprint held until support statuses are normalized and not overclaiming.
+- Launch provider proof and ingestion work, but keep marketing claims held until support statuses are normalized and not overclaiming.
 
 ## Board Updates If It Fails
 
@@ -212,6 +252,8 @@ If migration or verification fails:
 
 ## Next Work After This Is Green
 
-Launch a new huge goal window:
+Launched the next huge goal windows:
 
-> Verify New Brunswick GoingToCamp alertability, then run Alberta/Saskatchewan adapter discovery against official reservation pages. Keep every new provider searchable-only until site-level availability polling is proven.
+- Canada Provider Proof.
+- Alert Engine Cleanup.
+- Catalog Ingestion Factory.
