@@ -27,6 +27,24 @@ GitHub blocker trackers:
 - Railway reliability: https://github.com/UltraIntelligence/alphacamper/issues/9
 - Stripe revenue readiness: https://github.com/UltraIntelligence/alphacamper/issues/10
 
+## Smallest Owner Action Today
+
+Do these two things first. They are independent and can happen in parallel.
+
+1. Railway: log into/link the Alphacamper Railway project, confirm the worker service is the `alphacamper-worker` service, then rerun the Railway smoke.
+2. Stripe/Vercel: confirm the correct Alphacamper Stripe account, add the five production Stripe env vars to Vercel, redeploy, then rerun the billing smoke.
+
+Latest refresh: 2026-05-09T14:55:40Z.
+
+Current smoke result:
+
+- Worker smoke: yellow.
+- Worker blocker: `missing_worker_heartbeat`; Railway CLI not authenticated locally.
+- Billing smoke: yellow.
+- Billing blocker: Vercel Production is missing `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
+
+Do not paste secret values into Codex, GitHub, Slack, or docs. Only report present/missing and paste the smoke command result.
+
 ## Parallel Unblock Plan
 
 There are two active external unblocks now. They can move in parallel:
