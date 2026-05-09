@@ -63,6 +63,7 @@ Next action:
 
 Use runbook for evidence:
 
+- `docs/research/railway-worker-smoke-runbook.md`.
 - `docs/research/live-catalog-migration-runbook.md`.
 - Use `docs/research/live-catalog-verification.sql` for repeat checks.
 

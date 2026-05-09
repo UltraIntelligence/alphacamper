@@ -78,6 +78,10 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
     - Maps the original control-tower request to the actual docs in this folder.
     - Use this to check whether the operating system still covers the brief.
 
+14. `railway-worker-smoke-runbook.md`
+    - The current production worker blocker.
+    - Use this to verify Railway deploy/runtime, `worker_status`, and alert-engine ownership.
+
 ## Current Control-Tower Read
 
 Do not claim broad Canada alertable coverage yet.
