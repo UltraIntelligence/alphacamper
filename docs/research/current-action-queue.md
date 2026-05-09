@@ -114,7 +114,7 @@ Current result:
 - Repo now includes `alphacamper-worker/railway.json` to make the worker's Railway build/deploy settings explicit.
 - Worker health now listens on Railway's `PORT` when provided, with `8080` as the fallback.
 - `npm run smoke:railway -- --allow-blocked` now prints live production heartbeat proof before Railway auth/log checks.
-- Latest verified result at 2026-05-09T14:01:05Z remains yellow/blocked: active watches 5, delivered alerts 0, no Supabase heartbeat, missing worker platforms, and Railway CLI not authenticated.
+- Latest verified worker smoke at 2026-05-09T15:12:56Z remains yellow: active watches 5, total alerts 0, delivered alerts 0, worker degraded with `missing_worker_heartbeat`, no Supabase heartbeat, and missing worker platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
 - GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/9
 
 Next action:
@@ -237,7 +237,7 @@ Current truth:
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
 - `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, gross app-recorded revenue, checkout/webhook proof, and net/refund reporting state.
 - Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make the gate green.
-- Latest verified smoke result after commit `28336c0a6` is yellow: 0 paid active passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
+- Latest verified billing smoke at 2026-05-09T15:12:56Z is yellow: 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
 - Direct `vercel env ls production` confirms the five missing names are not configured in production.
 - The available Stripe connector is currently logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not create or reuse Stripe products from that connector without confirming the correct account first.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.

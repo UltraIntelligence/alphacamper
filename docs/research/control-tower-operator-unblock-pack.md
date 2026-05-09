@@ -34,14 +34,14 @@ Do these two things first. They are independent and can happen in parallel.
 1. Railway: log into/link the Alphacamper Railway project, confirm the worker service is the `alphacamper-worker` service, then rerun the Railway smoke.
 2. Stripe/Vercel: confirm the correct Alphacamper Stripe account, add the five production Stripe env vars to Vercel, redeploy, then rerun the billing smoke.
 
-Latest refresh: 2026-05-09T14:55:40Z.
+Latest refresh: 2026-05-09T15:12:56Z.
 
 Current smoke result:
 
 - Worker smoke: yellow.
-- Worker blocker: `missing_worker_heartbeat`; Railway CLI not authenticated locally.
+- Worker blocker: 5 active watches, 0 alerts, 0 delivered alerts, `missing_worker_heartbeat`, no Supabase heartbeat, and missing worker platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
 - Billing smoke: yellow.
-- Billing blocker: Vercel Production is missing `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
+- Billing blocker: 0 paid active passes, 0 payment-mode passes, 0 gross app revenue, 0 funnel rows, 0 webhook rows, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and Vercel Production is missing `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
 
 Do not paste secret values into Codex, GitHub, Slack, or docs. Only report present/missing and paste the smoke command result.
 

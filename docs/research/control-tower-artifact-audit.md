@@ -103,7 +103,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T14:05:52Z.
+Audit timestamp: 2026-05-09T15:12:56Z.
 
 Objective restated as concrete deliverables:
 
@@ -123,11 +123,11 @@ Evidence inspected:
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
 - `docs/research/north-star-success-metrics.md` and `docs/research/north-america-control-tower.md` capture the tier-one competitor ambition, get-you-the-site distinction, regular-camper-to-Alphacamper framing, and $10k net revenue target.
-- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T14:01:05Z.
-- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T14:13:54Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
+- `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T15:12:56Z.
+- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T15:12:56Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 - `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
-- Latest `main` CI after commit `39b3d16b8 Clarify parallel control tower unblocks` passed the site, worker, extension, and smoke-check jobs in GitHub Actions run `25602976436`.
+- Latest `main` CI after commit `e5602ad73 Align availability matrix language` passed the site, worker, extension, and smoke-check jobs in GitHub Actions run `25604351495`.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
@@ -150,7 +150,7 @@ Live smoke evidence:
 - Worker error: `missing_worker_heartbeat`.
 - Supabase heartbeat: none.
 - Missing required worker platforms: `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, `recreation_gov`.
-- Billing smoke: 0 subscriptions, 0 paid active passes, 0 summer passes, 0 year passes, no gross app revenue, 0 funnel events, 0 webhook events, Vercel env readable, and the five production Stripe env vars still missing.
+- Billing smoke: 0 subscriptions, 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, Vercel env readable, and the five production Stripe env vars still missing.
 
 ## Remaining Open Work
 
