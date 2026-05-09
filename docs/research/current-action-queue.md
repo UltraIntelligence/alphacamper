@@ -12,9 +12,9 @@ Goal-window rule:
 - The window keeps working until the objective is proven, or until it hits a real blocker.
 - The report back must include evidence, counts where relevant, risks, and the recommended next action.
 
-## Active Epic Windows
+## Current And Recent Epic Windows
 
-Currently running from the control tower on 2026-05-09:
+Current and recent goal windows from the control tower on 2026-05-09:
 
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
@@ -101,6 +101,7 @@ Next action:
 
 Use runbook for evidence:
 
+- `docs/research/control-tower-operator-unblock-pack.md`.
 - `docs/research/railway-worker-smoke-runbook.md`.
 - `cd alphacamper-worker && npm run smoke:railway`.
 - `cd alphacamper-worker && npm run smoke:production`.
@@ -145,6 +146,7 @@ Next action:
 - Keep the live provider-quality route wired into the operator/admin experience.
 - Deploy/sync the Manitoba and Nova Scotia catalog-label update; do not use campground-row counts as the 50k success metric.
 - Keep reliability yellow until Railway heartbeat, active watch polling, alert creation, and notifications are proven.
+- Use `docs/research/control-tower-operator-unblock-pack.md` for the order: Railway heartbeat, notification proof, Stripe, then Manitoba/Nova Scotia live-label sync.
 
 ### 3. Alert Engine Cleanup
 

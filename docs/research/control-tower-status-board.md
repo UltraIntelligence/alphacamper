@@ -176,6 +176,10 @@ Next prompt:
 
 > Deploy/sync the Manitoba and Nova Scotia catalog-label update, then smoke-test live watch creation, Railway worker health, and notification delivery before claiming reliability.
 
+Operator unblock pack:
+
+- `docs/research/control-tower-operator-unblock-pack.md`
+
 ### Epic 2: Canada Coverage Sprint
 
 Status: Yellow
@@ -403,8 +407,8 @@ Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-3. Production Catalog Label Sync: deploy/sync the Manitoba and Nova Scotia alertable/live-polling profile update.
-4. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
+3. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
+4. Production Catalog Label Sync: deploy/sync the Manitoba and Nova Scotia alertable/live-polling profile update after the worker is alive.
 5. Paid Alert-To-Assist Loop: after heartbeat and billing are green, prove the first BC/Ontario "get you the site" loop.
 6. Alberta/Saskatchewan Adapter Sprint: build live polling only after Railway heartbeat is green.
 7. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
