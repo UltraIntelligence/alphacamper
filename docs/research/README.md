@@ -82,6 +82,10 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
     - The current production worker blocker.
     - Use this to verify Railway deploy/runtime, `worker_status`, and alert-engine ownership.
 
+15. `customer-watch-notification-smoke-runbook.md`
+    - The next proof after Railway heartbeat is green.
+    - Use this to verify real watch creation, guardrails, alert rows, notification delivery, and cleanup.
+
 ## Current Control-Tower Read
 
 Do not claim broad Canada alertable coverage yet.
@@ -128,9 +132,10 @@ Do not relaunch those same windows just because this conversation was forked.
 Next high-leverage runs:
 
 1. Production Worker Smoke.
-2. Alberta/Saskatchewan Adapter Sprint.
-3. Provider Health/Admin Truth UI and recurring ops.
-4. Demand Capture And Conversion.
+2. Customer Watch And Notification Smoke, only after worker heartbeat is green.
+3. Alberta/Saskatchewan Adapter Sprint.
+4. Provider Health/Admin Truth UI and recurring ops.
+5. Demand Capture And Conversion.
 
 Run when official Parks Canada source data is selected:
 

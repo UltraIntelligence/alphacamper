@@ -31,6 +31,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
 | Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
+| Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
 | Current blocker is watched automatically | Thread automation `alphacamper-worker-heartbeat-watch`, `current-action-queue.md`, `README.md` | Heartbeat automation reruns production smoke every 30 minutes and reports back to this thread | Covered |
 | Future readers know where to start | `README.md` | Research folder index and recommended next runs | Covered |
@@ -53,6 +54,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | "Do not overclaim coverage" | `control-tower-status-board.md`, `report-intake-procedure.md` |
 | "Do we need to relaunch the forked windows?" | `README.md`, `epic-launch-prompts.md`, `control-tower-status-board.md` |
 | "Prove the worker is live" | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts` |
+| "Prove the customer alert path is real" | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md` |
 
 ## Current Evidence
 
@@ -72,6 +74,7 @@ Created/updated docs:
 - `docs/research/provider-scoring-rubric.md`
 - `docs/research/report-intake-procedure.md`
 - `docs/research/railway-worker-smoke-runbook.md`
+- `docs/research/customer-watch-notification-smoke-runbook.md`
 - `alphacamper-worker/scripts/smoke-production.ts`
 - `alphacamper-worker/scripts/railway-diagnostics.ts`
 - `alphacamper-worker/package.json`
@@ -100,6 +103,7 @@ Evidence inspected:
 - `docs/research/epic-launch-prompts.md` includes ten large goal-window prompts.
 - `docs/research/report-intake-procedure.md` defines how reports are classified and folded back into the board.
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
+- `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` was created to rerun production smoke every 30 minutes.
@@ -133,6 +137,7 @@ Next control-tower action:
 - Launch or continue Production Worker Smoke with Railway access.
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
 - After heartbeat proof, smoke-test authenticated watch creation and notification delivery.
+- Use `docs/research/customer-watch-notification-smoke-runbook.md` for that next customer-path proof.
 - Then resume Alberta/Saskatchewan adapter work and Provider Health/Admin Truth UI/ops.
 
 ## Completion Read

@@ -71,6 +71,7 @@ Use runbook for evidence:
 - `docs/research/railway-worker-smoke-runbook.md`.
 - `cd alphacamper-worker && npm run smoke:railway`.
 - `cd alphacamper-worker && npm run smoke:production`.
+- `docs/research/customer-watch-notification-smoke-runbook.md` after worker heartbeat is green.
 - `docs/research/live-catalog-migration-runbook.md`.
 - Use `docs/research/live-catalog-verification.sql` for repeat checks.
 

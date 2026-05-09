@@ -282,9 +282,10 @@ Reported back and integrated:
 Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
-2. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
-3. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
-4. Demand Capture: let unsupported searches become a prioritization queue.
+2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
+3. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
+4. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
+5. Demand Capture: let unsupported searches become a prioritization queue.
 
 Keep research-only for now:
 
@@ -325,7 +326,7 @@ Short version:
 - Live Supabase now powers 461 safe searchable rows from official/provider directories.
 - We have 396 verified alertable campground rows, but not a verified campsite-level count yet.
 - We should not claim broad alertable Canada coverage until worker heartbeat, notification smoke, and campsite-level counts are proven.
-- The next real unlock is Railway worker proof plus Alberta/Saskatchewan adapter work.
+- The next real unlock is Railway worker proof, then customer watch/notification smoke, then Alberta/Saskatchewan adapter work.
 
 ## North Star
 

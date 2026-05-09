@@ -447,6 +447,48 @@ Recommended control-tower update:
 - ...
 ```
 
+## Prompt 11: Customer Watch And Notification Smoke
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+After Production Worker Smoke is green, prove the real customer watch and notification path. Create one controlled test watch through the UI or authenticated API, confirm it appears in live Supabase, confirm the worker checks it, confirm a controlled notification path writes a real availability_alert with notified_at, test one search-only/unsupported guardrail, clean up the smoke watch, and report exact evidence.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Site app: alphacamper-site
+- Worker app: alphacamper-worker
+- Live site: https://alphacamper.com
+- Runbook: docs/research/customer-watch-notification-smoke-runbook.md
+- Current rule: exact dates plus optional exact site number only.
+- Do not count any campsite toward the 50k realtime-alertable goal until this proof exists.
+
+Rules:
+- Use a controlled test account, not a real customer account.
+- Do not paste access tokens, service-role keys, Railway variables, Resend keys, or Sent.dm keys.
+- Do not create broad watches across many dates/providers.
+- Do not mark green unless watch creation, worker check, notification delivery, guardrail, and cleanup are all proven.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Worker prerequisite:
+- ...
+Watch creation:
+- ...
+Notification proof:
+- ...
+Guardrail proof:
+- ...
+Cleanup:
+- ...
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
 ## Intake Instruction
 
 When a goal window reports back, update:
