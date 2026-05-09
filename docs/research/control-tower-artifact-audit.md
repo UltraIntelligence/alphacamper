@@ -27,6 +27,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
 | Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
 | Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
+| Billing blocker has an executable proof path | `alphacamper-site/scripts/smoke-billing.ts`, `alphacamper-site/package.json`, `summer-revenue-scoreboard.md` | `npm run smoke:billing` checks live billing tables, Vercel Stripe env names, and one-time Stripe price shape when local Stripe env is available | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, escalation rules, output format | Covered |
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
@@ -79,6 +80,7 @@ Created/updated docs:
 - `docs/research/railway-worker-smoke-runbook.md`
 - `docs/research/customer-watch-notification-smoke-runbook.md`
 - `docs/research/summer-revenue-scoreboard.md`
+- `alphacamper-site/scripts/smoke-billing.ts`
 - `alphacamper-worker/railway.json`
 - `alphacamper-worker/scripts/smoke-production.ts`
 - `alphacamper-worker/scripts/railway-diagnostics.ts`

@@ -509,6 +509,7 @@ Context:
 - Stripe webhook: alphacamper-site/app/api/stripe/webhook/route.ts
 - Funnel events API: alphacamper-site/app/api/events/route.ts
 - Revenue framing: docs/research/summer-revenue-scoreboard.md
+- Billing smoke command: from alphacamper-site, run npm run smoke:billing
 - Current issue: checkout now uses one-time payment mode in code and live Supabase has billing/conversion tables, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
 
 Rules:

@@ -176,6 +176,7 @@ Next action:
 Use runbook for framing:
 
 - `docs/research/summer-revenue-scoreboard.md`.
+- `cd alphacamper-site && npm run smoke:billing`.
 
 ### 5. Alberta/Saskatchewan Adapter Sprint
 

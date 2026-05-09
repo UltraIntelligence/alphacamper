@@ -106,6 +106,17 @@ Current status:
 
 - Yellow. The one-time-vs-subscription decision is resolved in code and the live tables exist, but production Stripe env vars and operator revenue reporting are not complete.
 
+Repeatable smoke command:
+
+```bash
+cd alphacamper-site
+npm run smoke:billing
+```
+
+Expected current result:
+
+- Yellow until production Vercel has the Stripe env vars and the configured price ids are verified as one-time prices.
+
 ### Gate 2: Worker And Notification Proof
 
 Green means:

@@ -299,6 +299,7 @@ Current result:
 - Legacy subscription webhook handling remains for any older subscription-mode sessions.
 - Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`; current counts are 0 rows for paid passes and funnel events.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
+- `npm run smoke:billing` now gives a repeatable secret-safe billing proof.
 - `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
 
 Next prompt:
