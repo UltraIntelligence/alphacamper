@@ -4,7 +4,7 @@ Last updated: 2026-05-09
 
 ## Mission
 
-Make Alphacamper the clearest, most useful campsite-alert product for Canadian campers first, then expand into broader North America.
+Make Alphacamper a tier-one competitor to Campnab and Campflare: the clearest, most useful campsite-alert product for Canadian campers first, then a broader North American camper assistant.
 
 The winning promise is not "we monitor everything" yet. The winning promise is:
 
@@ -13,6 +13,8 @@ The winning promise is not "we monitor everything" yet. The winning promise is:
 The long-term distinction is:
 
 > Not just finding the site, but helping the camper get the site.
+
+The product should help regular campers become Alphacampers: prepared, fast to act, and guided toward the best realistic booking move.
 
 Major success line:
 
@@ -24,7 +26,7 @@ Longer-term category leadership line:
 
 Business success line:
 
-- $10k revenue by the end of summer.
+- $10k net collected revenue by the end of summer.
 
 ## Operating Model
 

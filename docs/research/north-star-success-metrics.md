@@ -4,7 +4,7 @@ Last updated: 2026-05-09
 
 ## Major Goal
 
-Alphacamper should become the most trusted Canada-first campsite alert and planning product, then expand into North America from that position.
+Alphacamper should become a tier-one competitor to Campnab and Campflare: the most trusted Canada-first campsite alert and planning product, then a broader North American camper assistant from that position.
 
 The product should help campers answer:
 
@@ -14,9 +14,11 @@ The product distinction should become:
 
 > Not just finding the site, but helping the camper get the site.
 
+The product should help regular campers become Alphacampers: more prepared, faster to act, and clearer on where they actually have a shot at getting in.
+
 Business target:
 
-- $10k revenue by the end of summer.
+- $10k net collected revenue by the end of summer.
 
 ## What Counts As Success
 
@@ -28,6 +30,7 @@ Success means:
 - the product clearly says what is alertable now
 - active alerts are checked fast enough to matter
 - paid customers believe Alphacamper improves their odds of getting the trip
+- alert results lead into the next best action, not a dead-end notification
 - provider health is visible internally
 - coverage pages tell the truth
 - missing parks become demand signals
@@ -146,7 +149,7 @@ The campground-row count is progress, but the success metric is campsite invento
 
 For the business, aim for:
 
-> $10k revenue by the end of summer from campers who trust Alphacamper enough to pay for better odds.
+> $10k net collected revenue by the end of summer from campers who trust Alphacamper enough to pay for better odds.
 
 Use `docs/research/summer-revenue-scoreboard.md` to measure this. Net collected revenue after refunds is the real success number; gross revenue is only an early signal.
 

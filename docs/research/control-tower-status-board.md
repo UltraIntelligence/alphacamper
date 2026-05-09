@@ -123,6 +123,7 @@ Control-tower rule:
 | 2026-05-09 | Product moat is "not just find the site, help the camper get the site" | Alphacamper should become a more useful camper assistant than a plain alert tool | Active |
 | 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
 | 2026-05-09 | Treat net collected revenue as the real $10k target | The 30-day guarantee means gross sales alone can overstate success | Active |
+| 2026-05-09 | Aim for tier-one Campnab/Campflare competitor status | The product should combine broad alert coverage with guided actions that help regular campers become Alphacampers | Active |
 | 2026-05-09 | Use one-time payments for 2026 passes | Matches pass copy, lowers customer confusion, and makes summer revenue reporting clearer | Active |
 | 2026-05-09 | Treat New Brunswick as alertable after provider proof | The New Brunswick CAMIS/GoingToCamp path returned directory and site-level availability evidence | Active |
 | 2026-05-09 | Upgrade Manitoba and Nova Scotia to repo-ready live-polling profiles | Official/provider availability responses returned clean campsite-level proof: Manitoba 5,480 and Nova Scotia 1,700 IDs | Active; production catalog sync/deploy pending |
