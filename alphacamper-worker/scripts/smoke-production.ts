@@ -15,6 +15,7 @@
 import "../src/env.js";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 
 const DEFAULT_SITE_URL = "https://alphacamper.com";
@@ -64,6 +65,15 @@ type Options = {
   siteUrl: string;
   allowYellow: boolean;
   maxHeartbeatAgeMinutes: number;
+};
+
+export type ProductionWorkerSmokeStatusInput = {
+  providerAvailable: boolean;
+  fetchedFrom: string | null;
+  routeWorkerHealthy: boolean;
+  heartbeatRecent: boolean;
+  requiredPlatformsHealthy: boolean;
+  supabaseError: string | null;
 };
 
 function parseArgs(argv: string[]): Options {
@@ -199,6 +209,23 @@ function printLine(label: string, value: string | number | null | undefined) {
   console.log(`${label.padEnd(24)} ${value ?? "none"}`);
 }
 
+export function evaluateProductionWorkerSmokeStatus(input: ProductionWorkerSmokeStatusInput): SmokeStatus {
+  if (!input.providerAvailable || input.fetchedFrom !== "live_supabase") {
+    return "red";
+  }
+
+  if (
+    !input.routeWorkerHealthy ||
+    !input.heartbeatRecent ||
+    !input.requiredPlatformsHealthy ||
+    input.supabaseError
+  ) {
+    return "yellow";
+  }
+
+  return "green";
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   console.log("Production Worker Smoke");
@@ -226,12 +253,14 @@ async function main() {
     heartbeatAge <= options.maxHeartbeatAgeMinutes;
   const requiredPlatformsHealthy = supabase.configured && platformMisses.length === 0;
 
-  let status: SmokeStatus = "green";
-  if (!providerQuality.available || providerQuality.fetchedFrom !== "live_supabase") {
-    status = "red";
-  } else if (!routeWorkerHealthy || !heartbeatRecent || !requiredPlatformsHealthy || supabase.error) {
-    status = "yellow";
-  }
+  const status = evaluateProductionWorkerSmokeStatus({
+    providerAvailable: providerQuality.available,
+    fetchedFrom: providerQuality.fetchedFrom,
+    routeWorkerHealthy,
+    heartbeatRecent: Boolean(heartbeatRecent),
+    requiredPlatformsHealthy,
+    supabaseError: supabase.error,
+  });
 
   printLine("Status", status);
   printLine("Provider-quality", providerQuality.fetchedFrom);
@@ -263,7 +292,9 @@ async function main() {
   process.exit(status === "yellow" && options.allowYellow ? 0 : 1);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
