@@ -72,7 +72,7 @@ Next recommended windows:
 4. Provider Health/Admin Truth. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/11. Continue once live worker heartbeat creates real provider health data.
 5. Get You The Site Moat Proof. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/15. Prove one paid alert-to-official-review assist loop.
 6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/12. Reported yellow; Alberta/Saskatchewan look feasible through Aspira-style ABPP/SKPP paths, but live alert launch waits for reliability gates.
-7. Parks Canada Enrichment. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/14. Live province search and six production province pages are verified; do not relaunch unless the scope changes.
+7. Parks Canada Enrichment. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/14. Closed after live province search and six production province pages were verified; do not relaunch unless the scope changes.
 
 ## Prompt 1: Phase 2 Live Catalog Fix
 
