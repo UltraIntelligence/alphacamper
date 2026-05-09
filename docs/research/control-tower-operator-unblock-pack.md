@@ -76,9 +76,8 @@ If the live Alphacamper Stripe objects do not exist yet, create:
 - Webhook endpoint: https://alphacamper.com/api/stripe/webhook
 
 Webhook events:
-- checkout.session.completed
-- customer.subscription.updated
-- customer.subscription.deleted
+- Required for current one-time pass checkout: checkout.session.completed
+- Optional legacy compatibility if Stripe asks for them: customer.subscription.updated and customer.subscription.deleted
 
 After production is redeployed, do not paste secret values. Just confirm the variables are present and paste the billing smoke result.
 ```

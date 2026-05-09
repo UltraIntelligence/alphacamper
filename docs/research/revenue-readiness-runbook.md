@@ -58,9 +58,12 @@ If the Stripe products/prices do not exist yet, create these in the correct live
 - `Alphacamper Year Pass 2026`, one-time USD price, $49.00.
 - A live webhook endpoint for `https://alphacamper.com/api/stripe/webhook`.
 
-Required webhook events:
+Required webhook event for current one-time pass checkout:
 
 - `checkout.session.completed`
+
+Optional legacy compatibility events if Stripe asks for them:
+
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
 
