@@ -165,7 +165,7 @@ Next action:
 - Keep the live provider-quality route wired into the operator/admin experience.
 - Deploy/sync the Manitoba and Nova Scotia catalog-label update; do not use campground-row counts as the 50k success metric.
 - Keep reliability yellow until Railway heartbeat, active watch polling, alert creation, and notifications are proven.
-- Use `docs/research/control-tower-operator-unblock-pack.md` for the order: Railway heartbeat, notification proof, Stripe, then Manitoba/Nova Scotia live-label sync.
+- Use `docs/research/control-tower-operator-unblock-pack.md` for the order: Railway heartbeat, Stripe setup, notification proof, then Manitoba/Nova Scotia live-label sync.
 
 ### 3. Alert Engine Cleanup
 
