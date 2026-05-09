@@ -57,6 +57,7 @@ Expected live Supabase project: tbdrmcdrfgunbcevslqf
 
 Please confirm:
 - The service is deployed from current main.
+- Railway itself shows a successful deploy for the worker service; GitHub only shows Vercel site deployments and repo tests.
 - The service has SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY set for production.
 - Email/SMS variables exist if we expect notifications to send.
 - Logs do not show worker_status heartbeat write failed.

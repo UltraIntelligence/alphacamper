@@ -25,7 +25,8 @@ This is the current blocker for calling alert coverage production-ready.
   - It reports 5 active watches.
   - It reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Live Supabase still has no `worker_status` heartbeat row.
-- GitHub deployment metadata shows Vercel site deploys, not Railway worker deploy proof.
+- GitHub commit status and deployment metadata show Vercel site deploys, not Railway worker deploy proof.
+- The committed GitHub workflow only runs tests and the site customer smoke check; it does not deploy Railway.
 - Railway CLI was not authenticated in this shell.
 - Repo inspection found no committed Railway project link.
 - Worker deploy config now exists at `alphacamper-worker/railway.json`.
@@ -96,6 +97,7 @@ Why these matter:
 - Railway monorepo services need the worker app as the root directory.
 - Railway uses a `Dockerfile` at the source root, so the source root must be `alphacamper-worker`.
 - Railway provides a `PORT` variable for service health/routing; the worker now honors it and falls back to `8080`.
+- A push to `main` should not be treated as worker deploy proof unless Railway's own GitHub integration shows a successful deploy for the `alphacamper-worker` service.
 
 Expected live variables:
 
