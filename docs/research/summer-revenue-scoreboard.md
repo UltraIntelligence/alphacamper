@@ -64,7 +64,7 @@ Latest verification at 2026-05-09T16:03:17Z:
 
 - `npm run smoke:billing -- --allow-yellow` remains yellow with 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no gross app revenue, no checkout/webhook proof, and net/refund reporting not verified.
 - Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make this gate green.
-- `vercel env ls production` confirms `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are missing.
+- `vercel env list production` confirms `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SUMMER`, `STRIPE_PRICE_YEAR`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are missing.
 - The available Stripe connector is logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), so it should not be used for Alphacamper billing setup unless Ryan confirms that is the intended Stripe account.
 
 Important wrinkle:

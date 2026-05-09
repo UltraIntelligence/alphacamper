@@ -69,6 +69,18 @@ Optional legacy compatibility events if Stripe asks for them:
 
 Then put the two price IDs and webhook signing secret into Vercel Production.
 
+Secret-safe Vercel CLI path, run from a normal terminal or use the Vercel dashboard. Do not paste secret values into Codex or GitHub:
+
+```bash
+cd /Users/ryan/Code/Alphacamper/alphacamper-site
+vercel env list production
+vercel env add STRIPE_SECRET_KEY production
+vercel env add STRIPE_WEBHOOK_SECRET production
+vercel env add STRIPE_PRICE_SUMMER production
+vercel env add STRIPE_PRICE_YEAR production
+vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production
+```
+
 2. Verify the two Stripe prices.
 
 Both pass prices should be one-time prices, not recurring subscription prices.
@@ -76,6 +88,10 @@ Both pass prices should be one-time prices, not recurring subscription prices.
 3. Redeploy production after the env vars are present.
 
 This makes the runtime actually see the new Stripe config.
+
+```bash
+vercel deploy --prod --force --yes
+```
 
 4. Run the billing smoke check.
 
@@ -147,6 +163,8 @@ Red:
 Add the five missing Stripe env vars to Vercel Production, redeploy, then rerun:
 
 ```bash
-cd alphacamper-site
+cd /Users/ryan/Code/Alphacamper/alphacamper-site
+vercel env list production
+vercel deploy --prod --force --yes
 npm run smoke:billing -- --allow-yellow
 ```

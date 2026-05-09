@@ -160,6 +160,20 @@ Webhook events:
 - Required for current one-time pass checkout: checkout.session.completed
 - Optional legacy compatibility if Stripe asks for them: customer.subscription.updated and customer.subscription.deleted
 
+Secret-safe Vercel CLI path, run from a normal terminal or use the Vercel dashboard:
+
+```bash
+cd /Users/ryan/Code/Alphacamper/alphacamper-site
+vercel env list production
+vercel env add STRIPE_SECRET_KEY production
+vercel env add STRIPE_WEBHOOK_SECRET production
+vercel env add STRIPE_PRICE_SUMMER production
+vercel env add STRIPE_PRICE_YEAR production
+vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production
+vercel deploy --prod --force --yes
+npm run smoke:billing -- --allow-yellow
+```
+
 After production is redeployed, do not paste secret values. Just confirm the variables are present and paste the billing smoke result.
 ```
 
@@ -225,6 +239,19 @@ Required Vercel Production env vars:
 - `STRIPE_PRICE_SUMMER`
 - `STRIPE_PRICE_YEAR`
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+
+Secret-safe Vercel CLI path, run from a normal terminal or use the Vercel dashboard:
+
+```bash
+cd /Users/ryan/Code/Alphacamper/alphacamper-site
+vercel env list production
+vercel env add STRIPE_SECRET_KEY production
+vercel env add STRIPE_WEBHOOK_SECRET production
+vercel env add STRIPE_PRICE_SUMMER production
+vercel env add STRIPE_PRICE_YEAR production
+vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production
+vercel deploy --prod --force --yes
+```
 
 After env vars are added and production is redeployed:
 
