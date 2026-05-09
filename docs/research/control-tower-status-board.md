@@ -37,11 +37,11 @@ Previous windows launched from this control-tower thread on 2026-05-09:
 
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
-| Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Reported yellow; parser proof under intake |
+| Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Reported yellow; discovery intaken and closed; live implementation waits for #9/#13 |
 | Feynman | Extra high | Verified campsite-level inventory counts | Superseded by Ohm/Jason's verified 51,997 count |
 | Noether | High | Railway worker heartbeat recovery | Reported yellow; heartbeat hardening landed |
 | Nash | High | Customer watch and notification smoke | Reported yellow; read-only helper verified; held until Railway heartbeat is green |
-| Descartes | High | Demand capture for search-only/unsupported parks | Reported green for scoped change; under intake |
+| Descartes | High | Demand capture for search-only/unsupported parks | Reported green for public demand proof; intaken into #19; protected operator proof pending |
 
 Control-tower intake rule:
 
