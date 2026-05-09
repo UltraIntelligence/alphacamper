@@ -35,14 +35,14 @@ The live catalog schema blocker is cleared:
 - `/api/campgrounds?q=Sugarloaf` returns the New Brunswick provider-proof row.
 - `/api/check-availability` now returns 410 retired on the live site.
 - `/api/admin/provider-quality` now reads live Supabase on production and reports 5 active watches.
-- Support labels are normalized for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
+- Support labels are normalized for BC, Ontario, Parks Canada, and New Brunswick live; Manitoba and Nova Scotia are repo-ready for alertable/live-polling after the next deploy/sync.
 - Production provider-quality reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Worker heartbeat fix is pushed at `d7464921c`, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
 - Checkout code now uses one-time Stripe payment mode to match the one-time pass copy.
 - Live Supabase now has `subscriptions` and `funnel_events`, both currently with 0 rows.
 - Production Vercel is missing Stripe env vars, so live checkout is not green yet.
-- 44,817 campsite IDs are now verified from provider availability responses across BC Parks, Ontario Parks, Parks Canada, and New Brunswick.
-- The first 50,000 Canada success line is still yellow because Alphacamper is 5,183 verified campsite IDs short, and worker heartbeat/notification proof remains separate.
+- 51,997 campsite IDs are now verified from provider availability responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
+- The first 50,000 Canada inventory line is crossed by 1,997 IDs, but worker heartbeat/notification proof remains separate.
 - Worker polling and notifications are still not proven, so do not use this count as a reliability claim.
 
 ## Completed Goal Windows

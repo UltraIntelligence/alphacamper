@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DEFAULT_PLATFORMS,
   isCountableRootMapId,
   splitCountableCampgroundRows,
 } from "../scripts/count-campsite-inventory.js";
@@ -35,5 +36,16 @@ describe("campsite inventory row filtering", () => {
     expect(isCountableRootMapId(-2147483648)).toBe(true);
     expect(isCountableRootMapId(Number.NaN)).toBe(false);
     expect(isCountableRootMapId("123")).toBe(false);
+  });
+
+  it("defaults to verified live-polling provider profiles only", () => {
+    expect(DEFAULT_PLATFORMS).toEqual([
+      "bc_parks",
+      "ontario_parks",
+      "parks_canada",
+      "gtc_manitoba",
+      "gtc_novascotia",
+      "gtc_new_brunswick",
+    ]);
   });
 });

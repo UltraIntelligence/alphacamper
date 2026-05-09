@@ -69,7 +69,7 @@ interface ExcludedCampgroundRow {
   reason: string;
 }
 
-const DEFAULT_PLATFORMS = Object.values(CATALOG_PROVIDER_PROFILES)
+export const DEFAULT_PLATFORMS = Object.values(CATALOG_PROVIDER_PROFILES)
   .filter((profile) => (
     profile.supportStatus === "alertable" &&
     profile.availabilityMode === "live_polling" &&

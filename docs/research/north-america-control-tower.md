@@ -81,15 +81,14 @@ Verified live Supabase rows after catalog refresh:
 - Ontario Parks: 129.
 - Parks Canada: 113 alertable, with province enrichment still weak.
 - New Brunswick: 9 alertable.
-- Manitoba: 45 search-only.
-- Nova Scotia: 20 search-only.
-- Verified realtime-alertable campsite IDs: 44,817 from clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, and New Brunswick.
-- Provider campsite counts: BC Parks 10,410; Ontario Parks 21,640; Parks Canada 11,336; New Brunswick 1,431.
-- Current gap to the 50,000 Canada success line: 5,183 campsite IDs.
+- Manitoba: 45 live search-only rows; repo-ready alertable/live-polling after deploy/sync.
+- Nova Scotia: 20 live search-only rows; repo-ready alertable/live-polling after deploy/sync.
+- Verified realtime-alertable campsite IDs: 51,997 from clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
+- Provider campsite counts: BC Parks 10,410; Ontario Parks 21,640; Parks Canada 11,336; New Brunswick 1,431; Manitoba 5,480; Nova Scotia 1,700.
+- The first 50,000 Canada inventory line is crossed by 1,997 campsite IDs.
 
 Still not counted as realtime success:
 
-- Manitoba and Nova Scotia until polling is proven.
 - Alberta and Saskatchewan until the new adapter is built.
 - Newfoundland and Labrador and Ontario regional systems until refreshed and proven.
 - Worker heartbeat and notification delivery remain separate proof gates before marketing realtime reliability.

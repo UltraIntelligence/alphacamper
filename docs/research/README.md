@@ -100,13 +100,13 @@ The live catalog schema gate is now cleared:
 - The live Supabase support-status and catalog-evidence migrations were applied and verified on 2026-05-09.
 - Customer search now returns live-only rows such as Bamberton and New Brunswick Sugarloaf.
 - Live catalog refresh from official/provider directories now has 461 safe searchable rows.
-- Verified alertable campground rows: 396.
-- Search-only campground rows: 65.
+- Verified alertable campground rows: 396 live; 461 repo-ready after Manitoba and Nova Scotia sync.
+- Search-only campground rows: 65 live; 0 after Manitoba and Nova Scotia sync.
 - Watch creation guardrails pass local tests, but production watch creation still needs a customer-path smoke test after deploy.
 - Site deploy is live: `/api/check-availability` returns 410 retired.
 - Production provider-quality is live: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` as degraded with `missing_worker_heartbeat`.
 - Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
-- Campsite-level inventory proof is now at 44,817 verified campsite IDs from provider availability responses across BC Parks, Ontario Parks, Parks Canada, and New Brunswick. This is 5,183 short of the first 50,000 Canada success line.
+- Campsite-level inventory proof is now at 51,997 verified campsite IDs from provider availability responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia. This crosses the first 50,000 Canada inventory line by 1,997 IDs.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` is active every 30 minutes to re-run production smoke and report back here.
 
 Major success line:

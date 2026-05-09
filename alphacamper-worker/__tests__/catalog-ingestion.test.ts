@@ -60,12 +60,19 @@ describe("catalog ingestion row builder", () => {
     expect(rows[0].raw_payload).toMatchObject({ resourceLocationId: -2504 });
   });
 
-  it("keeps Manitoba searchable but not alertable until live polling is verified", () => {
-    const profile = getCatalogProviderProfile("gtc_manitoba");
+  it("marks Manitoba and Nova Scotia alertable after site-level polling proof", () => {
+    const manitoba = getCatalogProviderProfile("gtc_manitoba");
+    const novaScotia = getCatalogProviderProfile("gtc_novascotia");
 
-    expect(profile.supportStatus).toBe("search_only");
-    expect(profile.availabilityMode).toBe("directory_only");
-    expect(profile.confidence).toBe("verified");
+    expect(manitoba.supportStatus).toBe("alertable");
+    expect(manitoba.availabilityMode).toBe("live_polling");
+    expect(manitoba.confidence).toBe("verified");
+    expect(manitoba.verificationNote).toContain("5,480 campsite IDs");
+
+    expect(novaScotia.supportStatus).toBe("alertable");
+    expect(novaScotia.availabilityMode).toBe("live_polling");
+    expect(novaScotia.confidence).toBe("verified");
+    expect(novaScotia.verificationNote).toContain("1,700 campsite IDs");
   });
 
   it("marks New Brunswick alertable after site-level polling proof", () => {
