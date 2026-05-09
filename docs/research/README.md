@@ -46,53 +46,65 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
    - The live status board.
    - Use this when another goal window reports back.
 
-5. `control-tower-snapshot-2026-05-09.md`
+5. `control-tower-operator-unblock-pack.md`
+   - The short operator-facing unblock guide for Railway, Stripe, notification proof, and Manitoba/Nova Scotia label sync.
+   - Use this when the work is blocked on external service access or production configuration.
+
+6. `control-tower-snapshot-2026-05-09.md`
    - The current executive snapshot after the first three goal windows reported.
    - Use this for the fastest read of where things stand now.
 
-6. `epic-launch-prompts.md`
+7. `epic-launch-prompts.md`
    - Copy-paste prompts for the separate long-running goal windows.
    - Use this to launch the next workstreams.
 
-7. `live-catalog-migration-runbook.md`
+8. `live-catalog-migration-runbook.md`
    - The approval-gated runbook for applying and verifying the live Supabase catalog migration.
    - Use this before any customer-facing coverage expansion.
 
-8. `live-catalog-verification.sql`
+9. `live-catalog-verification.sql`
    - Read-only SQL checks for the live catalog before and after the migration.
    - Use this inside the Supabase SQL Editor alongside the runbook.
 
-9. `current-action-queue.md`
+10. `current-action-queue.md`
    - The immediate operating queue.
    - Use this to see what to launch now, what is held, and why.
 
-10. `post-migration-launch-pack.md`
+11. `post-migration-launch-pack.md`
    - The next huge goal windows to launch after the live catalog migration is verified.
    - Use this immediately after Epic 1 is no longer red.
 
-11. `competitor-data-pipeline-playbook.md`
+12. `competitor-data-pipeline-playbook.md`
    - Explains how competitors likely built high-quality campground data.
    - Use this when planning catalog ingestion and enrichment.
 
-12. `provider-scoring-rubric.md`
+13. `provider-scoring-rubric.md`
    - Gives the roadmap window a consistent way to rank the next providers.
    - Use this for Alberta, Saskatchewan, PEI, Quebec/SEPAQ, and US expansion decisions.
 
-13. `report-intake-procedure.md`
+14. `report-intake-procedure.md`
     - Explains how to process reports from long-running goal windows.
     - Use this when a window comes back green/yellow/red.
 
-14. `control-tower-artifact-audit.md`
+15. `control-tower-artifact-audit.md`
     - Maps the control-tower request to the actual docs, commands, evidence, and remaining gaps.
     - Use this to audit whether the operating system still covers the brief before calling anything complete.
 
-15. `railway-worker-smoke-runbook.md`
+16. `railway-worker-smoke-runbook.md`
     - The current production worker blocker.
     - Use this to verify Railway deploy/runtime, `worker_status`, and alert-engine ownership.
 
-16. `customer-watch-notification-smoke-runbook.md`
+17. `revenue-readiness-runbook.md`
+    - The Stripe and first-paid-customer proof path.
+    - Use this for #10 before calling the $10k scoreboard measurable.
+
+18. `customer-watch-notification-smoke-runbook.md`
     - The next proof after Railway heartbeat is green.
     - Use this to verify real watch creation, guardrails, alert rows, notification delivery, and cleanup.
+
+19. `get-the-site-moat-plan.md`
+    - The product moat plan for helping campers get the site after an alert.
+    - Use this when #15 is ready to move from strategy into paid-loop proof.
 
 ## Current Control-Tower Read
 
