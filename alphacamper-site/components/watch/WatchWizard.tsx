@@ -2,7 +2,13 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { sendMagicLink, storeMagicLinkEmail } from '@/lib/auth'
-import { getCampground, type CampgroundPlatform } from '@/lib/parks'
+import {
+  getCampground,
+  getSupportStatusLabel,
+  isAlertableSupportStatus,
+  type CampgroundPlatform,
+  type CampgroundSupportStatus,
+} from '@/lib/parks'
 import { StepSearch } from './StepSearch'
 import { StepDates } from './StepDates'
 import { StepSiteNumber } from './StepSiteNumber'
@@ -24,6 +30,7 @@ export interface WatchData {
   isAnyOpening: boolean
   siteNumber: string
   email: string
+  supportStatus: CampgroundSupportStatus
 }
 
 const INITIAL_DATA: WatchData = {
@@ -37,6 +44,7 @@ const INITIAL_DATA: WatchData = {
   isAnyOpening: false,
   siteNumber: '',
   email: '',
+  supportStatus: 'unsupported',
 }
 
 interface StepDef {
@@ -63,6 +71,10 @@ const PLATFORM_LABELS: Record<string, string> = {
   gtc_maitland: 'Maitland Valley',
   gtc_stclair: 'St. Clair Region',
   gtc_nlcamping: 'Newfoundland & Labrador Parks',
+  alberta_parks: 'Alberta Parks',
+  saskatchewan_parks: 'Saskatchewan Parks',
+  pei_parks: 'PEI Parks',
+  sepaq: 'SEPAQ',
 }
 
 function formatIntakeDate(str: string): string {
@@ -105,17 +117,30 @@ export function WatchWizard({
       name: string
       platform: WatchData['platform']
       province: string | null
+      supportStatus?: CampgroundSupportStatus
+      support_status?: CampgroundSupportStatus
     }) => {
       if (isCancelled) return
+      const supportStatus = park.supportStatus ?? park.support_status ?? 'unsupported'
       setData((prev) => ({
         ...prev,
         campgroundId: park.id,
         campgroundName: park.name,
         platform: park.platform,
         province: park.province ?? '',
+        supportStatus,
       }))
-      setCompletedSteps((prev) => new Set([...prev, 'search']))
-      setActiveStep('dates')
+      if (isAlertableSupportStatus(supportStatus)) {
+        setCompletedSteps((prev) => new Set([...prev, 'search']))
+        setActiveStep('dates')
+      } else {
+        setCompletedSteps((prev) => {
+          const next = new Set(prev)
+          next.delete('search')
+          return next
+        })
+        setActiveStep('search')
+      }
     }
 
     const hydrateSelectedPark = async () => {
@@ -146,6 +171,7 @@ export function WatchWizard({
               name: park.name,
               platform: park.platform,
               province: park.province ?? '',
+              supportStatus: park.support_status,
             })
             return
           }
@@ -161,6 +187,7 @@ export function WatchWizard({
           name: park.name,
           platform: park.platform,
           province: park.province,
+          supportStatus: park.supportStatus,
         })
       } else if (initialPlatform && !isCancelled) {
         setData((prev) => ({ ...prev, platform: initialPlatform }))
@@ -280,6 +307,10 @@ export function WatchWizard({
       ? `${formatIntakeDate(data.arrivalDate)} – ${formatIntakeDate(data.departureDate)}`
       : null
 
+  const selectedStatusLabel = data.campgroundName
+    ? getSupportStatusLabel(data.supportStatus)
+    : null
+
   return (
     <>
       <WatchMapBackground campgroundName={data.campgroundName} platform={data.platform} />
@@ -393,7 +424,10 @@ export function WatchWizard({
                 }
                 sub={
                   data.campgroundName
-                    ? PLATFORM_LABELS[data.platform] ?? data.platform ?? null
+                    ? [
+                      PLATFORM_LABELS[data.platform] ?? data.platform,
+                      selectedStatusLabel,
+                    ].filter(Boolean).join(' · ')
                     : null
                 }
                 active={activeStep === 'search'}

@@ -10,11 +10,18 @@ CREATE TABLE IF NOT EXISTS campgrounds (
   name        TEXT NOT NULL,
   short_name  TEXT,
   province    TEXT,         -- 'BC' | 'ON' | null (Parks Canada spans multiple provinces)
+  support_status TEXT NOT NULL DEFAULT 'alertable',
+  provider_key TEXT,
+  source_url TEXT,
+  last_verified_at TIMESTAMPTZ,
   synced_at   TIMESTAMPTZ DEFAULT now(),
-  PRIMARY KEY (id, platform)
+  PRIMARY KEY (id, platform),
+  CONSTRAINT campgrounds_support_status_check
+    CHECK (support_status IN ('alertable', 'search_only', 'coming_soon', 'unsupported'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_campgrounds_platform ON campgrounds (platform);
+CREATE INDEX IF NOT EXISTS idx_campgrounds_support_status ON campgrounds (support_status);
 CREATE INDEX IF NOT EXISTS idx_campgrounds_name_trgm ON campgrounds USING GIN (name gin_trgm_ops);
 
 ALTER TABLE campgrounds ENABLE ROW LEVEL SECURITY;

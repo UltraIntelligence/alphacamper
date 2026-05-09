@@ -38,6 +38,11 @@ describe('searchCampgrounds', () => {
     expect(results.length).toBeGreaterThan(0)
     results.forEach(r => expect(r.province).toBe('ON'))
   })
+
+  it('adds support status to catalog search results', () => {
+    const results = searchCampgrounds('alice')
+    expect(results[0].supportStatus).toBe('alertable')
+  })
 })
 
 describe('getCampground', () => {
@@ -45,6 +50,7 @@ describe('getCampground', () => {
     const cg = getCampground('-2430')
     expect(cg).toBeDefined()
     expect(cg!.name).toBe('Alice Lake')
+    expect(cg!.supportStatus).toBe('alertable')
   })
 
   it('returns undefined for unknown id', () => {

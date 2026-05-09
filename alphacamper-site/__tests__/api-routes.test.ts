@@ -22,9 +22,14 @@ vi.mock('@/lib/supabase.server', () => ({
   getSupabaseForRequest: () => mockSupabase,
 }))
 
+vi.mock('@/lib/supabase', () => ({
+  getSupabase: () => mockSupabase,
+}))
+
 import * as watchRoute from '@/app/api/watch/route'
 import * as alertsRoute from '@/app/api/alerts/route'
 import * as registerRoute from '@/app/api/register/route'
+import * as campgroundsRoute from '@/app/api/campgrounds/route'
 
 function buildInsertChain(result: { data: unknown; error: { message: string } | null }) {
   const chain = {
@@ -44,6 +49,7 @@ function buildSelectChain(result: { data: unknown; error: { message: string } | 
     error: result.error,
     select: vi.fn(() => chain),
     eq: vi.fn(() => chain),
+    or: vi.fn(() => chain),
     order: vi.fn(() => chain),
     limit: vi.fn(() => chain),
     single: vi.fn(() => chain),
@@ -86,7 +92,7 @@ describe('watch routes', () => {
   it('creates a watch with exact dates and optional site number', async () => {
     mockGetUserIdFromRequest.mockResolvedValue('user-123')
     const campgroundQueryChain = buildSelectChain({
-      data: { id: 'camp-1', platform: 'bc_parks', name: 'Alice Lake Provincial Park' },
+      data: { id: 'camp-1', platform: 'bc_parks', name: 'Alice Lake Provincial Park', support_status: 'alertable' },
       error: null,
     })
     const insertChain = buildInsertChain({
@@ -151,6 +157,40 @@ describe('watch routes', () => {
     await expect(response.json()).resolves.toEqual({ error: 'Invalid campground selection' })
   })
 
+  it('rejects a watch when the campground is searchable but alerts are not live', async () => {
+    mockGetUserIdFromRequest.mockResolvedValue('user-123')
+    const campgroundQueryChain = buildSelectChain({
+      data: {
+        id: 'camp-1',
+        platform: 'alberta_parks',
+        name: 'Coming Soon Campground',
+        support_status: 'coming_soon',
+      },
+      error: null,
+    })
+    const insertChain = buildInsertChain({ data: null, error: null })
+    mockFrom.mockImplementation((table: string) => (
+      table === 'campgrounds' ? campgroundQueryChain : insertChain
+    ))
+
+    const response = await watchRoute.POST(new Request('https://alphacamper.test/api/watch', {
+      method: 'POST',
+      body: JSON.stringify({
+        platform: 'alberta_parks',
+        campgroundId: 'camp-1',
+        campgroundName: 'Coming Soon Campground',
+        arrivalDate: '2026-07-10',
+        departureDate: '2026-07-12',
+      }),
+    }))
+
+    expect(response.status).toBe(400)
+    expect(insertChain.insert).not.toHaveBeenCalled()
+    await expect(response.json()).resolves.toEqual({
+      error: 'Alerts are not live for this campground yet',
+    })
+  })
+
   it('lists only active watches for the signed-in customer', async () => {
     mockGetUserIdFromRequest.mockResolvedValue('user-123')
     const queryChain = buildSelectChain({
@@ -183,6 +223,47 @@ describe('watch routes', () => {
     expect(updateChain.eq).toHaveBeenNthCalledWith(1, 'id', 'watch-1')
     expect(updateChain.eq).toHaveBeenNthCalledWith(2, 'user_id', 'user-123')
     await expect(response.json()).resolves.toEqual({ success: true })
+  })
+})
+
+describe('campgrounds route', () => {
+  it('returns support status with campground search results', async () => {
+    const queryChain = buildSelectChain({
+      data: [{
+        id: 'camp-1',
+        platform: 'alberta_parks',
+        root_map_id: null,
+        name: 'Bow Valley Campground',
+        short_name: null,
+        province: 'AB',
+        support_status: 'coming_soon',
+        provider_key: 'alberta_parks',
+        source_url: 'https://shop.albertaparks.ca',
+        last_verified_at: '2026-05-09T00:00:00.000Z',
+      }],
+      error: null,
+    })
+    mockFrom.mockReturnValue(queryChain)
+
+    const response = await campgroundsRoute.GET(
+      new Request('https://alphacamper.test/api/campgrounds?q=Bow')
+    )
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      campgrounds: [{
+        id: 'camp-1',
+        platform: 'alberta_parks',
+        root_map_id: null,
+        name: 'Bow Valley Campground',
+        short_name: null,
+        province: 'AB',
+        support_status: 'coming_soon',
+        provider_key: 'alberta_parks',
+        source_url: 'https://shop.albertaparks.ca',
+        last_verified_at: '2026-05-09T00:00:00.000Z',
+      }],
+    })
   })
 })
 

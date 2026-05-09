@@ -28,6 +28,7 @@ describe('StepSiteNumber', () => {
           isAnyOpening: false,
           siteNumber: '',
           email: '',
+          supportStatus: 'alertable',
         }}
         onUpdate={vi.fn()}
         onComplete={onComplete}
@@ -56,6 +57,7 @@ describe('StepSiteNumber', () => {
           isAnyOpening: false,
           siteNumber: '',
           email: '',
+          supportStatus: 'alertable',
         }}
         onUpdate={onUpdate}
         onComplete={vi.fn()}
@@ -82,6 +84,7 @@ describe('StepSiteNumber', () => {
           isAnyOpening: false,
           siteNumber: 'A12',
           email: '',
+          supportStatus: 'alertable',
         }}
         onUpdate={vi.fn()}
         onComplete={vi.fn()}

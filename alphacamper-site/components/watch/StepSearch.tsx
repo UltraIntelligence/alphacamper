@@ -3,7 +3,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { getNextHighlightedIndex } from '@/lib/search-nav'
 import type { WatchData } from './WatchWizard'
-import type { CampgroundPlatform } from '@/lib/parks'
+import {
+  getSupportStatusLabel,
+  isAlertableSupportStatus,
+  type CampgroundPlatform,
+  type CampgroundSupportStatus,
+} from '@/lib/parks'
 
 interface StepSearchProps {
   data: WatchData
@@ -24,6 +29,10 @@ const PLATFORM_LABEL: Record<string, string> = {
   gtc_maitland: 'Maitland Valley',
   gtc_stclair: 'St. Clair Region',
   gtc_nlcamping: 'Newfoundland & Labrador Parks',
+  alberta_parks: 'Alberta Parks',
+  saskatchewan_parks: 'Saskatchewan Parks',
+  pei_parks: 'PEI Parks',
+  sepaq: 'SEPAQ',
 }
 
 function getPlatformLabel(platform: WatchData['platform']): string {
@@ -36,6 +45,7 @@ type Campground = {
   name: string
   platform: CampgroundPlatform
   province: string | null
+  support_status?: CampgroundSupportStatus
 }
 
 export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onComplete }: StepSearchProps) {
@@ -101,13 +111,14 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
       campgroundName: cg.name,
       platform: cg.platform,
       province: cg.province ?? '',
+      supportStatus: cg.support_status ?? 'unsupported',
     })
   }
 
   const handleClear = () => {
     setHighlightedIndex(-1)
     setQuery('')
-    onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
+    onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '', supportStatus: 'unsupported' })
   }
 
   const isSelected = Boolean(data.campgroundId)
@@ -119,8 +130,8 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
         Which park are you <em>trying to book</em>?
       </h2>
       <p className="step-lede">
-        We scan BC Parks, Ontario Parks, Parks Canada, and Recreation.gov. Start
-        typing a park name and pick yours.
+        Start typing a park name. We will show whether alerts are live or still
+        being verified.
       </p>
 
       <div className="step-field">
@@ -144,7 +155,7 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
               setQuery(e.target.value)
               setIsDismissed(false)
               if (isSelected) {
-                onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '' })
+                onUpdate({ campgroundId: '', campgroundName: '', platform: '', province: '', supportStatus: 'unsupported' })
               }
             }}
             onKeyDown={(e) => {
@@ -211,6 +222,8 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
                 <span className="step-search-result-meta">
                   {getPlatformLabel(cg.platform)}
                   {cg.province ? <> · {cg.province}</> : null}
+                  {' · '}
+                  {getSupportStatusLabel(cg.support_status ?? 'unsupported')}
                 </span>
               </span>
               <span className="step-search-result-arrow" aria-hidden="true">→</span>
@@ -228,6 +241,8 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
               <span className="step-search-picked-meta">
                 {getPlatformLabel(data.platform)}
                 {data.province ? <> · {data.province}</> : null}
+                {' · '}
+                {getSupportStatusLabel(data.supportStatus)}
               </span>
             </div>
             <button
@@ -246,9 +261,9 @@ export function StepSearch({ data, initialQuery, platformFilter, onUpdate, onCom
           type="button"
           className="step-cta"
           onClick={onComplete}
-          disabled={!isSelected}
+          disabled={!isSelected || !isAlertableSupportStatus(data.supportStatus)}
         >
-          Continue
+          {isSelected && !isAlertableSupportStatus(data.supportStatus) ? 'Alerts not live yet' : 'Continue'}
           <span aria-hidden="true">→</span>
         </button>
       </div>

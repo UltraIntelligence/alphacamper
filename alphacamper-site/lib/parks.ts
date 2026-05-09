@@ -9,6 +9,16 @@ export type CampgroundPlatform =
   | 'gtc_maitland'
   | 'gtc_stclair'
   | 'gtc_nlcamping'
+  | 'alberta_parks'
+  | 'saskatchewan_parks'
+  | 'pei_parks'
+  | 'sepaq'
+
+export type CampgroundSupportStatus =
+  | 'alertable'
+  | 'search_only'
+  | 'coming_soon'
+  | 'unsupported'
 
 export interface Campground {
   id: string
@@ -16,6 +26,11 @@ export interface Campground {
   platform: CampgroundPlatform
   province: string
   park?: string
+  supportStatus?: CampgroundSupportStatus
+}
+
+export interface CatalogCampground extends Campground {
+  supportStatus: CampgroundSupportStatus
 }
 
 const PLATFORM_DOMAINS: Record<string, string> = {
@@ -29,6 +44,26 @@ const PLATFORM_DOMAINS: Record<string, string> = {
   gtc_maitland: 'maitlandvalley.goingtocamp.com',
   gtc_stclair: 'stclair.goingtocamp.com',
   gtc_nlcamping: 'nlcamping.ca',
+}
+
+const ALERTABLE_PLATFORMS = new Set<string>([
+  'bc_parks',
+  'ontario_parks',
+  'recreation_gov',
+  'parks_canada',
+  'gtc_manitoba',
+  'gtc_novascotia',
+  'gtc_longpoint',
+  'gtc_maitland',
+  'gtc_stclair',
+  'gtc_nlcamping',
+])
+
+const SUPPORT_STATUS_LABELS: Record<CampgroundSupportStatus, string> = {
+  alertable: 'Alerts live',
+  search_only: 'Search only',
+  coming_soon: 'Coming soon',
+  unsupported: 'Unsupported',
 }
 
 export const CAMPGROUNDS: Campground[] = [
@@ -303,7 +338,42 @@ export const CAMPGROUNDS: Campground[] = [
   { id: '-2147483635', name: 'Townsite', platform: 'parks_canada', province: 'AB', park: 'Waterton Lakes' }, // verify ID
 ]
 
-export function searchCampgrounds(query: string): Campground[] {
+export function getDefaultSupportStatus(platform: string): CampgroundSupportStatus {
+  return ALERTABLE_PLATFORMS.has(platform) ? 'alertable' : 'unsupported'
+}
+
+export function normalizeSupportStatus(
+  status: string | null | undefined,
+  platform: string,
+): CampgroundSupportStatus {
+  if (
+    status === 'alertable' ||
+    status === 'search_only' ||
+    status === 'coming_soon' ||
+    status === 'unsupported'
+  ) {
+    return status
+  }
+
+  return getDefaultSupportStatus(platform)
+}
+
+export function isAlertableSupportStatus(status: string | null | undefined): boolean {
+  return status === 'alertable'
+}
+
+export function getSupportStatusLabel(status: CampgroundSupportStatus): string {
+  return SUPPORT_STATUS_LABELS[status]
+}
+
+export function withCatalogSupportStatus(campground: Campground): CatalogCampground {
+  return {
+    ...campground,
+    supportStatus: normalizeSupportStatus(campground.supportStatus, campground.platform),
+  }
+}
+
+export function searchCampgrounds(query: string): CatalogCampground[] {
   if (!query.trim()) return []
   const q = query.toLowerCase().trim()
   return CAMPGROUNDS.filter(
@@ -315,11 +385,12 @@ export function searchCampgrounds(query: string): Campground[] {
       (q.length >= 3 && c.platform === 'ontario_parks' && 'ontario'.includes(q)) ||
       (q.length >= 3 && c.platform === 'recreation_gov' && 'united states'.includes(q)) ||
       (q.length >= 3 && c.platform === 'parks_canada' && ('parks canada'.includes(q) || 'national park'.includes(q)))
-  )
+  ).map(withCatalogSupportStatus)
 }
 
-export function getCampground(id: string): Campground | undefined {
-  return CAMPGROUNDS.find((c) => c.id === id)
+export function getCampground(id: string): CatalogCampground | undefined {
+  const campground = CAMPGROUNDS.find((c) => c.id === id)
+  return campground ? withCatalogSupportStatus(campground) : undefined
 }
 
 export function getPlatformDomain(platform: string): string | null {

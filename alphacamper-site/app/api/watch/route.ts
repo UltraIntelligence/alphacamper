@@ -1,29 +1,35 @@
 import { NextResponse } from "next/server";
 import { getUserIdFromRequest } from "@/lib/auth.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getCampground } from "@/lib/parks";
+import { getCampground, isAlertableSupportStatus, normalizeSupportStatus } from "@/lib/parks";
 import { getSupabaseForRequest } from "@/lib/supabase.server";
 
 async function resolveCanonicalCampgroundName(
   supabase: SupabaseClient,
   platform: string,
   campgroundId: string,
-): Promise<string | null> {
+): Promise<{ name: string; supportStatus: string } | null> {
   const { data, error } = await supabase
     .from("campgrounds")
-    .select("id, platform, name")
+    .select("id, platform, name, support_status")
     .eq("id", campgroundId)
     .eq("platform", platform)
     .limit(1)
     .single();
 
   if (!error && data?.id === campgroundId && data?.platform === platform && data?.name) {
-    return data.name;
+    return {
+      name: data.name,
+      supportStatus: normalizeSupportStatus(data.support_status, platform),
+    };
   }
 
   const staticCampground = getCampground(campgroundId);
   if (staticCampground && staticCampground.platform === platform) {
-    return staticCampground.name;
+    return {
+      name: staticCampground.name,
+      supportStatus: staticCampground.supportStatus,
+    };
   }
 
   return null;
@@ -39,19 +45,25 @@ export async function POST(request: Request) {
     const supabase = getSupabaseForRequest(request);
 
     const body = await request.json();
-    const { platform, campgroundId, campgroundName, siteNumber, arrivalDate, departureDate } = body;
+    const { platform, campgroundId, siteNumber, arrivalDate, departureDate } = body;
 
     if (!platform || !campgroundId || !arrivalDate || !departureDate) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const canonicalCampgroundName = await resolveCanonicalCampgroundName(
+    const canonicalCampground = await resolveCanonicalCampgroundName(
       supabase,
       platform,
       campgroundId,
     );
-    if (!canonicalCampgroundName) {
+    if (!canonicalCampground) {
       return NextResponse.json({ error: "Invalid campground selection" }, { status: 400 });
+    }
+    if (!isAlertableSupportStatus(canonicalCampground.supportStatus)) {
+      return NextResponse.json(
+        { error: "Alerts are not live for this campground yet" },
+        { status: 400 },
+      );
     }
 
     const { data, error } = await supabase
@@ -60,7 +72,7 @@ export async function POST(request: Request) {
         user_id: userId,
         platform,
         campground_id: campgroundId,
-        campground_name: canonicalCampgroundName,
+        campground_name: canonicalCampground.name,
         site_number: siteNumber || null,
         arrival_date: arrivalDate,
         departure_date: departureDate,

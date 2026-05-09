@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
-import { searchCampgrounds } from '@/lib/parks'
+import { normalizeSupportStatus, searchCampgrounds } from '@/lib/parks'
 
 const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' }
 
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
   let query = supabase
     .from('campgrounds')
-    .select('id, platform, root_map_id, name, short_name, province')
+    .select('id, platform, root_map_id, name, short_name, province, support_status, provider_key, source_url, last_verified_at')
     .limit(limit)
 
   if (id) {
@@ -43,7 +43,11 @@ export async function GET(request: Request) {
       console.error('[campgrounds] Supabase exact lookup failed:', error.message)
       return cachedJson({ campgrounds: [] })
     }
-    return cachedJson({ campgrounds: data ?? [] })
+    const campgrounds = (data ?? []).map((result: { support_status?: string | null; platform: string }) => ({
+      ...result,
+      support_status: normalizeSupportStatus(result.support_status, result.platform),
+    }))
+    return cachedJson({ campgrounds })
   }
 
   const escapedQuery = q
@@ -77,6 +81,10 @@ export async function GET(request: Request) {
     name: string
     short_name: string | null
     province: string | null
+    support_status?: string | null
+    provider_key?: string | null
+    source_url?: string | null
+    last_verified_at?: string | null
   }>
 
   // Merge static fallback — covers Recreation.gov and pre-sync state for Camis platforms
@@ -87,6 +95,10 @@ export async function GET(request: Request) {
     name: c.name,
     short_name: null as string | null,
     province: c.province ?? null,
+    support_status: c.supportStatus,
+    provider_key: c.platform,
+    source_url: null as string | null,
+    last_verified_at: null as string | null,
   }))
 
   const dbKeys = new Set(dbResults.map(r => `${r.id}:${r.platform}`))
@@ -99,7 +111,10 @@ export async function GET(request: Request) {
     })
   )
   const merged = [
-    ...dbResults,
+    ...dbResults.map((result) => ({
+      ...result,
+      support_status: normalizeSupportStatus(result.support_status, result.platform),
+    })),
     ...staticResults.filter((result) => {
       if (dbKeys.has(`${result.id}:${result.platform}`)) return false
       const nameKey = normalizeCampgroundKey(result.name)

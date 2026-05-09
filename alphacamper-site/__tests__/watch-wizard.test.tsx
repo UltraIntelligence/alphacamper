@@ -38,6 +38,7 @@ vi.mock('@/components/watch/StepSearch', () => ({
           campgroundName: 'Alice Lake',
           platform: 'bc_parks',
           province: 'BC',
+          supportStatus: 'alertable',
         })
         onComplete()
       }}
@@ -120,6 +121,7 @@ beforeEach(() => {
         name: 'Alice Lake Provincial Park',
         platform: 'bc_parks',
         province: 'BC',
+        support_status: 'alertable',
       }],
     }),
   })) as typeof fetch
@@ -218,6 +220,33 @@ describe('WatchWizard', () => {
         initialParkName="Not Alice Lake"
         initialPlatform="bc_parks"
         initialProvince="BC"
+      />
+    )
+
+    expect(await screen.findByRole('button', { name: 'Choose campground' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Choose dates' })).toBeNull()
+  })
+
+  it('does not skip search when a prefilled campground is not alertable yet', async () => {
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        campgrounds: [{
+          id: 'coming-soon-1',
+          name: 'Bow Valley Campground',
+          platform: 'alberta_parks',
+          province: 'AB',
+          support_status: 'coming_soon',
+        }],
+      }),
+    })) as typeof fetch
+
+    render(
+      <WatchWizard
+        initialParkId="coming-soon-1"
+        initialParkName="Bow Valley Campground"
+        initialPlatform="alberta_parks"
+        initialProvince="AB"
       />
     )
 
