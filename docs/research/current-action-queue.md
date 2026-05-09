@@ -191,7 +191,7 @@ These should be separate goal windows when launched.
 
 Goal objective:
 
-- Make the $10k summer revenue goal measurable and trustworthy.
+- Make the $10k net summer revenue goal measurable and trustworthy.
 
 Why it matters:
 
@@ -292,7 +292,7 @@ Goal objective:
 
 Why it matters:
 
-- The $10k summer revenue goal needs paid camper outcomes, not only infrastructure.
+- The $10k net summer revenue goal needs paid camper outcomes, not only infrastructure.
 
 Current truth:
 

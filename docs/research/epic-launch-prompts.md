@@ -42,31 +42,37 @@ Use medium or lower only for narrow follow-up chores like formatting docs, recou
 North-star metric:
 
 - First success line: 50,000 verified realtime-alertable Canadian campsites.
+- Current provider-inventory proof: 51,997 verified campsite IDs across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia.
 - Longer-term leadership line: 250,000 to 350,000+ realtime-alertable North American campsites.
 - Search-only, coming-soon, unverified seed, and static fallback rows do not count toward realtime success.
+- Reliability is still yellow until Railway heartbeat, active watch polling, alert creation, and notification delivery are proven.
+- Business success line: $10k net collected revenue by the end of summer.
 
 ## Current Launch State
 
-Already reported back:
+Already reported back and intaken:
 
 1. Phase 2 Live Catalog Fix: yellow after live migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
-4. Canada Provider Proof: yellow; New Brunswick alertable, Alberta/Saskatchewan need adapter work.
+4. Canada Provider Proof: yellow; New Brunswick alertable, Manitoba/Nova Scotia repo-ready, Alberta/Saskatchewan need adapter work.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
+7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.
+8. Billing Truth And Revenue Reporting: yellow until Stripe production envs, webhook proof, and net/refund truth are green.
+9. Get You The Site Moat: yellow product proof; strategy is integrated but one paid alert-to-assist loop still needs proof.
 
 Do not relaunch those same windows unless the scope changes.
 
 Next recommended windows:
 
-1. Production Worker Smoke.
-2. Customer Watch And Notification Smoke, only after worker heartbeat is green.
-3. Billing Truth And Revenue Reporting.
-4. Alberta/Saskatchewan Adapter Sprint.
-5. Provider Health/Admin Truth.
-6. Demand Capture And Conversion.
-7. Parks Canada Enrichment when official source data is chosen.
+1. Production Worker Smoke. High reasoning. Launch/continue now; likely blocked on Railway access.
+2. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
+3. Billing Truth And Revenue Reporting. High reasoning. Continue after production Stripe env vars are configured.
+4. Provider Health/Admin Truth. High reasoning. Continue once live worker heartbeat creates real provider health data.
+5. Get You The Site Moat Proof. Extra-high reasoning. Prove one paid alert-to-official-review assist loop.
+6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Hold active-alert launch until Railway heartbeat and notification proof are green.
+7. Parks Canada Enrichment. High reasoning. Run when official source data is chosen.
 
 ## Prompt 1: Phase 2 Live Catalog Fix
 
@@ -211,6 +217,7 @@ Context:
 
 Rules:
 - Start only after the live catalog schema is verified or work only in safe preview/local mode.
+- Do not sync Manitoba/Nova Scotia production alertable labels until Railway heartbeat is green.
 - Do not mark a provider alertable unless search, watch creation, worker polling, and notification path are verified.
 - If a provider is searchable but not alertable, label it honestly.
 
@@ -327,7 +334,7 @@ Context:
 
 Rules:
 - Treat this as production verification, not new feature work.
-- Do not overclaim campsite-level totals.
+- Treat 51,997 as provider-inventory proof, not customer reliability proof.
 - If the worker is not live yet, say exactly what is pending and keep watching if possible.
 - Do not print secret values from Railway or Supabase. Only report whether required variables exist and point to the live project.
 
@@ -427,7 +434,7 @@ Turn unsupported, search-only, and coming-soon campground interest into a demand
 
 Context:
 - Repo: /Users/ryan/Code/Alphacamper
-- Business target: $10k revenue by end of summer.
+- Business target: $10k net collected revenue by end of summer.
 - Product distinction: not just finding the site, but helping the camper get the site.
 - Current gap: unsupported searches are not yet a strong prioritization signal.
 
@@ -466,7 +473,7 @@ Context:
 - Live site: https://alphacamper.com
 - Runbook: docs/research/customer-watch-notification-smoke-runbook.md
 - Current rule: exact dates plus optional exact site number only.
-- Do not count any campsite toward the 50k realtime-alertable goal until this proof exists.
+- The 51,997 campsite inventory proof is already counted for provider coverage; do not market customer reliability until this smoke is green.
 
 Rules:
 - Use a controlled test account, not a real customer account.
@@ -499,7 +506,7 @@ Recommended control-tower update:
 Act as an Alphacamper goal window.
 
 Objective:
-Make the $10k summer revenue goal measurable and customer-safe. Decide whether the summer/year passes are one-time purchases or subscriptions, align checkout copy and Stripe Checkout mode, verify the live billing and funnel reporting source of truth, and produce a simple operator revenue scoreboard.
+Make the $10k net summer revenue goal measurable and customer-safe. Verify the summer/year passes are one-time purchases, keep checkout copy and Stripe Checkout mode aligned, verify the live billing and funnel reporting source of truth, and produce a simple operator revenue scoreboard.
 
 Context:
 - Repo: /Users/ryan/Code/Alphacamper

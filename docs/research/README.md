@@ -120,30 +120,34 @@ Longer-term category leadership line:
 
 Business line:
 
-- $10k revenue by the end of summer.
+- $10k net collected revenue by the end of summer.
 - The current revenue scoreboard is not green yet: checkout now uses one-time payment mode in code and the live billing/conversion tables exist, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
 
 ## Current Window Status
 
-Already reported back:
+Already reported back and intaken:
 
 1. Phase 2 Live Catalog Fix: yellow after migration and search verification.
 2. Alert Engine Truth Audit: yellow.
 3. North America Provider Roadmap: yellow.
-4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
+4. Canada Provider Proof: yellow; New Brunswick is alertable, Manitoba/Nova Scotia are repo-ready, Alberta/Saskatchewan need adapter work.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
+7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.
+8. Billing Truth And Revenue Reporting: yellow until Stripe production envs, webhook proof, and net/refund truth are green.
+9. Get You The Site Moat: yellow product proof; strategy integrated, full paid loop unproven.
 
 Do not relaunch those same windows just because this conversation was forked.
 
 Next high-leverage runs:
 
-1. Production Worker Smoke.
-2. Customer Watch And Notification Smoke, only after worker heartbeat is green.
-3. Billing Truth And Revenue Reporting.
-4. Alberta/Saskatchewan Adapter Sprint.
-5. Provider Health/Admin Truth UI and recurring ops.
-6. Demand Capture And Conversion.
+1. Production Worker Smoke. High reasoning. Launch/continue now; likely blocked on Railway access.
+2. Customer Watch And Notification Smoke. High reasoning. Hold until worker heartbeat is green.
+3. Billing Truth And Revenue Reporting. High reasoning. Continue after production Stripe env vars are configured.
+4. Provider Health/Admin Truth UI and recurring ops. High reasoning. Continue once live worker heartbeat creates real provider health data.
+5. Get You The Site Moat Proof. Extra-high reasoning. Prove one paid alert-to-official-review assist loop.
+6. Alberta/Saskatchewan Adapter Sprint. Extra-high reasoning. Hold active-alert launch until Railway heartbeat and notification proof are green.
+7. Demand Capture And Conversion. High reasoning. Use only as a revenue path, not a reliability claim.
 
 Run when official Parks Canada source data is selected:
 

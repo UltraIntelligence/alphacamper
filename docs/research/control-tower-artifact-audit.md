@@ -26,7 +26,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Epic runs are defined | `epic-launch-prompts.md` | Twelve copy-paste goal-window prompts, including Production Worker Smoke, customer notification smoke, billing truth, and revenue/demand capture | Covered |
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
 | Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
-| Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
+| Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k net summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
 | Billing blocker has an executable proof path | `alphacamper-site/scripts/smoke-billing.ts`, `alphacamper-site/package.json`, `summer-revenue-scoreboard.md` | `npm run smoke:billing` checks live billing tables, Vercel Stripe env names, and one-time Stripe price shape when local Stripe env is available | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, escalation rules, output format | Covered |
@@ -93,7 +93,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T09:45:46Z.
+Audit timestamp: 2026-05-09T11:52:52Z.
 
 Objective restated as concrete deliverables:
 
@@ -111,8 +111,9 @@ Evidence inspected:
 - `docs/research/report-intake-procedure.md` defines how reports are classified and folded back into the board.
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
-- `docs/research/summer-revenue-scoreboard.md` defines the $10k revenue scoreboard and flags the billing/source-of-truth blocker.
+- `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
+- `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow because production Stripe env vars are missing and no paid rows exist yet.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` was created to rerun production smoke every 30 minutes.
 
@@ -126,6 +127,7 @@ Live smoke evidence:
 - Worker error: `missing_worker_heartbeat`.
 - Supabase heartbeat: none.
 - Missing required worker platforms: `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, `recreation_gov`.
+- Billing smoke: 0 paid active passes, 0 funnel events, 0 webhook events, and missing production Stripe env vars.
 
 ## Remaining Open Work
 
@@ -139,7 +141,9 @@ Reported windows now reflected in the board:
 4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
-7. Billing Truth And Revenue Reporting: yellow after one-time checkout code and live table migration; production Stripe env vars and operator reporting remain.
+7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.
+8. Billing Truth And Revenue Reporting: yellow after one-time checkout code and live table migration; production Stripe env vars and operator reporting remain.
+9. Get You The Site Moat: yellow product proof; full paid alert-to-official-review loop remains.
 
 Next control-tower action:
 
@@ -147,7 +151,7 @@ Next control-tower action:
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
 - After heartbeat proof, smoke-test authenticated watch creation and notification delivery.
 - Use `docs/research/customer-watch-notification-smoke-runbook.md` for that next customer-path proof.
-- Then configure production Stripe env vars and revenue reporting, resume Alberta/Saskatchewan adapter work, and continue Provider Health/Admin Truth UI/ops.
+- Then configure production Stripe env vars and revenue reporting, prove the paid alert-to-assist loop, resume Alberta/Saskatchewan adapter work, and continue Provider Health/Admin Truth UI/ops.
 
 ## Completion Read
 
@@ -159,6 +163,6 @@ Do not mark the operational program complete while:
 
 - Railway worker runtime has no live heartbeat.
 - Active watches exist but polling/notification delivery is not proven.
-- Realtime-alertable campsite counts are still unverified.
-- $10k revenue reporting is not yet measurable from a verified billing source.
+- The 51,997 campsite inventory proof is not yet backed by live customer reliability proof.
+- $10k net revenue reporting is not yet measurable from a verified billing source.
 - Provider health/admin truth is route-level, not a completed operator workflow.
