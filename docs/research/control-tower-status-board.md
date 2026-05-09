@@ -22,7 +22,7 @@ Launched from this control-tower thread on 2026-05-09:
 
 | Window | Reasoning | Scope | Status |
 |---|---|---|---|
-| Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Running |
+| Maxwell | Extra high | Alberta/Saskatchewan adapter proof | Reported yellow; parser proof under intake |
 | Feynman | Extra high | Verified campsite-level inventory counts | Running |
 | Noether | High | Railway worker heartbeat recovery | Reported yellow; heartbeat hardening landed |
 | Nash | High | Customer watch and notification smoke | Reported yellow; smoke helper under intake |
@@ -174,11 +174,12 @@ Current result:
 
 - New Brunswick provider proof is green enough to mark 9 campground rows alertable.
 - Manitoba and Nova Scotia are live in search as verified search-only rows: 45 and 20.
-- Alberta and Saskatchewan were researched as likely shared Aspira/ReserveAmerica-style adapter work, but remain 0 alertable rows.
+- Alberta and Saskatchewan now have a worker-side Aspira/ReserveAmerica parser proof for official directory and calendar pages, but remain 0 alertable rows.
+- Tests explicitly keep them out of `SUPPORTED_PLATFORMS`, so they cannot be polled for customer alerts yet.
 
 Next prompt:
 
-> Build the next provider adapter proof: Alberta first, then Saskatchewan if the adapter pattern transfers. In parallel, prove Manitoba/Nova Scotia live polling before upgrading them from search-only.
+> Wire live worker polling for the Aspira calendar path only after Railway heartbeat is green, then prove watch -> poll -> alert -> notification before upgrading Alberta or Saskatchewan from search-only.
 
 ### Epic 3: Alert Engine Truth Audit
 

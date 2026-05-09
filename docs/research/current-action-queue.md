@@ -18,7 +18,7 @@ Launched from the control tower on 2026-05-09:
 
 | Agent | Reasoning | Objective | Current control-tower status |
 |---|---|---|---|
-| Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Running |
+| Maxwell | Extra high | Alberta/Saskatchewan Adapter Sprint | Reported yellow; parser proof under intake |
 | Feynman | Extra high | Realtime Campsite Inventory Count Proof | Running |
 | Noether | High | Production Worker Heartbeat Recovery | Reported yellow; heartbeat hardening landed |
 | Nash | High | Customer Watch And Notification Smoke | Reported yellow; smoke helper under intake |
@@ -211,7 +211,13 @@ Why it matters:
 Current truth:
 
 - Alberta and Saskatchewan are searchable roadmap targets, not alertable product coverage yet.
-- Provider proof suggests they likely share an Aspira/ReserveAmerica-style adapter shape.
+- Worker-side parser proof confirms they share an Aspira/ReserveAmerica-style directory and calendar shape.
+- They are intentionally not in active worker `SUPPORTED_PLATFORMS` yet, so customers cannot be misled into live alerts.
+
+Next action:
+
+- Turn the parser proof into a live polling implementation only after Railway heartbeat is green.
+- Then prove a controlled watch, provider poll, alert row, and customer notification before upgrading labels from search-only to alertable.
 
 ### 6. Provider Health/Admin Truth
 
