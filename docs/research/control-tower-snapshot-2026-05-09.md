@@ -13,12 +13,15 @@ Longer-term category leadership line:
 Business line:
 
 - $10k revenue by the end of summer.
+- Count net collected revenue as the real success number; use gross revenue as an early signal.
 
 ## Current Verdict
 
 We have the right strategy and the right workstreams.
 
 We are not yet ready to claim broad Canadian alertable coverage.
+
+We are also not yet ready to claim app-side revenue reporting is trustworthy.
 
 The live catalog schema blocker is cleared:
 
@@ -35,6 +38,8 @@ The live catalog schema blocker is cleared:
 - Support labels are normalized for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
 - Production provider-quality reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Worker heartbeat fix is pushed at `d7464921c`, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
+- Checkout copy says one-time passes, but checkout code uses Stripe subscription mode.
+- The latest live aggregate read could not find the expected `subscriptions` or `funnel_events` tables.
 - Zero campsites should be counted toward the 50,000 realtime-alertable north-star target until worker polling and notifications are verified by provider.
 
 ## Completed Goal Windows
@@ -145,6 +150,16 @@ Next action:
 
 - Make provider sync and worker health visible to admins.
 
+### 4. Billing truth and revenue scoreboard
+
+Result:
+
+- `docs/research/summer-revenue-scoreboard.md` defines the $10k target, pass-count math, net-vs-gross rule, and the current billing/reporting blocker.
+
+Next action:
+
+- Decide one-time payment vs subscription, align checkout copy and Stripe mode, then verify revenue and funnel reporting from Stripe and/or live Supabase.
+
 ## What Not To Claim Yet
 
 Do not claim:
@@ -154,10 +169,11 @@ Do not claim:
 - Manitoba/Nova Scotia/Alberta/Saskatchewan alertability
 - all search results are alertable
 - Vercel cron-backed providers count toward the Canadian realtime target
+- $10k progress is measurable from the app database
 
 Safe claim:
 
 - Alphacamper has the foundation for Canada-first expansion.
 - Alphacamper's expanded live catalog search is now working with 461 safe searchable campground rows.
 - New Brunswick is now in the alertable set after provider proof.
-- The next work is Railway worker proof, campsite-level counts, and Alberta/Saskatchewan adapter work.
+- The next work is Railway worker proof, customer notification smoke, billing truth, campsite-level counts, and Alberta/Saskatchewan adapter work.

@@ -8,7 +8,7 @@ Status:
 
 - Gate cleared on 2026-05-09.
 - These windows reported back and were integrated on 2026-05-09.
-- Next work should focus on Railway worker smoke, Alberta/Saskatchewan adapter proof, provider health/admin truth, and demand capture.
+- Next work should focus on Railway worker smoke, customer notification proof, billing truth/revenue reporting, Alberta/Saskatchewan adapter proof, provider health/admin truth, and demand capture.
 
 ## Gate Before Launching
 

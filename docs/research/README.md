@@ -22,7 +22,7 @@ Each separate window should be launched as its own large goal, not a small ticke
 
 The control tower does not redo the window's work. It decides what the report means, updates the board, and launches the next large goal.
 
-Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engine Truth Audit, Provider Roadmap, and Catalog Ingestion Factory. Use high reasoning for Canada Coverage Sprint and Parks Canada Enrichment.
+Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engine Truth Audit, Provider Roadmap, Catalog Ingestion Factory, and Alberta/Saskatchewan Adapter Sprint. Use high reasoning for Production Worker Smoke, Customer Watch And Notification Smoke, Billing Truth And Revenue Reporting, Canada Coverage Sprint, Parks Canada Enrichment, Provider Health/Admin Truth, and Demand Capture.
 
 ## Open First
 
@@ -34,55 +34,59 @@ Use extra-high reasoning for the broadest windows: Live Catalog Fix, Alert Engin
    - Defines the major goal and the campsite-count thresholds for success.
    - Use this when deciding whether the program is actually winning.
 
-3. `control-tower-status-board.md`
+3. `summer-revenue-scoreboard.md`
+   - Defines the $10k summer revenue scoreboard.
+   - Use this when deciding whether coverage is turning into paid camper outcomes.
+
+4. `control-tower-status-board.md`
    - The live status board.
    - Use this when another goal window reports back.
 
-4. `control-tower-snapshot-2026-05-09.md`
+5. `control-tower-snapshot-2026-05-09.md`
    - The current executive snapshot after the first three goal windows reported.
    - Use this for the fastest read of where things stand now.
 
-5. `epic-launch-prompts.md`
+6. `epic-launch-prompts.md`
    - Copy-paste prompts for the separate long-running goal windows.
    - Use this to launch the next workstreams.
 
-6. `live-catalog-migration-runbook.md`
+7. `live-catalog-migration-runbook.md`
    - The approval-gated runbook for applying and verifying the live Supabase catalog migration.
    - Use this before any customer-facing coverage expansion.
 
-7. `live-catalog-verification.sql`
+8. `live-catalog-verification.sql`
    - Read-only SQL checks for the live catalog before and after the migration.
    - Use this inside the Supabase SQL Editor alongside the runbook.
 
-8. `current-action-queue.md`
+9. `current-action-queue.md`
    - The immediate operating queue.
    - Use this to see what to launch now, what is held, and why.
 
-9. `post-migration-launch-pack.md`
+10. `post-migration-launch-pack.md`
    - The next huge goal windows to launch after the live catalog migration is verified.
    - Use this immediately after Epic 1 is no longer red.
 
-10. `competitor-data-pipeline-playbook.md`
+11. `competitor-data-pipeline-playbook.md`
    - Explains how competitors likely built high-quality campground data.
    - Use this when planning catalog ingestion and enrichment.
 
-11. `provider-scoring-rubric.md`
+12. `provider-scoring-rubric.md`
    - Gives the roadmap window a consistent way to rank the next providers.
    - Use this for Alberta, Saskatchewan, PEI, Quebec/SEPAQ, and US expansion decisions.
 
-12. `report-intake-procedure.md`
+13. `report-intake-procedure.md`
     - Explains how to process reports from long-running goal windows.
     - Use this when a window comes back green/yellow/red.
 
-13. `control-tower-artifact-audit.md`
+14. `control-tower-artifact-audit.md`
     - Maps the control-tower request to the actual docs, commands, evidence, and remaining gaps.
     - Use this to audit whether the operating system still covers the brief before calling anything complete.
 
-14. `railway-worker-smoke-runbook.md`
+15. `railway-worker-smoke-runbook.md`
     - The current production worker blocker.
     - Use this to verify Railway deploy/runtime, `worker_status`, and alert-engine ownership.
 
-15. `customer-watch-notification-smoke-runbook.md`
+16. `customer-watch-notification-smoke-runbook.md`
     - The next proof after Railway heartbeat is green.
     - Use this to verify real watch creation, guardrails, alert rows, notification delivery, and cleanup.
 
@@ -115,6 +119,7 @@ Longer-term category leadership line:
 Business line:
 
 - $10k revenue by the end of summer.
+- The current app/database revenue scoreboard is not green yet: checkout copy says one-time passes, checkout code uses Stripe subscription mode, and the latest live Supabase read could not find the expected `subscriptions` or `funnel_events` tables.
 
 ## Current Window Status
 
@@ -133,9 +138,10 @@ Next high-leverage runs:
 
 1. Production Worker Smoke.
 2. Customer Watch And Notification Smoke, only after worker heartbeat is green.
-3. Alberta/Saskatchewan Adapter Sprint.
-4. Provider Health/Admin Truth UI and recurring ops.
-5. Demand Capture And Conversion.
+3. Billing Truth And Revenue Reporting.
+4. Alberta/Saskatchewan Adapter Sprint.
+5. Provider Health/Admin Truth UI and recurring ops.
+6. Demand Capture And Conversion.
 
 Run when official Parks Canada source data is selected:
 

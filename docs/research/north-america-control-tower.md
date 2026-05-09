@@ -376,13 +376,16 @@ Next recommended action:
 
 ## Current Next Action
 
-Start Epic 1. The schema mismatch is the gate. Everything else gets easier once live Supabase is the trusted catalog.
+Continue Production Worker Smoke. The live catalog gate is cleared, but Railway worker heartbeat and notification proof are still the product gate.
+
+After the customer notification path is proven, run Billing Truth And Revenue Reporting so the $10k summer goal is measured from a trustworthy source.
 
 ## Companion Docs
 
 - `docs/research/control-tower-status-board.md` tracks epic status, blockers, and report intake.
 - `docs/research/control-tower-snapshot-2026-05-09.md` gives the current executive snapshot after the first three goal windows.
 - `docs/research/north-star-success-metrics.md` defines the major goal and campsite-count thresholds for success.
+- `docs/research/summer-revenue-scoreboard.md` defines the $10k revenue target, pass-count math, and billing/reporting blocker.
 - `docs/research/live-catalog-migration-runbook.md` gives the approval-gated steps for applying and verifying the live Supabase catalog migration.
 - `docs/research/current-action-queue.md` lists what to launch now, what is held, and why.
 - `docs/research/post-migration-launch-pack.md` defines the next huge goal windows once the live catalog migration is verified.

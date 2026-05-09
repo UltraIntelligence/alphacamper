@@ -1,0 +1,153 @@
+# Summer Revenue Scoreboard
+
+Last updated: 2026-05-09
+
+## Purpose
+
+The coverage goal and the business goal are connected, but they are not the same.
+
+Coverage goal:
+
+- 50,000 verified realtime-alertable Canadian campsites.
+
+Business goal:
+
+- $10k revenue by the end of summer.
+
+Control-tower rule:
+
+- We should not call the expansion successful unless customers can pay, create watches, receive alerts, and see Alphacamper improve their odds of getting a site.
+
+## Revenue Math
+
+Current checkout copy shows:
+
+| Pass | Price | Simple $10k path |
+|---|---:|---:|
+| Summer pass | $29 | 345 passes = $10,005 |
+| Year pass | $49 | 205 passes = $10,045 |
+
+Mixed paths:
+
+| Summer passes | Year passes | Revenue |
+|---:|---:|---:|
+| 100 | 145 | $10,005 |
+| 150 | 116 | $10,034 |
+| 200 | 86 | $10,014 |
+
+Recommended success definition:
+
+- Primary: $10k net collected revenue after refunds and chargebacks.
+- Leading indicator: $10k gross collected revenue before the 30-day guarantee settles.
+
+Why:
+
+- The product promises a refund if Alphacamper does not book the camper a site.
+- Gross sales can look healthy while refunds reveal that the product did not deliver the customer outcome.
+
+## Current Source-Of-Truth Read
+
+Live aggregate read on 2026-05-09:
+
+| Area | Current live read | Meaning |
+|---|---:|---|
+| Active watches | 5 | There are real active watches or admin test watches waiting on worker polling. |
+| Availability alerts | 0 | No verified live alert delivery yet. |
+| Delivered alerts | 0 | `notified_at` proof is still missing. |
+| `subscriptions` table | Missing in live schema cache | Stripe is the money source of truth until this is fixed or verified. |
+| `funnel_events` table | Missing in live schema cache | Operator-wide conversion reporting is not live yet. |
+
+Important wrinkle:
+
+- The checkout UI calls both passes "one-time".
+- `/api/checkout` creates Stripe Checkout sessions with `mode: "subscription"`.
+- The webhook writes subscription state into a `subscriptions` table.
+- The live database read could not find that table.
+
+Product recommendation:
+
+- If these are fixed 2026 passes, use Stripe one-time payment mode and keep the current customer language.
+- If this is meant to renew, keep subscription mode but rewrite the checkout page so customers clearly understand renewal and cancellation.
+- Recommended for summer 2026: one-time payment. It matches the pass language, lowers customer confusion, and keeps the $10k scoreboard cleaner.
+
+## Weekly Scoreboard
+
+Track these every week.
+
+| Metric | Source | Why it matters |
+|---|---|---|
+| Gross Stripe revenue | Stripe | Fastest signal that campers are willing to pay. |
+| Net Stripe revenue | Stripe | The real $10k success number after refunds. |
+| Paid summer passes | Stripe or verified DB billing table | Shows short-term summer conversion. |
+| Paid year passes | Stripe or verified DB billing table | Shows higher-trust conversion. |
+| Refund count and dollars | Stripe | Tells us whether the guarantee is being triggered too often. |
+| Active watches | Supabase `watched_targets` | Shows customers are asking Alphacamper to work for them. |
+| Alerts delivered | Supabase `availability_alerts.notified_at` | Proves the alert engine is creating customer value. |
+| Alert taps | `funnel_events` after live table is verified | Shows whether campers act on alerts. |
+| Booking submitted | `funnel_events` after live table is verified | Shows "not just finding, helping get the site." |
+| Booking confirmed | `funnel_events` after live table is verified | Best customer outcome metric. |
+| Unsupported/search-only requests | Demand capture queue | Tells us which providers to build next. |
+| Verified realtime campsite inventory | Provider health and worker proof | Measures the coverage promise. |
+
+## Revenue Gates
+
+### Gate 1: Billing Truth
+
+Green means:
+
+- Checkout copy matches Stripe mode.
+- Live database has the billing table the site expects, or reporting intentionally uses Stripe only.
+- We can report paid pass counts without guessing.
+
+Current status:
+
+- Yellow/red until the one-time-vs-subscription decision is resolved and live billing reporting is verified.
+
+### Gate 2: Worker And Notification Proof
+
+Green means:
+
+- Railway worker heartbeat is real.
+- A controlled customer watch is created.
+- The worker checks it.
+- A real alert row is written with `notified_at`.
+- Cleanup is complete.
+
+Current status:
+
+- Yellow. Production site is live, but Railway heartbeat and notification proof are not green yet.
+
+### Gate 3: Conversion Measurement
+
+Green means:
+
+- Operator can see how many people pay, create watches, receive alerts, tap alerts, submit bookings, and confirm bookings.
+- Unsupported/search-only interest becomes a ranked queue.
+
+Current status:
+
+- Red until live funnel storage and operator reporting are proven.
+
+## How This Ties To The Product Strategy
+
+The competitor bar is not just "large campground list."
+
+Alphacamper should win by doing three things together:
+
+- Coverage: show the campground customers expect.
+- Trust: label alertable vs search-only honestly.
+- Outcome: help the camper actually get the site.
+
+The business target should not be treated as separate from the product. $10k by end of summer is the proof that enough campers believe Alphacamper improves their odds.
+
+## Next Work
+
+Recommended next epic after the current worker gate:
+
+- Billing Truth And Revenue Reporting.
+
+Objective:
+
+- Decide one-time vs subscription, align checkout copy and Stripe mode, verify live billing storage or Stripe-only reporting, and create an operator revenue view with gross revenue, net revenue, pass count, refunds, active watches, delivered alerts, and booking outcome events.
+
+Do not mark the $10k goal as measurable from the app database until this is complete.

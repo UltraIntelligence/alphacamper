@@ -148,7 +148,32 @@ Next action:
 
 These should be separate goal windows when launched.
 
-### 4. Alberta/Saskatchewan Adapter Sprint
+### 4. Billing Truth And Revenue Reporting
+
+Goal objective:
+
+- Make the $10k summer revenue goal measurable and trustworthy.
+
+Why it matters:
+
+- The product goal is not only more coverage. Campers need to pay, create watches, receive alerts, and believe Alphacamper improves their odds of getting a site.
+
+Current truth:
+
+- Checkout copy says the passes are one-time.
+- `/api/checkout` currently uses Stripe subscription mode.
+- The latest live Supabase aggregate read could not find the expected `subscriptions` or `funnel_events` tables.
+- Stripe is the current money source of truth until the app database reporting path is fixed or intentionally replaced by Stripe-only reporting.
+
+Next action:
+
+- Decide one-time payment vs subscription, align checkout and copy, verify live billing storage/reporting, and build a simple operator revenue scoreboard.
+
+Use runbook for framing:
+
+- `docs/research/summer-revenue-scoreboard.md`.
+
+### 5. Alberta/Saskatchewan Adapter Sprint
 
 Goal objective:
 
@@ -163,7 +188,7 @@ Current truth:
 - Alberta and Saskatchewan are searchable roadmap targets, not alertable product coverage yet.
 - Provider proof suggests they likely share an Aspira/ReserveAmerica-style adapter shape.
 
-### 5. Provider Health/Admin Truth
+### 6. Provider Health/Admin Truth
 
 Goal objective:
 
@@ -178,7 +203,7 @@ Current truth:
 - `catalog_provider_syncs` now records provider refresh status.
 - Worker health exists, but an admin-facing view is not proven.
 
-### 6. Demand Capture And Conversion
+### 7. Demand Capture And Conversion
 
 Goal objective:
 
@@ -192,6 +217,7 @@ Current truth:
 
 - Unsupported searches are not yet a strong prioritization signal.
 - The product still needs clearer "we can help you get this site" flows.
+- This should build on the revenue scoreboard so demand work is measured against paid conversion and booking outcomes.
 
 ## Run When Source Data Is Chosen
 

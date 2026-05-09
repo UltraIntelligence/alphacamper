@@ -23,9 +23,10 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Live migration gate has a runbook | `live-catalog-migration-runbook.md` | Approval prompt, preflight SQL, apply step, verification, and board updates | Covered |
 | Live migration has reusable verification SQL | `live-catalog-verification.sql` | Read-only provider counts, column checks, index check, support-status distribution, and sample row lookups | Covered |
 | Post-migration launches are pre-scoped | `post-migration-launch-pack.md` | Canada provider proof, alert-engine cleanup, and catalog ingestion factory prompts | Covered |
-| Epic runs are defined | `epic-launch-prompts.md` | Ten copy-paste goal-window prompts, including Production Worker Smoke and revenue/demand capture | Covered |
+| Epic runs are defined | `epic-launch-prompts.md` | Twelve copy-paste goal-window prompts, including Production Worker Smoke, customer notification smoke, billing truth, and revenue/demand capture | Covered |
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
 | Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
+| Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
 | Reasoning level guidance is clear | `README.md`, `epic-launch-prompts.md` | Extra-high for broad strategic/evidence-heavy windows; high for bounded coverage/enrichment windows | Covered |
 | Report-back process exists | `report-intake-procedure.md` | Intake steps, escalation rules, output format | Covered |
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
@@ -48,6 +49,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | "Coordinate reports back from long-running windows" | `report-intake-procedure.md`, `control-tower-status-board.md` |
 | "Find how competitors populated high-quality data" | `competitor-data-pipeline-playbook.md` |
 | "Be clear on the big goal and success count" | `north-star-success-metrics.md`, `control-tower-status-board.md` |
+| "Make $10k revenue by the end of summer" | `summer-revenue-scoreboard.md`, `current-action-queue.md`, `epic-launch-prompts.md` |
 | "Use huge tasks with their own goals" | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` |
 | "What is blocking us now?" | `control-tower-snapshot-2026-05-09.md`, `railway-worker-smoke-runbook.md`, `current-action-queue.md` |
 | "What do we launch after migration?" | `post-migration-launch-pack.md`, `current-action-queue.md` |
@@ -75,6 +77,7 @@ Created/updated docs:
 - `docs/research/report-intake-procedure.md`
 - `docs/research/railway-worker-smoke-runbook.md`
 - `docs/research/customer-watch-notification-smoke-runbook.md`
+- `docs/research/summer-revenue-scoreboard.md`
 - `alphacamper-worker/scripts/smoke-production.ts`
 - `alphacamper-worker/scripts/railway-diagnostics.ts`
 - `alphacamper-worker/package.json`
@@ -100,10 +103,11 @@ Evidence inspected:
 - `docs/research/README.md` lists the control-tower operating model and where to start.
 - `docs/research/control-tower-status-board.md` lists the master gates, count ledger, decision log, epic board, and current blockers.
 - `docs/research/current-action-queue.md` says the current gate is Production Worker Smoke.
-- `docs/research/epic-launch-prompts.md` includes ten large goal-window prompts.
+- `docs/research/epic-launch-prompts.md` includes twelve large goal-window prompts.
 - `docs/research/report-intake-procedure.md` defines how reports are classified and folded back into the board.
 - `docs/research/railway-worker-smoke-runbook.md` defines the worker runtime proof path.
 - `docs/research/customer-watch-notification-smoke-runbook.md` defines the next proof after worker heartbeat is green.
+- `docs/research/summer-revenue-scoreboard.md` defines the $10k revenue scoreboard and flags the billing/source-of-truth blocker.
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com`.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked because this shell is not Railway-authenticated.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` was created to rerun production smoke every 30 minutes.
@@ -131,6 +135,7 @@ Reported windows now reflected in the board:
 4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
+7. Billing Truth And Revenue Reporting: red until checkout mode, customer copy, and revenue reporting are aligned.
 
 Next control-tower action:
 
@@ -138,7 +143,7 @@ Next control-tower action:
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
 - After heartbeat proof, smoke-test authenticated watch creation and notification delivery.
 - Use `docs/research/customer-watch-notification-smoke-runbook.md` for that next customer-path proof.
-- Then resume Alberta/Saskatchewan adapter work and Provider Health/Admin Truth UI/ops.
+- Then resolve Billing Truth And Revenue Reporting, resume Alberta/Saskatchewan adapter work, and continue Provider Health/Admin Truth UI/ops.
 
 ## Completion Read
 
@@ -151,4 +156,5 @@ Do not mark the operational program complete while:
 - Railway worker runtime has no live heartbeat.
 - Active watches exist but polling/notification delivery is not proven.
 - Realtime-alertable campsite counts are still unverified.
+- $10k revenue reporting is not yet measurable from a verified billing source.
 - Provider health/admin truth is route-level, not a completed operator workflow.

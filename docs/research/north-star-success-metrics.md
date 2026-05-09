@@ -148,6 +148,8 @@ For the business, aim for:
 
 > $10k revenue by the end of summer from campers who trust Alphacamper enough to pay for better odds.
 
+Use `docs/research/summer-revenue-scoreboard.md` to measure this. Net collected revenue after refunds is the real success number; gross revenue is only an early signal.
+
 Longer term, the category-winning number is:
 
 > 250,000 to 350,000+ realtime-alertable North American campsites, plus a better customer experience for finding realistic openings.

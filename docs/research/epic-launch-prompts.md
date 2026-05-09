@@ -30,6 +30,8 @@ Use extra-high reasoning for:
 Use high reasoning for:
 
 - Production Worker Smoke.
+- Customer Watch And Notification Smoke.
+- Billing Truth And Revenue Reporting.
 - Canada Coverage Sprint.
 - Parks Canada Enrichment.
 - Provider Health/Admin Truth.
@@ -59,10 +61,12 @@ Do not relaunch those same windows unless the scope changes.
 Next recommended windows:
 
 1. Production Worker Smoke.
-2. Alberta/Saskatchewan Adapter Sprint.
-3. Provider Health/Admin Truth.
-4. Demand Capture And Conversion.
-5. Parks Canada Enrichment when official source data is chosen.
+2. Customer Watch And Notification Smoke, only after worker heartbeat is green.
+3. Billing Truth And Revenue Reporting.
+4. Alberta/Saskatchewan Adapter Sprint.
+5. Provider Health/Admin Truth.
+6. Demand Capture And Conversion.
+7. Parks Canada Enrichment when official source data is chosen.
 
 ## Prompt 1: Phase 2 Live Catalog Fix
 
@@ -489,10 +493,59 @@ Recommended control-tower update:
 - ...
 ```
 
+## Prompt 12: Billing Truth And Revenue Reporting
+
+```text
+Act as an Alphacamper goal window.
+
+Objective:
+Make the $10k summer revenue goal measurable and customer-safe. Decide whether the summer/year passes are one-time purchases or subscriptions, align checkout copy and Stripe Checkout mode, verify the live billing and funnel reporting source of truth, and produce a simple operator revenue scoreboard.
+
+Context:
+- Repo: /Users/ryan/Code/Alphacamper
+- Site app: alphacamper-site
+- Checkout UI: alphacamper-site/components/checkout/CheckoutView.tsx
+- Checkout API: alphacamper-site/app/api/checkout/route.ts
+- Stripe webhook: alphacamper-site/app/api/stripe/webhook/route.ts
+- Funnel events API: alphacamper-site/app/api/events/route.ts
+- Revenue framing: docs/research/summer-revenue-scoreboard.md
+- Current issue: checkout copy says one-time, checkout code uses Stripe subscription mode, and the latest live Supabase aggregate read could not find subscriptions or funnel_events.
+
+Rules:
+- Treat Stripe as the source of truth for real money unless live database reporting is explicitly verified.
+- Do not print Stripe keys, Supabase keys, customer emails, or payment details.
+- Keep the customer language clear: if it renews, say subscription; if it does not renew, use one-time payment mode.
+- Prefer the simplest customer-safe path for summer 2026.
+
+Report back:
+Epic:
+Status: green / yellow / red
+Billing decision:
+- one-time / subscription / blocked
+Customer copy:
+- ...
+Stripe/source-of-truth evidence:
+- ...
+Operator scoreboard:
+- gross revenue:
+- net revenue:
+- paid summer passes:
+- paid year passes:
+- refunds:
+- active watches:
+- delivered alerts:
+- booking outcomes:
+Risks:
+- ...
+Recommended control-tower update:
+- ...
+```
+
 ## Intake Instruction
 
 When a goal window reports back, update:
 
 - `docs/research/control-tower-status-board.md`
 - `docs/research/north-america-control-tower.md` only if the strategy or next order changes
+- `docs/research/summer-revenue-scoreboard.md` if billing or conversion truth changes
 - `docs/research/competitor-data-pipeline-playbook.md` only if new data-source learnings change the ingestion plan

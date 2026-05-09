@@ -34,6 +34,7 @@ These gates protect the product from over-promising.
 | Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
+| Revenue measurement | Red | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout copy says one-time, checkout code uses subscription mode, and live DB reporting tables were not found in the latest aggregate read |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
 
 ## Current Count Ledger
@@ -61,6 +62,16 @@ Control-tower rule:
 - Reported counts are useful for planning.
 - Verified counts are the only numbers safe for customer-facing claims.
 
+## Business Ledger
+
+| Count | Value | Evidence Level | Product Meaning | Next Verification Needed |
+|---|---:|---|---|---|
+| Summer revenue target | $10k | Ryan's business target | The summer work needs to turn into paid camper trust | Track gross and net Stripe revenue weekly |
+| Summer-pass path to $10k | 345 passes | Calculated from $29 checkout copy | Shows the size of the short-term sales target | Verify price/mode in Stripe |
+| Year-pass path to $10k | 205 passes | Calculated from $49 checkout copy | Shows the size of the higher-trust sales target | Verify price/mode in Stripe |
+| Verified paid-pass count from app DB | Not verified | Latest live read could not find `subscriptions` | App-side revenue reporting is not trustworthy yet | Resolve billing mode and live reporting source |
+| Verified funnel-event count from app DB | Not verified | Latest live read could not find `funnel_events` | Operator-wide conversion reporting is not trustworthy yet | Verify or add live funnel storage |
+
 ## Decision Log
 
 | Date | Decision | Reason | Status |
@@ -73,6 +84,8 @@ Control-tower rule:
 | 2026-05-09 | Do not count Vercel cron toward the 50,000 Canadian north-star target | Pasteur found Vercel cron is a weaker legacy path; cleanup code retires it once deployed | Active |
 | 2026-05-09 | Operate autonomously unless a move is unusually destructive or risky | Ryan wants the control tower to move like an owner, not wait on normal execution approvals | Active |
 | 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
+| 2026-05-09 | Treat net collected revenue as the real $10k target | The 30-day guarantee means gross sales alone can overstate success | Active |
+| 2026-05-09 | Resolve one-time pass vs subscription before trusting revenue reporting | Checkout copy and checkout mode currently disagree | Active |
 | 2026-05-09 | Treat New Brunswick as alertable after provider proof | The New Brunswick CAMIS/GoingToCamp path returned directory and site-level availability evidence | Active |
 | 2026-05-09 | Keep Manitoba and Nova Scotia search-only for now | Their official directories are verified, but live alert polling has not been proven end to end | Active |
 | 2026-05-09 | Move all alert polling toward Railway worker | Recreation.gov worker support now exists in code, and the old Vercel cron is retired live; Railway heartbeat still needs proof | Active |
@@ -263,6 +276,32 @@ Next prompt:
 
 > Turn the importer into an operational job with provider health surfaced to admins, then extend it to Newfoundland/Labrador and the Ontario regional systems.
 
+### Epic 7: Billing Truth And Revenue Reporting
+
+Status: Red
+
+Customer promise affected:
+
+- Whether campers understand what they are buying and whether Alphacamper can honestly track progress toward $10k by summer end.
+
+Must prove:
+
+- Checkout copy matches Stripe mode.
+- The live database has the billing/conversion tables the app expects, or reporting intentionally uses Stripe as the source of truth.
+- Operators can see gross revenue, net revenue, paid pass counts, refunds, active watches, delivered alerts, and booking outcome events.
+
+Current result:
+
+- Checkout UI says the summer and year passes are one-time.
+- `/api/checkout` creates Stripe sessions with `mode: "subscription"`.
+- `/api/stripe/webhook` writes subscription state into a `subscriptions` table.
+- The latest live aggregate read could not find `subscriptions` or `funnel_events` in the live schema cache.
+- `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
+
+Next prompt:
+
+> Resolve one-time payment vs subscription, align the customer copy and Stripe mode, then prove weekly operator revenue reporting from Stripe and/or live Supabase.
+
 ## Current Recommended Next Runs
 
 Already reported:
@@ -283,9 +322,10 @@ Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-3. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
-4. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
-5. Demand Capture: let unsupported searches become a prioritization queue.
+3. Billing Truth And Revenue Reporting: make the $10k goal measurable and fix the one-time-vs-subscription mismatch.
+4. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
+5. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
+6. Demand Capture: let unsupported searches become a prioritization queue.
 
 Keep research-only for now:
 
@@ -326,7 +366,8 @@ Short version:
 - Live Supabase now powers 461 safe searchable rows from official/provider directories.
 - We have 396 verified alertable campground rows, but not a verified campsite-level count yet.
 - We should not claim broad alertable Canada coverage until worker heartbeat, notification smoke, and campsite-level counts are proven.
-- The next real unlock is Railway worker proof, then customer watch/notification smoke, then Alberta/Saskatchewan adapter work.
+- We should not claim the $10k goal is measurable from the app database until billing mode and live revenue reporting are fixed.
+- The next real unlock is Railway worker proof, then customer watch/notification smoke, then billing truth, then Alberta/Saskatchewan adapter work.
 
 ## North Star
 
@@ -341,5 +382,6 @@ Longer-term category leadership line:
 Business line:
 
 - $10k revenue by the end of summer.
+- Count net collected revenue as the real success number; use gross revenue as an early warning signal.
 
 Only count realtime-alertable inventory when measuring this goal. Search-only rows, static fallback rows, unverified seeds, and coming-soon providers are useful, but they do not count toward the realtime success number.
