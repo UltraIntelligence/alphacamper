@@ -107,7 +107,7 @@ Current result:
 - Repo now includes `alphacamper-worker/railway.json` to make the worker's Railway build/deploy settings explicit.
 - Worker health now listens on Railway's `PORT` when provided, with `8080` as the fallback.
 - `npm run smoke:railway -- --allow-blocked` now prints live production heartbeat proof before Railway auth/log checks.
-- Latest verified result at 2026-05-09T13:16:09Z remains yellow/blocked: active watches 5, delivered alerts 0, no Supabase heartbeat, missing worker platforms, and Railway CLI not authenticated.
+- Latest verified result at 2026-05-09T13:36:41Z remains yellow/blocked: active watches 5, delivered alerts 0, no Supabase heartbeat, missing worker platforms, and Railway CLI not authenticated.
 - GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/9
 
 Next action:
@@ -229,7 +229,7 @@ Current truth:
 - The live tables currently have 0 billing/conversion rows.
 - Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
 - `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, and gross app-recorded revenue.
-- Latest verified smoke result at 2026-05-09T13:16:09Z is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, and the five production Stripe env vars missing.
+- Latest verified smoke result at 2026-05-09T13:36:41Z is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, and the five production Stripe env vars missing.
 - Direct `vercel env ls production` confirms the five missing names are not configured in production.
 - The available Stripe connector is currently logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not create or reuse Stripe products from that connector without confirming the correct account first.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.
