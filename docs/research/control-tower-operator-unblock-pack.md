@@ -21,6 +21,11 @@ Still yellow:
 - Stripe production checkout/revenue proof.
 - Production catalog sync for Manitoba and Nova Scotia alertable labels.
 
+GitHub blocker trackers:
+
+- Railway reliability: https://github.com/UltraIntelligence/alphacamper/issues/9
+- Stripe revenue readiness: https://github.com/UltraIntelligence/alphacamper/issues/10
+
 ## Order Of Operations
 
 Do these in this order.

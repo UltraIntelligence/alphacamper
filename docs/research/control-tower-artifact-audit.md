@@ -33,6 +33,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Competitor data strategy is explained | `competitor-data-pipeline-playbook.md` | Source classes, database shape, ingestion factory epic | Covered |
 | Provider roadmap can be ranked consistently | `provider-scoring-rubric.md` | Scorecard, weights, provider hypotheses | Covered |
 | Production worker blocker has an executable proof path | `railway-worker-smoke-runbook.md`, `alphacamper-worker/scripts/smoke-production.ts`, `alphacamper-worker/scripts/railway-diagnostics.ts`, `alphacamper-worker/package.json` | `npm run smoke:production` reads production provider-quality and live Supabase heartbeat state; `npm run smoke:railway` checks Railway auth/service/env/logs without printing secrets | Covered |
+| External blockers have GitHub tracker issues | GitHub issues #9 and #10, `current-action-queue.md`, `control-tower-operator-unblock-pack.md` | Railway heartbeat and Stripe revenue readiness have explicit done criteria and links from control docs | Covered |
 | Railway worker deploy settings are explicit | `alphacamper-worker/railway.json`, `alphacamper-worker/src/index.ts`, `railway-worker-smoke-runbook.md` | Worker has Railway build/deploy config, honors Railway `PORT`, and documents the root-directory/config-file setup checklist | Covered |
 | Customer watch and notification proof is pre-scoped | `customer-watch-notification-smoke-runbook.md`, `epic-launch-prompts.md`, `current-action-queue.md` | Runbook separates watch creation, worker polling, notification delivery, guardrail proof, and cleanup | Covered |
 | Operator truth is surfaced from production | `alphacamper-site/app/api/admin/provider-quality/route.ts`, `control-tower-status-board.md`, `current-action-queue.md` | Production route reports live Supabase, 5 active watches, and `missing_worker_heartbeat` | Covered |
@@ -93,7 +94,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T12:03:40Z.
+Audit timestamp: 2026-05-09T12:07:24Z.
 
 Objective restated as concrete deliverables:
 
@@ -119,6 +120,8 @@ Evidence inspected:
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
 - Local Stripe CLI can read live Stripe objects but is restricted from creating live Alphacamper products/prices/webhooks.
 - Stripe connector account check returned a different account (`Superpress`), so it is not the Alphacamper billing source.
+- GitHub issue #9 tracks Railway heartbeat and live alert reliability.
+- GitHub issue #10 tracks Stripe production checkout and revenue proof.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` now reruns worker reliability smoke and billing readiness smoke every 30 minutes.
 
 Live smoke evidence:

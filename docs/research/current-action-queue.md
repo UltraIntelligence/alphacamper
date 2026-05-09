@@ -90,6 +90,7 @@ Current result:
 - Worker health now listens on Railway's `PORT` when provided, with `8080` as the fallback.
 - `npm run smoke:railway -- --allow-blocked` now prints live production heartbeat proof before Railway auth/log checks.
 - Latest verified result remains yellow/blocked: active watches 5, delivered alerts 0, no Supabase heartbeat, missing worker platforms, and Railway CLI not authenticated.
+- GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/9
 
 Next action:
 
@@ -212,6 +213,7 @@ Current truth:
 - `npm run smoke:billing -- --allow-yellow` now reports paid active passes, summer/year split, payment-mode pass count, and gross app-recorded revenue.
 - Latest verified smoke result is yellow: 0 paid active passes, no gross app revenue, 0 funnel events, 0 webhook events, and the five production Stripe env vars missing.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.
+- GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/10
 
 Next action:
 
