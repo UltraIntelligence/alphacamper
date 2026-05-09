@@ -96,7 +96,7 @@ describe("/api/checkout", () => {
     expect(response.status).toBe(200);
     expect(lookupChain.eq).toHaveBeenCalledWith("user_id", "user-123");
     expect(createSession).toHaveBeenCalledWith(expect.objectContaining({
-      mode: "subscription",
+      mode: "payment",
       line_items: [{ price: "price_summer_123", quantity: 1 }],
       success_url: "https://alphacamper.test/dashboard?checkout=success",
       cancel_url: "https://alphacamper.test/checkout?product=summer&canceled=true",
@@ -106,7 +106,7 @@ describe("/api/checkout", () => {
         user_id: "user-123",
         product_key: "summer_pass_2026",
       },
-      subscription_data: {
+      payment_intent_data: {
         metadata: {
           user_id: "user-123",
           product_key: "summer_pass_2026",

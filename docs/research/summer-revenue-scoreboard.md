@@ -54,15 +54,18 @@ Live aggregate read on 2026-05-09:
 | Active watches | 5 | There are real active watches or admin test watches waiting on worker polling. |
 | Availability alerts | 0 | No verified live alert delivery yet. |
 | Delivered alerts | 0 | `notified_at` proof is still missing. |
-| `subscriptions` table | Missing in live schema cache | Stripe is the money source of truth until this is fixed or verified. |
-| `funnel_events` table | Missing in live schema cache | Operator-wide conversion reporting is not live yet. |
+| `subscriptions` table | Exists, 0 rows | Live billing storage exists after the one-time pass migration. |
+| `funnel_events` table | Exists, 0 rows | Live conversion-event storage exists, but operator-wide reporting still needs a view. |
+| Production Vercel Stripe env vars | Missing | Live checkout cannot work until Stripe production env vars are configured. |
 
 Important wrinkle:
 
 - The checkout UI calls both passes "one-time".
-- `/api/checkout` creates Stripe Checkout sessions with `mode: "subscription"`.
-- The webhook writes subscription state into a `subscriptions` table.
-- The live database read could not find that table.
+- `/api/checkout` now creates Stripe Checkout sessions with `mode: "payment"` in code.
+- The webhook now stores one-time pass purchases in the existing `subscriptions` access table.
+- Legacy subscription webhook handling remains for any older subscription-mode sessions.
+- The live database now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`.
+- Production Vercel is still missing the Stripe env vars needed to actually start checkout.
 
 Product recommendation:
 
@@ -101,7 +104,7 @@ Green means:
 
 Current status:
 
-- Yellow/red until the one-time-vs-subscription decision is resolved and live billing reporting is verified.
+- Yellow. The one-time-vs-subscription decision is resolved in code and the live tables exist, but production Stripe env vars and operator revenue reporting are not complete.
 
 ### Gate 2: Worker And Notification Proof
 
@@ -126,7 +129,7 @@ Green means:
 
 Current status:
 
-- Red until live funnel storage and operator reporting are proven.
+- Yellow. Live funnel storage exists, but operator reporting is not proven.
 
 ## How This Ties To The Product Strategy
 
@@ -148,6 +151,6 @@ Recommended next epic after the current worker gate:
 
 Objective:
 
-- Decide one-time vs subscription, align checkout copy and Stripe mode, verify live billing storage or Stripe-only reporting, and create an operator revenue view with gross revenue, net revenue, pass count, refunds, active watches, delivered alerts, and booking outcome events.
+- Configure production Stripe env vars, prove one checkout/webhook path, and create an operator revenue view with gross revenue, net revenue, pass count, refunds, active watches, delivered alerts, and booking outcome events.
 
-Do not mark the $10k goal as measurable from the app database until this is complete.
+Do not mark the $10k goal as fully measurable until production Stripe checkout and operator reporting are both proven.

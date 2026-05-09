@@ -11,6 +11,10 @@ function normalizeStripeString(value: string | Stripe.Customer | Stripe.DeletedC
   return typeof value === "string" ? value : value?.id ?? null;
 }
 
+function normalizeStripeObjectId(value: string | { id: string } | null): string | null {
+  return typeof value === "string" ? value : value?.id ?? null;
+}
+
 function mapSubscriptionStatus(status: Stripe.Subscription.Status): SubscriptionStatus {
   if (status === "active" || status === "trialing") {
     return "active";
@@ -50,11 +54,62 @@ function resolveProductKey(metadata: Record<string, string> | null | undefined):
   return isProductKey(rawValue) ? rawValue : null;
 }
 
+function getPassPeriodEnd(productKey: ProductKey): string {
+  switch (productKey) {
+    case "summer_pass_2026":
+      return "2026-11-01T00:00:00.000Z";
+    case "year_pass_2026":
+      return "2027-01-01T00:00:00.000Z";
+  }
+}
+
+function mapCheckoutPaymentStatus(status: Stripe.Checkout.Session["payment_status"] | null): SubscriptionStatus {
+  if (status === "paid" || status === "no_payment_required") {
+    return "active";
+  }
+
+  return "past_due";
+}
+
 async function processCheckoutCompleted(event: Stripe.CheckoutSessionCompletedEvent) {
   const session = event.data.object;
   const userId = session.metadata?.user_id ?? session.client_reference_id;
   if (!userId) {
     throw new Error("Missing user_id on checkout session");
+  }
+
+  const sessionProductKey = resolveProductKey(session.metadata);
+
+  if (session.mode === "payment") {
+    if (!sessionProductKey) {
+      throw new Error("Missing product_key on checkout session");
+    }
+
+    const supabase = getServiceRoleSupabase();
+    const { error } = await supabase
+      .from("subscriptions")
+      .upsert({
+        user_id: userId,
+        stripe_customer_id: normalizeStripeString(session.customer),
+        stripe_subscription_id: null,
+        stripe_payment_intent_id: normalizeStripeObjectId(session.payment_intent),
+        stripe_checkout_session_id: session.id,
+        checkout_mode: "payment",
+        product_key: sessionProductKey,
+        status: mapCheckoutPaymentStatus(session.payment_status),
+        current_period_end: getPassPeriodEnd(sessionProductKey),
+        amount_total: session.amount_total,
+        currency: session.currency,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: "user_id",
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return;
   }
 
   const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
@@ -64,7 +119,7 @@ async function processCheckoutCompleted(event: Stripe.CheckoutSessionCompletedEv
 
   const stripe = getStripe();
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const productKey = resolveProductKey(session.metadata) ?? resolveProductKey(subscription.metadata);
+  const productKey = sessionProductKey ?? resolveProductKey(subscription.metadata);
   if (!productKey) {
     throw new Error("Missing product_key on checkout session");
   }
@@ -76,6 +131,9 @@ async function processCheckoutCompleted(event: Stripe.CheckoutSessionCompletedEv
       user_id: userId,
       stripe_customer_id: normalizeStripeString(session.customer),
       stripe_subscription_id: subscription.id,
+      stripe_payment_intent_id: null,
+      stripe_checkout_session_id: session.id,
+      checkout_mode: "subscription",
       product_key: productKey,
       status: mapSubscriptionStatus(subscription.status),
       current_period_end: toIsoDate(getSubscriptionPeriodEnd(subscription)),
@@ -117,6 +175,7 @@ async function processSubscriptionChange(subscription: Stripe.Subscription) {
       user_id: userId,
       stripe_customer_id: normalizeStripeString(subscription.customer),
       stripe_subscription_id: subscription.id,
+      checkout_mode: "subscription",
       product_key: productKey,
       status: mapSubscriptionStatus(subscription.status),
       current_period_end: toIsoDate(getSubscriptionPeriodEnd(subscription)),

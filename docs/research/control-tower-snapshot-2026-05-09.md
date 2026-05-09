@@ -38,8 +38,9 @@ The live catalog schema blocker is cleared:
 - Support labels are normalized for BC, Ontario, Parks Canada, Manitoba, Nova Scotia, and New Brunswick.
 - Production provider-quality reports `railway_worker` degraded with `missing_worker_heartbeat`.
 - Worker heartbeat fix is pushed at `d7464921c`, but live `worker_status` still has no rows, so Railway runtime health remains unverified.
-- Checkout copy says one-time passes, but checkout code uses Stripe subscription mode.
-- The latest live aggregate read could not find the expected `subscriptions` or `funnel_events` tables.
+- Checkout code now uses one-time Stripe payment mode to match the one-time pass copy.
+- Live Supabase now has `subscriptions` and `funnel_events`, both currently with 0 rows.
+- Production Vercel is missing Stripe env vars, so live checkout is not green yet.
 - Zero campsites should be counted toward the 50,000 realtime-alertable north-star target until worker polling and notifications are verified by provider.
 
 ## Completed Goal Windows
@@ -155,10 +156,11 @@ Next action:
 Result:
 
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k target, pass-count math, net-vs-gross rule, and the current billing/reporting blocker.
+- Follow-up code now aligns checkout with one-time pass purchases and creates the live billing/conversion tables.
 
 Next action:
 
-- Decide one-time payment vs subscription, align checkout copy and Stripe mode, then verify revenue and funnel reporting from Stripe and/or live Supabase.
+- Configure production Stripe env vars, prove one checkout/webhook path, then verify revenue and funnel reporting from Stripe and/or live Supabase.
 
 ## What Not To Claim Yet
 

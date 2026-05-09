@@ -164,13 +164,14 @@ Why it matters:
 Current truth:
 
 - Checkout copy says the passes are one-time.
-- `/api/checkout` currently uses Stripe subscription mode.
-- The latest live Supabase aggregate read could not find the expected `subscriptions` or `funnel_events` tables.
-- Stripe is the current money source of truth until the app database reporting path is fixed or intentionally replaced by Stripe-only reporting.
+- `/api/checkout` now uses Stripe one-time payment mode in code.
+- Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`.
+- The live tables currently have 0 billing/conversion rows.
+- Production Vercel is missing Stripe env vars, so live checkout still cannot be called green.
 
 Next action:
 
-- Decide one-time payment vs subscription, align checkout and copy, verify live billing storage/reporting, and build a simple operator revenue scoreboard.
+- Configure production Stripe env vars, prove one test checkout/webhook in Stripe test or production-safe mode, and build a simple operator revenue scoreboard.
 
 Use runbook for framing:
 

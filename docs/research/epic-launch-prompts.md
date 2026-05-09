@@ -509,7 +509,7 @@ Context:
 - Stripe webhook: alphacamper-site/app/api/stripe/webhook/route.ts
 - Funnel events API: alphacamper-site/app/api/events/route.ts
 - Revenue framing: docs/research/summer-revenue-scoreboard.md
-- Current issue: checkout copy says one-time, checkout code uses Stripe subscription mode, and the latest live Supabase aggregate read could not find subscriptions or funnel_events.
+- Current issue: checkout now uses one-time payment mode in code and live Supabase has billing/conversion tables, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
 
 Rules:
 - Treat Stripe as the source of truth for real money unless live database reporting is explicitly verified.

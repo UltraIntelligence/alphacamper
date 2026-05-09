@@ -64,13 +64,91 @@ describe("/api/stripe/webhook", () => {
     });
   });
 
-  it("upserts the subscription record when checkout completes", async () => {
+  it("upserts the one-time pass record when checkout completes", async () => {
     const constructEvent = vi.fn().mockReturnValue({
       id: "evt_checkout_complete",
       type: "checkout.session.completed",
       data: {
         object: {
           id: "cs_test_123",
+          mode: "payment",
+          customer: "cus_123",
+          payment_intent: "pi_123",
+          payment_status: "paid",
+          amount_total: 2900,
+          currency: "usd",
+          client_reference_id: "user-123",
+          metadata: {
+            user_id: "user-123",
+            product_key: "summer_pass_2026",
+          },
+        },
+      },
+    });
+    const insertEvent = vi.fn().mockResolvedValue({ error: null });
+    const upsertSubscription = vi.fn().mockResolvedValue({ error: null });
+
+    mockGetStripe.mockReturnValue({
+      webhooks: { constructEvent },
+      subscriptions: { retrieve: vi.fn() },
+    });
+    mockFrom.mockImplementation((table: string) => {
+      if (table === "stripe_webhook_events") {
+        return {
+          ...buildLookupChain(null),
+          insert: insertEvent,
+          delete: vi.fn(() => ({
+            eq: vi.fn(async () => ({ error: null })),
+          })),
+        };
+      }
+
+      if (table === "subscriptions") {
+        return {
+          upsert: upsertSubscription,
+        };
+      }
+
+      throw new Error(`Unexpected table ${table}`);
+    });
+
+    const response = await POST(new Request("https://alphacamper.test/api/stripe/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": "good_signature" },
+      body: JSON.stringify({ hello: "world" }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(insertEvent).toHaveBeenCalledWith({
+      id: "evt_checkout_complete",
+      event_type: "checkout.session.completed",
+    });
+    expect(upsertSubscription).toHaveBeenCalledWith(expect.objectContaining({
+      user_id: "user-123",
+      stripe_customer_id: "cus_123",
+      stripe_subscription_id: null,
+      stripe_payment_intent_id: "pi_123",
+      stripe_checkout_session_id: "cs_test_123",
+      checkout_mode: "payment",
+      product_key: "summer_pass_2026",
+      status: "active",
+      current_period_end: "2026-11-01T00:00:00.000Z",
+      amount_total: 2900,
+      currency: "usd",
+    }), {
+      onConflict: "user_id",
+    });
+    await expect(response.json()).resolves.toEqual({ received: true });
+  });
+
+  it("keeps processing legacy subscription checkout sessions", async () => {
+    const constructEvent = vi.fn().mockReturnValue({
+      id: "evt_checkout_subscription",
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_subscription",
+          mode: "subscription",
           customer: "cus_123",
           subscription: "sub_123",
           client_reference_id: "user-123",
@@ -125,22 +203,20 @@ describe("/api/stripe/webhook", () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(insertEvent).toHaveBeenCalledWith({
-      id: "evt_checkout_complete",
-      event_type: "checkout.session.completed",
-    });
     expect(retrieveSubscription).toHaveBeenCalledWith("sub_123");
     expect(upsertSubscription).toHaveBeenCalledWith(expect.objectContaining({
       user_id: "user-123",
       stripe_customer_id: "cus_123",
       stripe_subscription_id: "sub_123",
+      stripe_payment_intent_id: null,
+      stripe_checkout_session_id: "cs_test_subscription",
+      checkout_mode: "subscription",
       product_key: "summer_pass_2026",
       status: "active",
       current_period_end: "2026-08-02T18:00:00.000Z",
     }), {
       onConflict: "user_id",
     });
-    await expect(response.json()).resolves.toEqual({ received: true });
   });
 
   it("treats duplicate event ids as a no-op", async () => {

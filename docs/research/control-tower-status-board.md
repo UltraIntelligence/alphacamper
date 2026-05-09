@@ -34,7 +34,7 @@ These gates protect the product from over-promising.
 | Watch creation guardrails | Yellow | Customers cannot create misleading alerts for unsupported rows | Local guardrail tests pass; live authenticated watch creation still needs a customer-path smoke test |
 | Alert engine source of truth | Yellow | Railway worker vs Vercel cron ownership is decided | Vercel cron route is retired live; worker heartbeat fix is pushed, but Railway runtime is not writing `worker_status` yet |
 | Provider health/admin truth | Yellow | Admin can see alertable/search-only/stale/broken providers | Live `/api/admin/provider-quality` now reads Supabase and shows the missing worker heartbeat; admin UI/recurring ops still need completion |
-| Revenue measurement | Red | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout copy says one-time, checkout code uses subscription mode, and live DB reporting tables were not found in the latest aggregate read |
+| Revenue measurement | Yellow | Stripe, checkout copy, and operator reporting agree on paid pass revenue | Checkout now uses one-time payment mode in code and live DB tables exist; production Stripe env vars and operator revenue reporting are still missing |
 | Demand capture | Red | Unsupported searches become a prioritization queue | Not built/proven |
 
 ## Current Count Ledger
@@ -69,8 +69,8 @@ Control-tower rule:
 | Summer revenue target | $10k | Ryan's business target | The summer work needs to turn into paid camper trust | Track gross and net Stripe revenue weekly |
 | Summer-pass path to $10k | 345 passes | Calculated from $29 checkout copy | Shows the size of the short-term sales target | Verify price/mode in Stripe |
 | Year-pass path to $10k | 205 passes | Calculated from $49 checkout copy | Shows the size of the higher-trust sales target | Verify price/mode in Stripe |
-| Verified paid-pass count from app DB | Not verified | Latest live read could not find `subscriptions` | App-side revenue reporting is not trustworthy yet | Resolve billing mode and live reporting source |
-| Verified funnel-event count from app DB | Not verified | Latest live read could not find `funnel_events` | Operator-wide conversion reporting is not trustworthy yet | Verify or add live funnel storage |
+| Verified paid-pass count from app DB | 0 | Live read from `subscriptions` after one-time pass migration | No paid passes recorded in the app DB yet | Configure Stripe env vars and prove checkout webhook |
+| Verified funnel-event count from app DB | 0 | Live read from `funnel_events` after one-time pass migration | No conversion events recorded yet | Build operator reporting and prove event writes |
 
 ## Decision Log
 
@@ -85,7 +85,7 @@ Control-tower rule:
 | 2026-05-09 | Operate autonomously unless a move is unusually destructive or risky | Ryan wants the control tower to move like an owner, not wait on normal execution approvals | Active |
 | 2026-05-09 | Add business north star: $10k revenue by end of summer | Coverage work should ladder into paid camper outcomes, not only infrastructure | Active |
 | 2026-05-09 | Treat net collected revenue as the real $10k target | The 30-day guarantee means gross sales alone can overstate success | Active |
-| 2026-05-09 | Resolve one-time pass vs subscription before trusting revenue reporting | Checkout copy and checkout mode currently disagree | Active |
+| 2026-05-09 | Use one-time payments for 2026 passes | Matches pass copy, lowers customer confusion, and makes summer revenue reporting clearer | Active |
 | 2026-05-09 | Treat New Brunswick as alertable after provider proof | The New Brunswick CAMIS/GoingToCamp path returned directory and site-level availability evidence | Active |
 | 2026-05-09 | Keep Manitoba and Nova Scotia search-only for now | Their official directories are verified, but live alert polling has not been proven end to end | Active |
 | 2026-05-09 | Move all alert polling toward Railway worker | Recreation.gov worker support now exists in code, and the old Vercel cron is retired live; Railway heartbeat still needs proof | Active |
@@ -279,7 +279,7 @@ Next prompt:
 
 ### Epic 7: Billing Truth And Revenue Reporting
 
-Status: Red
+Status: Yellow
 
 Customer promise affected:
 
@@ -294,14 +294,16 @@ Must prove:
 Current result:
 
 - Checkout UI says the summer and year passes are one-time.
-- `/api/checkout` creates Stripe sessions with `mode: "subscription"`.
-- `/api/stripe/webhook` writes subscription state into a `subscriptions` table.
-- The latest live aggregate read could not find `subscriptions` or `funnel_events` in the live schema cache.
+- `/api/checkout` now creates Stripe sessions with `mode: "payment"` in code.
+- `/api/stripe/webhook` now stores one-time pass purchases in the existing access table.
+- Legacy subscription webhook handling remains for any older subscription-mode sessions.
+- Live Supabase now has `subscriptions`, `stripe_webhook_events`, and `funnel_events`; current counts are 0 rows for paid passes and funnel events.
+- Production Vercel is missing Stripe env vars, so live checkout is not green yet.
 - `docs/research/summer-revenue-scoreboard.md` now defines the $10k scoreboard and the recommended decision.
 
 Next prompt:
 
-> Resolve one-time payment vs subscription, align the customer copy and Stripe mode, then prove weekly operator revenue reporting from Stripe and/or live Supabase.
+> Configure production Stripe env vars, prove one checkout/webhook path, then add weekly operator revenue reporting from Stripe and live Supabase.
 
 ## Current Recommended Next Runs
 
@@ -323,7 +325,7 @@ Next recommended runs:
 
 1. Production Worker Smoke: verify Railway worker deploy/health and heartbeat.
 2. Customer Watch And Notification Smoke: once heartbeat is green, prove one real watch, notification, guardrail, and cleanup path.
-3. Billing Truth And Revenue Reporting: make the $10k goal measurable and fix the one-time-vs-subscription mismatch.
+3. Billing Truth And Revenue Reporting: configure Stripe env vars, prove checkout/webhook, and finish the operator revenue view.
 4. Alberta/Saskatchewan Adapter Sprint: build the shared adapter proof without marketing them as alertable yet.
 5. Provider Health/Admin Truth: turn sync records and worker health into an admin-facing operator view.
 6. Demand Capture: let unsupported searches become a prioritization queue.

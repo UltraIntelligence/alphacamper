@@ -137,7 +137,7 @@ Reported windows now reflected in the board:
 4. Canada Provider Proof: yellow; New Brunswick is alertable, Alberta/Saskatchewan need adapter work.
 5. Alert Engine Cleanup: yellow until Railway worker runtime proof.
 6. Catalog Ingestion Factory: yellow until recurring ops/admin health are proven.
-7. Billing Truth And Revenue Reporting: red until checkout mode, customer copy, and revenue reporting are aligned.
+7. Billing Truth And Revenue Reporting: yellow after one-time checkout code and live table migration; production Stripe env vars and operator reporting remain.
 
 Next control-tower action:
 
@@ -145,7 +145,7 @@ Next control-tower action:
 - Verify the Railway service deployment, env vars, logs, `/health`, and live `worker_status`.
 - After heartbeat proof, smoke-test authenticated watch creation and notification delivery.
 - Use `docs/research/customer-watch-notification-smoke-runbook.md` for that next customer-path proof.
-- Then resolve Billing Truth And Revenue Reporting, resume Alberta/Saskatchewan adapter work, and continue Provider Health/Admin Truth UI/ops.
+- Then configure production Stripe env vars and revenue reporting, resume Alberta/Saskatchewan adapter work, and continue Provider Health/Admin Truth UI/ops.
 
 ## Completion Read
 

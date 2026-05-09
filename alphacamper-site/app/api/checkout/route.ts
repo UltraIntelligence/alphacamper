@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const origin = getTrustedOrigin();
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
+      mode: "payment",
       line_items: [
         {
           price: billingProduct.priceId,
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         user_id: identity.userId,
         product_key: billingProduct.productKey,
       },
-      subscription_data: {
+      payment_intent_data: {
         metadata: {
           user_id: identity.userId,
           product_key: billingProduct.productKey,

@@ -37,10 +37,15 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
   stripe_customer_id TEXT,
-  stripe_subscription_id TEXT NOT NULL UNIQUE,
+  stripe_subscription_id TEXT UNIQUE,
+  stripe_payment_intent_id TEXT UNIQUE,
+  stripe_checkout_session_id TEXT UNIQUE,
   product_key TEXT NOT NULL CHECK (product_key IN ('summer_pass_2026', 'year_pass_2026')),
   status TEXT NOT NULL CHECK (status IN ('active', 'canceled', 'past_due')),
   current_period_end TIMESTAMPTZ,
+  amount_total INTEGER,
+  currency TEXT,
+  checkout_mode TEXT NOT NULL DEFAULT 'subscription' CHECK (checkout_mode IN ('subscription', 'payment')),
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );

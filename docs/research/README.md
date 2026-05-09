@@ -119,7 +119,7 @@ Longer-term category leadership line:
 Business line:
 
 - $10k revenue by the end of summer.
-- The current app/database revenue scoreboard is not green yet: checkout copy says one-time passes, checkout code uses Stripe subscription mode, and the latest live Supabase read could not find the expected `subscriptions` or `funnel_events` tables.
+- The current revenue scoreboard is not green yet: checkout now uses one-time payment mode in code and the live billing/conversion tables exist, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
 
 ## Current Window Status
 
