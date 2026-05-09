@@ -147,6 +147,17 @@ Current 2026-05-09 baseline:
 
 The campground-row count is progress, but the success metric is campsite inventory with polling and notification proof. The 51,997 number proves provider inventory enumeration from the same availability-matrix family the worker can read, not Railway heartbeat or customer notification delivery. Alphacamper has crossed the first 50,000 inventory line, while reliability remains yellow until Railway heartbeat and notification proof are green.
 
+Call the first success line green only when all of this is true:
+
+| Proof | Current state |
+|---|---|
+| At least 50,000 Canadian campsite IDs are verified from official/provider availability data | Green: 51,997 verified provider-inventory campsite IDs |
+| The Railway worker is running in production and writing a recent `worker_status` heartbeat | Yellow: no live heartbeat yet |
+| Active customer watches are being polled by the worker | Yellow: 5 active watches exist, but worker polling is not proven |
+| A worker-created alert row is proven from the production path | Yellow: 0 alerts |
+| Customer notification delivery is proven for a controlled watch | Yellow: not proven |
+| Provider health/admin truth shows stale or blocked providers clearly | Yellow: route-level truth exists, but the full operator workflow waits on live worker data |
+
 For the business, aim for:
 
 > $10k net collected revenue by the end of summer from campers who trust Alphacamper enough to pay for better odds.
