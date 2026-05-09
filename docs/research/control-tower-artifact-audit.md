@@ -25,7 +25,7 @@ Act as the control tower for Alphacamper's North America campsite-alert expansio
 | Post-migration launches are pre-scoped | `post-migration-launch-pack.md` | Canada provider proof, alert-engine cleanup, and catalog ingestion factory prompts | Covered |
 | Epic runs are defined | `epic-launch-prompts.md` | Sixteen copy-paste goal-window prompts, including Production Worker Smoke, customer notification smoke, billing truth, first paid cohort, Manitoba/Nova Scotia label sync, paid alert-to-assist moat proof, and Canada parity expansion | Covered |
 | Epics are framed as huge independent goals | `README.md`, `north-america-control-tower.md`, `epic-launch-prompts.md` | Operating model says each separate window owns a large goal, deep work, verification, and report-back | Covered |
-| Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; leadership line is 250,000 to 350,000+ North American campsites | Covered |
+| Major success metric is clear | `north-star-success-metrics.md`, `README.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | First success line is 50,000 verified realtime-alertable Canadian campsites; `north-star-success-metrics.md` separates the green 51,997 provider-inventory proof from the still-yellow heartbeat, polling, alert, notification, and provider-health proof; leadership line is 250,000 to 350,000+ North American campsites | Covered |
 | Revenue success metric is clear | `summer-revenue-scoreboard.md`, `control-tower-status-board.md`, `current-action-queue.md` | $10k net summer revenue target, pass-count math, net-vs-gross rule, and billing/source-of-truth blocker are documented | Covered |
 | Tier-one competitor ambition is captured | `north-star-success-metrics.md`, `north-america-control-tower.md`, `control-tower-status-board.md` | Strategy names Campnab/Campflare as the tier-one bar and frames Alphacamper as a Canada-first alert and planning product moving toward a broader North American camper assistant | Covered |
 | Product distinction is captured | `north-star-success-metrics.md`, `north-america-control-tower.md`, `get-the-site-moat-plan.md`, `control-tower-status-board.md` | Docs say the moat is not just finding the site, but helping the camper get the site, with the paid alert-to-official-review loop held until reliability and billing gates are green | Covered |
@@ -104,7 +104,7 @@ Existing supporting docs:
 
 ## Completion Audit
 
-Audit timestamp: 2026-05-09T16:14:37Z.
+Audit timestamp: 2026-05-09T16:23:52Z.
 
 Objective restated as concrete deliverables:
 
@@ -125,12 +125,13 @@ Evidence inspected:
 - `docs/research/summer-revenue-scoreboard.md` defines the $10k net revenue scoreboard and flags the billing/source-of-truth blocker.
 - `docs/research/control-tower-operator-unblock-pack.md`, `docs/research/railway-worker-smoke-runbook.md`, and `docs/research/revenue-readiness-runbook.md` now include exact secret-safe Railway and Vercel owner steps.
 - `docs/research/north-star-success-metrics.md` and `docs/research/north-america-control-tower.md` capture the tier-one competitor ambition, get-you-the-site distinction, regular-camper-to-Alphacamper framing, and $10k net revenue target.
+- `docs/research/north-star-success-metrics.md` now defines the exact first-success green rule: 50,000+ verified provider campsite IDs plus Railway heartbeat, active polling, worker-created alert row, notification delivery, and provider/admin health proof.
 - `npm run smoke:production -- --allow-yellow` from `alphacamper-worker` returned yellow against `https://alphacamper.com` at 2026-05-09T16:03:17Z.
 - `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T16:03:17Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked at 2026-05-09T15:36Z because this shell is not Railway-authenticated.
 - `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
 - GitHub Actions is supporting evidence only, not Railway proof or revenue proof; verify the current `main` run with `/Users/ryan/.codex/bin/gh-no-proxy run list --limit 3` before relying on it.
-- Latest supporting GitHub Actions run checked during this audit: `25605657104`, green for commit `ef854bcc6`.
+- Latest supporting GitHub Actions run checked during this audit: `25605865956`, green for commit `617a82aa1`.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
 - `vercel env list production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
@@ -148,6 +149,8 @@ Live smoke evidence:
 - Provider-quality source: `live_supabase`.
 - Active watches: 5.
 - Active watches by platform: `bc_parks:4`, `ontario_parks:1`.
+- Provider-inventory proof: green at 51,997 verified campsite IDs.
+- First success line: still yellow until Railway heartbeat, active polling, worker-created alert row, notification delivery, and provider/admin health proof are green.
 - Total alerts: 0.
 - Delivered alerts: 0.
 - Worker status: degraded.
