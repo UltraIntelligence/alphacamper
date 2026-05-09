@@ -96,7 +96,7 @@ Current result:
 - Live catalog refresh is green for six providers.
 - Live site deploy is green: `/api/check-availability` returns 410 retired.
 - Live catalog API now returns evidence fields for Bamberton and Sugarloaf.
-- Worker heartbeat fix is pushed at `d7464921c` and CI is green.
+- Worker heartbeat fix is pushed, and latest main CI is green through `91b0d7fc1`.
 - Live `https://alphacamper.com/api/admin/provider-quality` now returns `fetchedFrom: live_supabase`.
 - The same production route reports 5 active watches and `railway_worker` degraded with `missing_worker_heartbeat`.
 - Supabase `worker_status` still returns no heartbeat rows after the fix.
