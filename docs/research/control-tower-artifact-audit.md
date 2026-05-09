@@ -127,7 +127,7 @@ Evidence inspected:
 - `npm run smoke:billing -- --allow-yellow` from `alphacamper-site` returned yellow at 2026-05-09T15:36:51Z because production Stripe env vars are missing, no paid rows/webhook proof exists yet, and net/refund reporting is not verified.
 - `npm run smoke:railway -- --allow-blocked` from `alphacamper-worker` returned blocked at 2026-05-09T15:36Z because this shell is not Railway-authenticated.
 - `npm run smoke:customer-watch -- --allow-yellow` from `alphacamper-site` returned yellow/read-only at 2026-05-09T14:10Z, with live provider-quality, 5 active watches, 0 delivered alerts, and `missing_worker_heartbeat`.
-- Latest `main` CI after commit `f0490bc76 Refresh control tower snapshot index` passed in GitHub Actions run `25604975518`.
+- GitHub Actions is supporting evidence only, not Railway proof or revenue proof; verify the current `main` run with `/Users/ryan/.codex/bin/gh-no-proxy run list --limit 3` before relying on it.
 - GitHub commit status and deployment metadata for latest `main` show Vercel site deployments only, and the committed GitHub workflow only runs tests plus the site smoke check. Railway deploy proof must come from Railway itself.
 - `vercel env ls production` from `alphacamper-site` confirmed Vercel is authenticated and the five required Stripe production env vars are absent.
 - Local Alphacamper env files do not expose the missing Stripe billing variable names, so there is no safe local source to push into Vercel.
