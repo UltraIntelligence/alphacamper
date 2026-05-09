@@ -132,6 +132,7 @@ The live catalog schema gate is now cleared:
 - Production provider-quality is live: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` as degraded with `missing_worker_heartbeat`; worker smoke splits active watches as `bc_parks:4` and `ontario_parks:1`.
 - Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
 - Latest verified worker smoke at 2026-05-09T16:27:19Z remains yellow; `npm run smoke:railway -- --allow-blocked` also reports Railway auth blocked in this shell.
+- Owner update at 2026-05-09T16:30:24Z: Railway is sleeping because the account was not reactivated yet.
 - Campsite-level inventory proof is now at 51,997 verified campsite IDs from provider availability-matrix responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia. This crosses the first 50,000 Canada inventory line by 1,997 IDs.
 - This is not a vanity spreadsheet, but it is also not live customer reliability proof; Railway heartbeat, active polling, alert creation, and notification delivery are still the gate.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` is active every 30 minutes to re-run worker reliability smoke and billing readiness smoke, then report back here. It should comment on #9 or #10 only when a gate changes, turns green, or reveals a new blocker.
@@ -151,6 +152,7 @@ Business line:
 - $10k net collected revenue by the end of summer.
 - The current revenue scoreboard is not green yet: checkout now uses one-time payment mode in code and the live billing/conversion tables exist, but production Vercel is missing Stripe env vars and operator revenue reporting is not complete.
 - Latest verified billing smoke at 2026-05-09T16:27:19Z remains yellow with 0 paid passes, 0 webhook rows, no checkout proof, no net/refund proof, and the five production Stripe env vars still missing.
+- Owner update at 2026-05-09T16:30:24Z: Stripe does not exist yet for Alphacamper, so #10 is now setup-from-zero before checkout proof.
 
 ## Current Window Status
 

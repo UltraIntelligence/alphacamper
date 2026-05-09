@@ -62,6 +62,7 @@ Latest smoke result:
 - Delivered alerts: 0.
 - Missing worker-platform proof: `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, `recreation_gov`.
 - Railway CLI diagnostic is blocked in this shell because Railway is not authenticated.
+- Owner update at 2026-05-09T16:30:24Z: Railway is sleeping because the account was not reactivated yet.
 
 This means we cannot honestly say live alerts are reliable yet.
 
@@ -85,6 +86,7 @@ Latest smoke result:
   - `STRIPE_PRICE_SUMMER`
   - `STRIPE_PRICE_YEAR`
   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- Owner update at 2026-05-09T16:30:24Z: Stripe does not exist yet for Alphacamper, so this is a setup-from-zero gate, not only an env-var gate.
 
 This means we cannot honestly say the $10k scoreboard is measurable yet.
 
@@ -92,8 +94,8 @@ This means we cannot honestly say the $10k scoreboard is measurable yet.
 
 The order is:
 
-1. Prove Railway worker heartbeat and polling.
-2. Prove Stripe production checkout and webhook/revenue rows.
+1. Reactivate Railway, redeploy/link the worker, then prove heartbeat and polling.
+2. Create the Alphacamper Stripe setup, wire Vercel production env vars, then prove checkout and webhook/revenue rows.
 3. Prove a real customer watch can create an alert and send a notification.
 4. Run the first paid cohort.
 5. Prove the get-you-the-site assist loop.
@@ -153,7 +155,7 @@ Safe claim:
 
 - Alphacamper has crossed 51,997 verified provider campsite IDs.
 - The customer-facing reliability gate is still yellow.
-- The next two unlocks are Railway worker proof and Stripe production checkout proof.
+- The next two unlocks are Railway account reactivation plus worker proof, and new Alphacamper Stripe setup plus production checkout proof.
 
 ## Control-Tower Recommendation
 

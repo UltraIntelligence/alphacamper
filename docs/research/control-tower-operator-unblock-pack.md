@@ -31,10 +31,15 @@ GitHub blocker trackers:
 
 Do these two things first. They are independent and can happen in parallel.
 
-1. Railway: log into/link the Alphacamper Railway project, confirm the worker service is the `alphacamper-worker` service, then rerun the Railway smoke.
-2. Stripe/Vercel: confirm the correct Alphacamper Stripe account, add the five production Stripe env vars to Vercel, redeploy, then rerun the billing smoke.
+1. Railway: reactivate the Railway account/project, wake or redeploy the `alphacamper-worker` service, then rerun the Railway smoke.
+2. Stripe/Vercel: create the Alphacamper Stripe setup, create the two one-time pass prices and webhook, add the five production Stripe env vars to Vercel, redeploy, then rerun the billing smoke.
 
-Latest refresh: 2026-05-09T15:36:51Z.
+Latest refresh: 2026-05-09T16:30:24Z.
+
+Owner update:
+
+- Railway is sleeping because the account was not reactivated yet.
+- Stripe does not exist yet for Alphacamper.
 
 Current smoke result:
 
@@ -98,8 +103,9 @@ After a report comes back, update the matching tracker only if the gate changes,
 There are two active external unblocks now. They can move in parallel:
 
 1. Fix Railway worker heartbeat.
+   - First reactivate/wake Railway.
    - This unlocks real alert reliability and protects every customer-facing coverage claim.
-2. Configure the correct Alphacamper Stripe account and Vercel production env vars.
+2. Create the Alphacamper Stripe setup and configure Vercel production env vars.
    - This unlocks checkout and the $10k revenue scoreboard.
 
 Then continue in this dependent order:
@@ -125,6 +131,7 @@ Healthcheck path: /health
 Expected live Supabase project: tbdrmcdrfgunbcevslqf
 
 Please confirm:
+- The Railway account/project has been reactivated and is not sleeping.
 - The service is deployed from current main.
 - Railway itself shows a successful deploy for the worker service; GitHub only shows Vercel site deployments and repo tests.
 - The service has SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY set for production.
@@ -140,7 +147,7 @@ Do not paste any secret values. Just confirm present/missing and paste the smoke
 ```text
 Please configure Alphacamper production checkout so the $10k net revenue scoreboard can become measurable.
 
-First confirm the Stripe account is the intended Alphacamper account. The Codex Stripe connector available in this workspace was logged into Superpress (`acct_1NpT2lFVQSJKvEIh`), so do not create or reuse products there unless Ryan explicitly confirms that is the correct Alphacamper account.
+Owner update: Stripe does not exist yet for Alphacamper. Start by creating or selecting the intended Alphacamper Stripe account. The Codex Stripe connector available in this workspace was logged into Superpress (`acct_1NpT2lFVQSJKvEIh`), so do not create or reuse products there unless Ryan explicitly confirms that is the correct Alphacamper account.
 
 In Vercel Production, add or verify:
 - STRIPE_SECRET_KEY
@@ -180,6 +187,8 @@ After production is redeployed, do not paste secret values. Just confirm the var
 ### 1. Fix Railway Worker Heartbeat
 
 This is the first unblock because alerts cannot be trusted until the worker is alive.
+
+Owner update: Railway is currently sleeping because the account was not reactivated yet. Reactivate the account/project before running the commands below.
 
 ```bash
 cd /Users/ryan/Code/Alphacamper/alphacamper-worker
@@ -224,6 +233,8 @@ Green proof:
 ### 3. Configure Stripe Production Revenue Path
 
 Only call revenue green after the env vars, webhook, and at least one real paid proof exist.
+
+Owner update: Stripe does not exist yet for Alphacamper. Treat this as a setup-from-zero path: create/select the Alphacamper Stripe account, create one-time prices, create the webhook, then wire Vercel.
 
 Current access finding:
 

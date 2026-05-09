@@ -120,11 +120,13 @@ Current result:
 - `npm run smoke:railway -- --allow-blocked` now prints live production heartbeat proof before Railway auth/log checks.
 - Latest verified worker smoke at 2026-05-09T16:27:19Z remains yellow: active watches 5, active watch split `bc_parks:4` and `ontario_parks:1`, total alerts 0, delivered alerts 0, worker degraded with `missing_worker_heartbeat`, no Supabase heartbeat, and missing worker platforms `bc_parks`, `ontario_parks`, `parks_canada`, `gtc_new_brunswick`, and `recreation_gov`.
 - Latest Railway diagnostic at 2026-05-09T16:27:19Z remains blocked from this shell: live proof is yellow and Railway auth is not authenticated.
+- Owner update at 2026-05-09T16:30:24Z: Railway is sleeping because the account was not reactivated yet.
 - GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/9
 
 Next action:
 
-- Get Railway deploy/runtime access or confirm the worker service is running.
+- Reactivate/wake the Railway account/project.
+- Get Railway deploy/runtime access and confirm the worker service is running.
 - Confirm Railway service root directory is `/alphacamper-worker` and config file path is `/alphacamper-worker/railway.json` if it is not auto-detected.
 - Verify `worker_status` heartbeat and `/health` output if a public/internal worker URL exists.
 - Smoke-test the customer path once the worker heartbeat is real.
@@ -244,13 +246,14 @@ Current truth:
 - Billing smoke now requires a real one-time payment-mode pass plus a recorded `checkout.session.completed` webhook row; legacy subscription-style evidence cannot make the gate green.
 - Latest verified billing smoke at 2026-05-09T16:27:19Z is yellow: 0 paid active passes, 0 summer passes, 0 year passes, 0 payment-mode passes, no gross app revenue, 0 funnel events, 0 webhook events, 0 checkout-completed webhooks, no checkout/webhook proof, net/refund reporting not verified, and the five production Stripe env vars missing.
 - Direct `vercel env list production` confirms the five missing names are not configured in production.
+- Owner update at 2026-05-09T16:30:24Z: Stripe does not exist yet for Alphacamper, so the next step is to create the Stripe account/setup and production objects before wiring Vercel.
 - The available Stripe connector is currently logged into the Superpress Stripe account (`acct_1NpT2lFVQSJKvEIh`), not an obvious Alphacamper account, so do not create or reuse Stripe products from that connector without confirming the correct account first.
 - `docs/research/revenue-readiness-runbook.md` defines the first-paid-customer proof path without doing a fake live-money charge.
 - GitHub tracker: https://github.com/UltraIntelligence/alphacamper/issues/10
 
 Next action:
 
-- Confirm the correct Alphacamper Stripe account, configure production Stripe env vars and one-time live prices, create the production webhook for `checkout.session.completed`, prove one approved live checkout/webhook path, and wire net/refund reporting from Stripe into the operator revenue-quality view.
+- Create or select the intended Alphacamper Stripe account, create one-time live prices, create the production webhook for `checkout.session.completed`, configure production Vercel Stripe env vars, prove one approved live checkout/webhook path, and wire net/refund reporting from Stripe into the operator revenue-quality view.
 
 Use runbook for framing:
 

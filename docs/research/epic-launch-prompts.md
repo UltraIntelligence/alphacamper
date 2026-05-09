@@ -65,13 +65,14 @@ Already reported back and intaken:
 7. 50k Canada Gap Sprint: green for provider-inventory proof; reliability still yellow.
 8. Billing Truth And Revenue Reporting: yellow until Stripe production envs, webhook proof, and net/refund truth are green.
 9. Get You The Site Moat: yellow product proof; strategy is integrated but one paid alert-to-assist loop still needs proof.
+10. Demand Capture And Conversion: public demand smoke is green; protected operator proof waits on an approved operator token/session.
 
 Do not relaunch those same windows unless the scope changes.
 
 Next recommended windows:
 
-1. Production Worker Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/9. Launch/continue now; likely blocked on Railway access.
-2. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue after the correct Alphacamper Stripe account and production Vercel env vars are confirmed.
+1. Production Worker Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/9. Launch/continue only after Railway account/project reactivation; owner update says Railway is currently sleeping.
+2. Billing Truth And Revenue Reporting. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/10. Continue as setup-from-zero: create/select Alphacamper Stripe, create one-time prices/webhook, add Vercel envs, redeploy, then prove checkout.
 3. Demand Capture And Conversion. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/19. Safe parallel revenue-intent lane; do not call revenue or reliability green.
 4. First Paid Cohort Sprint. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/16. Launch after #10 is green enough to take payment safely; measure 10-25 real paid passes against Stripe, app DB, watches, alerts, refunds, and net revenue.
 5. Customer Watch And Notification Smoke. High reasoning. Tracker: https://github.com/UltraIntelligence/alphacamper/issues/13. Hold until worker heartbeat is green.
