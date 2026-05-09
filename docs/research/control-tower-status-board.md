@@ -100,8 +100,8 @@ These numbers should be treated differently depending on their evidence level.
 | Static fallback campgrounds | 174 | Verified by Avicenna report | Safest current customer-facing searchable fallback | Recount from `alphacamper-site/lib/parks.ts` when needed |
 | Live known catalog rows | 464 | Verified live read after catalog refresh | Official/provider directory rows are now in live Supabase, including stale rows marked unsupported | Keep refreshing from official sources |
 | Live customer-searchable rows | 461 | Verified live read after catalog refresh | Safe searchable inventory excluding unsupported stale rows | Deploy updated UI/API evidence fields |
-| Verified alertable campground rows | 396 live; 461 repo-ready | Live read has BC, Ontario, Parks Canada, and New Brunswick alertable; Manitoba and Nova Scotia now have repo-side live-polling proof | Production catalog sync/deploy still needs to update live labels |
-| Verified provider-inventory campsite IDs | 51,997 | Clean provider availability proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia | First 50,000 Canada inventory line is crossed by 1,997 campsite IDs | Pair with worker heartbeat and notification proof before marketing reliability |
+| Verified alertable campground rows | 396 live; 461 repo-ready | Live read has BC, Ontario, Parks Canada, and New Brunswick alertable; Manitoba and Nova Scotia now have provider availability-matrix proof in repo | Production catalog sync/deploy still needs to update live labels; production reliability still waits for Railway |
+| Verified provider-inventory campsite IDs | 51,997 | Clean provider availability-matrix proof across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia | First 50,000 Canada inventory line is crossed by 1,997 campsite IDs | Pair with worker heartbeat and notification proof before marketing reliability |
 | Search-only campground rows | 65 live; 0 after Manitoba/Nova Scotia sync | Live read still shows Manitoba and Nova Scotia as search-only until production catalog sync runs | Sync production catalog after deploy if the control tower wants live labels updated |
 | Unsupported stale rows | 3 | Verified live read after refresh | Carmanah Walbran, Grand-Pre, and Internet are not treated as alert inventory | Keep stale rows out of customer claims |
 | BC Parks campsite IDs | 10,410 | Clean provider availability proof, 145/145 countable rows checked | Verified campsite-level inventory | Pair with Railway heartbeat and notifications before marketing reliability |
@@ -152,7 +152,7 @@ Control-tower rule:
 | 2026-05-09 | Aim for tier-one Campnab/Campflare competitor status | The product should combine broad alert coverage with guided actions that help regular campers become Alphacampers | Active |
 | 2026-05-09 | Use one-time payments for 2026 passes | Matches pass copy, lowers customer confusion, and makes summer revenue reporting clearer | Active |
 | 2026-05-09 | Treat New Brunswick as alertable after provider proof | The New Brunswick CAMIS/GoingToCamp path returned directory and site-level availability evidence | Active |
-| 2026-05-09 | Upgrade Manitoba and Nova Scotia to repo-ready live-polling profiles | Official/provider availability responses returned clean campsite-level proof: Manitoba 5,480 and Nova Scotia 1,700 IDs | Active; production catalog sync/deploy pending |
+| 2026-05-09 | Upgrade Manitoba and Nova Scotia to repo-ready live-polling profiles | Official/provider availability-matrix responses returned clean campsite-level proof: Manitoba 5,480 and Nova Scotia 1,700 IDs | Active; production catalog sync/deploy pending; production reliability still waits for Railway |
 | 2026-05-09 | Move all alert polling toward Railway worker | Recreation.gov worker support now exists in code, and the old Vercel cron is retired live; Railway heartbeat still needs proof | Active |
 
 ## Epic Board
@@ -195,7 +195,7 @@ Current result:
 - Live `worker_status` still returns no rows after the fix, so Railway runtime health remains unverified.
 - GitHub deployment metadata for the fix points to Vercel site deployment, not Railway worker deployment.
 - Worker deploy hardening now exists in code: `alphacamper-worker/railway.json`, Railway `PORT` support, and a clearer `/health` starting/degraded response.
-- Provider-inventory campsite proof is now verified for the current Canada core: 51,997 campsite IDs from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia provider availability responses.
+- Provider-inventory campsite proof is now verified for the current Canada core: 51,997 campsite IDs from BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia provider availability-matrix responses.
 - The first 50,000 provider-inventory line is crossed by 1,997 campsite IDs.
 - This proves provider inventory enumeration, not Railway heartbeat, active-watch polling, or customer notification delivery.
 

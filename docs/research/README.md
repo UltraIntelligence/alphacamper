@@ -122,7 +122,8 @@ The live catalog schema gate is now cleared:
 - Site deploy is live: `/api/check-availability` returns 410 retired.
 - Production provider-quality is live: `/api/admin/provider-quality` reads live Supabase, reports 5 active watches, and flags `railway_worker` as degraded with `missing_worker_heartbeat`.
 - Railway worker heartbeat is not yet proven; live `worker_status` currently has no rows.
-- Campsite-level inventory proof is now at 51,997 verified campsite IDs from provider availability responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia. This crosses the first 50,000 Canada inventory line by 1,997 IDs.
+- Campsite-level inventory proof is now at 51,997 verified campsite IDs from provider availability-matrix responses across BC Parks, Ontario Parks, Parks Canada, New Brunswick, Manitoba, and Nova Scotia. This crosses the first 50,000 Canada inventory line by 1,997 IDs.
+- This is not a vanity spreadsheet, but it is also not live customer reliability proof; Railway heartbeat, active polling, alert creation, and notification delivery are still the gate.
 - Thread heartbeat automation `alphacamper-worker-heartbeat-watch` is active every 30 minutes to re-run worker reliability smoke and billing readiness smoke, then report back here. It should comment on #9 or #10 only when a gate changes, turns green, or reveals a new blocker.
 - Operator unblock plan is documented in `docs/research/control-tower-operator-unblock-pack.md`: Railway heartbeat and Stripe revenue proof can move in parallel; customer notification proof and Manitoba/Nova Scotia live-label sync wait on worker reliability.
 

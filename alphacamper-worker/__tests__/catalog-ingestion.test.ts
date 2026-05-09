@@ -61,18 +61,20 @@ describe("catalog ingestion row builder", () => {
     expect(rows[0].raw_payload).toMatchObject({ resourceLocationId: -2504 });
   });
 
-  it("marks Manitoba and Nova Scotia alertable after site-level polling proof", () => {
+  it("marks Manitoba and Nova Scotia alertable after provider availability-matrix proof", () => {
     const manitoba = getCatalogProviderProfile("gtc_manitoba");
     const novaScotia = getCatalogProviderProfile("gtc_novascotia");
 
     expect(manitoba.supportStatus).toBe("alertable");
     expect(manitoba.availabilityMode).toBe("live_polling");
     expect(manitoba.confidence).toBe("verified");
+    expect(manitoba.verificationNote).toContain("provider availability-matrix proof");
     expect(manitoba.verificationNote).toContain("5,480 campsite IDs");
 
     expect(novaScotia.supportStatus).toBe("alertable");
     expect(novaScotia.availabilityMode).toBe("live_polling");
     expect(novaScotia.confidence).toBe("verified");
+    expect(novaScotia.verificationNote).toContain("provider availability-matrix proof");
     expect(novaScotia.verificationNote).toContain("1,700 campsite IDs");
   });
 

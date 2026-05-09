@@ -77,7 +77,7 @@ export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> =
     supportStatus: "alertable",
     availabilityMode: "live_polling",
     confidence: "verified",
-    verificationNote: "Official BC Parks CAMIS directory and worker live polling are verified.",
+    verificationNote: "Official BC Parks CAMIS directory and repo-side availability poller are verified. Pair with Railway heartbeat and notification proof before marketing production reliability.",
     staleAfterHours: 24,
   },
   ontario_parks: {
@@ -89,7 +89,7 @@ export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> =
     supportStatus: "alertable",
     availabilityMode: "live_polling",
     confidence: "verified",
-    verificationNote: "Official Ontario Parks CAMIS directory and worker live polling are verified.",
+    verificationNote: "Official Ontario Parks CAMIS directory and repo-side availability poller are verified. Pair with Railway heartbeat and notification proof before marketing production reliability.",
     staleAfterHours: 24,
   },
   parks_canada: {
@@ -101,7 +101,7 @@ export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> =
     supportStatus: "alertable",
     availabilityMode: "live_polling",
     confidence: "verified",
-    verificationNote: "Official Parks Canada CAMIS directory and worker live polling are verified.",
+    verificationNote: "Official Parks Canada CAMIS directory and repo-side availability poller are verified. Pair with Railway heartbeat and notification proof before marketing production reliability.",
     staleAfterHours: 24,
   },
   gtc_manitoba: {
@@ -113,7 +113,7 @@ export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> =
     supportStatus: "alertable",
     availabilityMode: "live_polling",
     confidence: "verified",
-    verificationNote: "Official GoingToCamp directory and site-level CAMIS availability polling are verified. Count proof 2026-05-09: 45/45 countable rows, 5,480 campsite IDs, 0 failures. Pair with Railway heartbeat and notification proof before marketing reliability.",
+    verificationNote: "Official GoingToCamp directory and provider availability-matrix proof are verified. Count proof 2026-05-09: 45/45 countable rows, 5,480 campsite IDs, 0 failures. Pair with Railway heartbeat and notification proof before marketing production reliability.",
     staleAfterHours: 24,
   },
   gtc_novascotia: {
@@ -125,7 +125,7 @@ export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> =
     supportStatus: "alertable",
     availabilityMode: "live_polling",
     confidence: "verified",
-    verificationNote: "Official GoingToCamp directory and site-level CAMIS availability polling are verified. Count proof 2026-05-09: 20/20 countable rows, 1,700 campsite IDs, 0 failures. Pair with Railway heartbeat and notification proof before marketing reliability.",
+    verificationNote: "Official GoingToCamp directory and provider availability-matrix proof are verified. Count proof 2026-05-09: 20/20 countable rows, 1,700 campsite IDs, 0 failures. Pair with Railway heartbeat and notification proof before marketing production reliability.",
     staleAfterHours: 24,
   },
   gtc_new_brunswick: {
@@ -137,7 +137,7 @@ export const CATALOG_PROVIDER_PROFILES: Record<string, CatalogProviderProfile> =
     supportStatus: "alertable",
     availabilityMode: "live_polling",
     confidence: "verified",
-    verificationNote: "Official New Brunswick Parks CAMIS directory and worker live polling are verified.",
+    verificationNote: "Official New Brunswick Parks CAMIS directory and repo-side availability poller are verified. Pair with Railway heartbeat and notification proof before marketing production reliability.",
     staleAfterHours: 24,
   },
 };
