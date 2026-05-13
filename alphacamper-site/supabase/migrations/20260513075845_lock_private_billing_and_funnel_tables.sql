@@ -1,3 +1,5 @@
+BEGIN;
+
 ALTER TABLE users ALTER COLUMN id DROP DEFAULT;
 
 CREATE OR REPLACE FUNCTION public.rls_dev_override_enabled()
@@ -19,6 +21,8 @@ BEGIN
   ) THEN
     ALTER TABLE watched_targets DROP CONSTRAINT IF EXISTS watched_targets_user_id_fkey;
     ALTER TABLE availability_alerts DROP CONSTRAINT IF EXISTS availability_alerts_user_id_fkey;
+    ALTER TABLE subscriptions DROP CONSTRAINT IF EXISTS subscriptions_user_id_fkey;
+    ALTER TABLE funnel_events DROP CONSTRAINT IF EXISTS funnel_events_user_id_fkey;
 
     UPDATE watched_targets wt
     SET user_id = au.id
@@ -34,6 +38,20 @@ BEGIN
     WHERE aa.user_id = u.id
       AND u.id <> au.id;
 
+    UPDATE subscriptions s
+    SET user_id = au.id
+    FROM users u
+    JOIN auth.users au ON lower(au.email) = lower(u.email)
+    WHERE s.user_id = u.id
+      AND u.id <> au.id;
+
+    UPDATE funnel_events fe
+    SET user_id = au.id
+    FROM users u
+    JOIN auth.users au ON lower(au.email) = lower(u.email)
+    WHERE fe.user_id = u.id
+      AND u.id <> au.id;
+
     UPDATE users u
     SET id = au.id
     FROM auth.users au
@@ -47,10 +65,26 @@ BEGIN
     ALTER TABLE availability_alerts
       ADD CONSTRAINT availability_alerts_user_id_fkey
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+    ALTER TABLE subscriptions
+      ADD CONSTRAINT subscriptions_user_id_fkey
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+    ALTER TABLE funnel_events
+      ADD CONSTRAINT funnel_events_user_id_fkey
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
   END IF;
 END $$;
 
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE watched_targets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE availability_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE stripe_webhook_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE funnel_events ENABLE ROW LEVEL SECURITY;
+
 DROP POLICY IF EXISTS "Allow user registration" ON users;
+DROP POLICY IF EXISTS "Users insert own data" ON users;
 DROP POLICY IF EXISTS "Users read own data" ON users;
 DROP POLICY IF EXISTS "Users update own data" ON users;
 DROP POLICY IF EXISTS "Users delete own data" ON users;
@@ -61,6 +95,10 @@ DROP POLICY IF EXISTS "Allow watched target inserts" ON watched_targets;
 DROP POLICY IF EXISTS "Allow watched target reads" ON watched_targets;
 DROP POLICY IF EXISTS "Allow watched target updates" ON watched_targets;
 DROP POLICY IF EXISTS "Allow watched target deletes" ON watched_targets;
+DROP POLICY IF EXISTS "Watched targets insert own data" ON watched_targets;
+DROP POLICY IF EXISTS "Watched targets read own data" ON watched_targets;
+DROP POLICY IF EXISTS "Watched targets update own data" ON watched_targets;
+DROP POLICY IF EXISTS "Watched targets delete own data" ON watched_targets;
 DROP POLICY IF EXISTS "wt_insert" ON watched_targets;
 DROP POLICY IF EXISTS "wt_select" ON watched_targets;
 DROP POLICY IF EXISTS "wt_update" ON watched_targets;
@@ -70,6 +108,10 @@ DROP POLICY IF EXISTS "Allow alert inserts" ON availability_alerts;
 DROP POLICY IF EXISTS "Allow alert reads" ON availability_alerts;
 DROP POLICY IF EXISTS "Allow alert updates" ON availability_alerts;
 DROP POLICY IF EXISTS "Allow alert deletes" ON availability_alerts;
+DROP POLICY IF EXISTS "Alerts insert own data" ON availability_alerts;
+DROP POLICY IF EXISTS "Alerts read own data" ON availability_alerts;
+DROP POLICY IF EXISTS "Alerts update own data" ON availability_alerts;
+DROP POLICY IF EXISTS "Alerts delete own data" ON availability_alerts;
 DROP POLICY IF EXISTS "alert_insert" ON availability_alerts;
 DROP POLICY IF EXISTS "alert_select" ON availability_alerts;
 DROP POLICY IF EXISTS "alert_update" ON availability_alerts;
@@ -158,3 +200,13 @@ CREATE POLICY "Alerts delete own data" ON availability_alerts
     public.rls_dev_override_enabled()
     OR auth.uid() = user_id
   );
+
+REVOKE ALL ON TABLE subscriptions FROM anon, authenticated;
+REVOKE ALL ON TABLE stripe_webhook_events FROM anon, authenticated;
+REVOKE ALL ON TABLE funnel_events FROM anon, authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE subscriptions TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE stripe_webhook_events TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE funnel_events TO service_role;
+
+COMMIT;

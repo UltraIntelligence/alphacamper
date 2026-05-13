@@ -23,6 +23,47 @@ const watchAId = "10000000-0000-0000-0000-0000000000aa";
 const watchBId = "10000000-0000-0000-0000-0000000000bb";
 const alertAId = "20000000-0000-0000-0000-0000000000aa";
 const alertBId = "20000000-0000-0000-0000-0000000000bb";
+const subscriptionAId = "30000000-0000-0000-0000-0000000000aa";
+const privateTableChecks = [
+  {
+    table: "subscriptions",
+    selectSql: "SELECT count(*) FROM subscriptions;",
+    insertSql: `
+      INSERT INTO subscriptions (
+        id,
+        user_id,
+        product_key,
+        status,
+        checkout_mode,
+        stripe_checkout_session_id
+      )
+      VALUES (
+        '30000000-0000-0000-0000-0000000000cc',
+        '${userBId}',
+        'year_pass_2026',
+        'active',
+        'payment',
+        'cs_test_private_probe'
+      );
+    `,
+    updateSql: `UPDATE subscriptions SET updated_at = now() WHERE id = '${subscriptionAId}';`,
+    deleteSql: "DELETE FROM subscriptions WHERE id = '30000000-0000-0000-0000-0000000000cc';",
+  },
+  {
+    table: "stripe_webhook_events",
+    selectSql: "SELECT count(*) FROM stripe_webhook_events;",
+    insertSql: "INSERT INTO stripe_webhook_events (id, event_type) VALUES ('evt_private_probe', 'checkout.session.completed');",
+    updateSql: "UPDATE stripe_webhook_events SET processed_at = now() WHERE id = 'evt_test_checkout_completed';",
+    deleteSql: "DELETE FROM stripe_webhook_events WHERE id = 'evt_private_probe';",
+  },
+  {
+    table: "funnel_events",
+    selectSql: "SELECT count(*) FROM funnel_events;",
+    insertSql: `INSERT INTO funnel_events (user_id, event_name, metadata) VALUES ('${userAId}', 'booking_submitted', '{"source":"private_probe"}'::jsonb);`,
+    updateSql: "UPDATE funnel_events SET metadata = '{\"source\":\"updated_probe\"}'::jsonb WHERE event_name = 'autofill_started';",
+    deleteSql: "DELETE FROM funnel_events WHERE metadata ->> 'source' = 'private_probe';",
+  },
+];
 
 function runDocker(args: string[], input?: string) {
   return execFileSync("docker", args, {
@@ -60,6 +101,24 @@ function runSql(sql: string) {
   return runDocker(
     ["exec", "-i", containerName, "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres", "-At"],
     sql,
+  );
+}
+
+function runSessionResult(
+  role: "authenticated" | "service_role",
+  sql: string,
+  options?: {
+    userId?: string;
+    headers?: Record<string, string>;
+  },
+) {
+  return spawnSync(
+    "docker",
+    ["exec", "-i", containerName, "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres", "-At"],
+    {
+      encoding: "utf8",
+      input: buildSessionSql(role, sql, options),
+    },
   );
 }
 
@@ -135,14 +194,13 @@ function applyMigrations() {
 
   runSql(`
     GRANT USAGE ON SCHEMA public, auth TO anon, authenticated, service_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
     GRANT SELECT ON auth.users TO authenticated, service_role;
   `);
 }
 
 function seedData() {
   runSql(`
-    TRUNCATE availability_alerts, watched_targets, users, auth.users RESTART IDENTITY CASCADE;
+    TRUNCATE stripe_webhook_events, funnel_events, subscriptions, availability_alerts, watched_targets, users, auth.users RESTART IDENTITY CASCADE;
 
     INSERT INTO auth.users (id, aud, role, email, confirmed_at)
     VALUES
@@ -178,6 +236,37 @@ function seedData() {
     VALUES
       ('${alertAId}', '${watchAId}', '${userAId}', '{"site":"A1"}'::jsonb, false),
       ('${alertBId}', '${watchBId}', '${userBId}', '{"site":"B1"}'::jsonb, false);
+
+    INSERT INTO subscriptions (
+      id,
+      user_id,
+      product_key,
+      status,
+      current_period_end,
+      checkout_mode,
+      amount_total,
+      currency,
+      stripe_checkout_session_id
+    )
+    VALUES (
+      '${subscriptionAId}',
+      '${userAId}',
+      'summer_pass_2026',
+      'active',
+      '2026-11-01T00:00:00.000Z',
+      'payment',
+      6900,
+      'usd',
+      'cs_test_user_a'
+    );
+
+    INSERT INTO stripe_webhook_events (id, event_type)
+    VALUES ('evt_test_checkout_completed', 'checkout.session.completed');
+
+    INSERT INTO funnel_events (user_id, watch_id, event_name, metadata)
+    VALUES
+      ('${userAId}', '${watchAId}', 'autofill_started', '{"source":"test"}'::jsonb),
+      ('${userBId}', '${watchBId}', 'booking_failed', '{"source":"test"}'::jsonb);
   `);
 }
 
@@ -259,7 +348,62 @@ maybeDescribe("RLS user isolation", () => {
     expect(alertCount).toBe("2");
   });
 
-  it("honors the dev override gate header", () => {
+  it("keeps billing, Stripe, and funnel tables server-only", () => {
+    for (const check of privateTableChecks) {
+      for (const sql of [
+        check.selectSql,
+        check.insertSql,
+        check.updateSql,
+        check.deleteSql,
+      ]) {
+        const result = runSessionResult(
+          "authenticated",
+          sql,
+          { userId: userAId },
+        );
+
+        expect(result.status, `${check.table} should reject authenticated access`).not.toBe(0);
+        expect(`${result.stdout}\n${result.stderr}`).toContain("permission denied");
+      }
+    }
+  });
+
+  it("allows the service role path to read private operational tables", () => {
+    const subscriptionCount = runScalarQuery(
+      "service_role",
+      "SELECT count(*) FROM subscriptions;",
+    );
+    const webhookCount = runScalarQuery(
+      "service_role",
+      "SELECT count(*) FROM stripe_webhook_events;",
+    );
+    const funnelCount = runScalarQuery(
+      "service_role",
+      "SELECT count(*) FROM funnel_events;",
+    );
+
+    expect(subscriptionCount).toBe("1");
+    expect(webhookCount).toBe("1");
+    expect(funnelCount).toBe("2");
+
+    for (const check of privateTableChecks) {
+      const result = runSessionResult(
+        "service_role",
+        `
+          ${check.insertSql}
+          ${check.updateSql}
+          ${check.deleteSql}
+        `,
+      );
+
+      expect(
+        result.status,
+        `${check.table} should allow service role writes\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`,
+      ).toBe(0);
+    }
+  });
+
+  it("does not let client headers bypass user isolation", () => {
     const strictCount = runScalarQuery(
       "authenticated",
       `SELECT count(*) FROM watched_targets WHERE user_id = '${userBId}';`,
@@ -275,6 +419,6 @@ maybeDescribe("RLS user isolation", () => {
     );
 
     expect(strictCount).toBe("0");
-    expect(overrideCount).toBe("1");
+    expect(overrideCount).toBe("0");
   });
 });

@@ -113,17 +113,17 @@ export function NewLandingHero() {
         <div className="hero-v2-inner">
           <div className="hero-v2-eyebrow">
             <span className="hero-v2-eyebrow-dot" aria-hidden="true" />
-            Campsite concierge — booking season 2026
+            Early access — booking season 2026
           </div>
 
           <h1 className="hero-v2-title">
-            We get <span className="hero-v2-title-you">you</span> the campsite.
+            Find the campsite <span className="hero-v2-title-you">you</span> want.
           </h1>
 
           <p className="hero-v2-lede">
-            We watch sold-out parks around the clock. The second your site opens,
-            we text you and autofill the booking form in your browser.{' '}
-            <span className="hero-v2-lede-emph">You finish in ten seconds.</span>
+            Start with a free watch for the park you want. We show what is alert-ready,
+            what is still being verified, and help you move faster when a spot opens.{' '}
+            <span className="hero-v2-lede-emph">No card required.</span>
           </p>
 
           <div className="hero-v2-demo" role="group" aria-label="Product demo">
@@ -146,18 +146,18 @@ export function NewLandingHero() {
           </div>
 
           <div className="hero-v2-cta-row">
-            <Link href="/checkout?product=summer" className="hero-v2-cta">
-              Get Summer Pass
-              <span className="hero-v2-cta-price">$29</span>
+            <Link href="/watch/new" className="hero-v2-cta">
+              Set up a free watch
+              <span className="hero-v2-cta-price">Free</span>
             </Link>
-            <Link href="/watch/new" className="hero-v2-cta-secondary">
-              Or set up a free watch first
+            <Link href="#pricing" className="hero-v2-cta-secondary">
+              See early-access pricing
             </Link>
           </div>
 
           <p className="hero-v2-trust">
-            <strong>30-day refund if we don&apos;t book you a site.</strong>{' '}
-            Built for families running annual-ritual trips — Algonquin site #47,
+            <strong>Honest coverage labels while alerts are being verified.</strong>{' '}
+            Built for families running annual-ritual trips: Algonquin site #47,
             every August.
           </p>
         </div>
@@ -165,16 +165,16 @@ export function NewLandingHero() {
         <div className="hero-v2-rail">
           <div className="hero-v2-rail-inner">
             <div className="hero-v2-rail-item">
-              <span className="hero-v2-rail-value">Every 45s</span>
-              <span className="hero-v2-rail-label">Scanning your site</span>
+              <span className="hero-v2-rail-value">51,997</span>
+              <span className="hero-v2-rail-label">Verified provider campsite IDs</span>
             </div>
             <div className="hero-v2-rail-item">
-              <span className="hero-v2-rail-value">~10 sec</span>
-              <span className="hero-v2-rail-label">SMS to booked</span>
+              <span className="hero-v2-rail-value">Clear labels</span>
+              <span className="hero-v2-rail-label">Alert-ready vs still verifying</span>
             </div>
             <div className="hero-v2-rail-item">
-              <span className="hero-v2-rail-value">4 networks</span>
-              <span className="hero-v2-rail-label">BC, Ontario, Parks Canada, US</span>
+              <span className="hero-v2-rail-value">Free first watch</span>
+              <span className="hero-v2-rail-label">Start without checkout</span>
             </div>
           </div>
         </div>
