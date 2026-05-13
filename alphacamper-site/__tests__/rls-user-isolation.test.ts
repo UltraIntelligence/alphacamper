@@ -23,6 +23,7 @@ const watchAId = "10000000-0000-0000-0000-0000000000aa";
 const watchBId = "10000000-0000-0000-0000-0000000000bb";
 const alertAId = "20000000-0000-0000-0000-0000000000aa";
 const alertBId = "20000000-0000-0000-0000-0000000000bb";
+const subscriptionAId = "30000000-0000-0000-0000-0000000000aa";
 
 function runDocker(args: string[], input?: string) {
   return execFileSync("docker", args, {
@@ -60,6 +61,24 @@ function runSql(sql: string) {
   return runDocker(
     ["exec", "-i", containerName, "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres", "-At"],
     sql,
+  );
+}
+
+function runSessionResult(
+  role: "authenticated" | "service_role",
+  sql: string,
+  options?: {
+    userId?: string;
+    headers?: Record<string, string>;
+  },
+) {
+  return spawnSync(
+    "docker",
+    ["exec", "-i", containerName, "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres", "-At"],
+    {
+      encoding: "utf8",
+      input: buildSessionSql(role, sql, options),
+    },
   );
 }
 
@@ -135,14 +154,13 @@ function applyMigrations() {
 
   runSql(`
     GRANT USAGE ON SCHEMA public, auth TO anon, authenticated, service_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
     GRANT SELECT ON auth.users TO authenticated, service_role;
   `);
 }
 
 function seedData() {
   runSql(`
-    TRUNCATE availability_alerts, watched_targets, users, auth.users RESTART IDENTITY CASCADE;
+    TRUNCATE stripe_webhook_events, funnel_events, subscriptions, availability_alerts, watched_targets, users, auth.users RESTART IDENTITY CASCADE;
 
     INSERT INTO auth.users (id, aud, role, email, confirmed_at)
     VALUES
@@ -178,6 +196,37 @@ function seedData() {
     VALUES
       ('${alertAId}', '${watchAId}', '${userAId}', '{"site":"A1"}'::jsonb, false),
       ('${alertBId}', '${watchBId}', '${userBId}', '{"site":"B1"}'::jsonb, false);
+
+    INSERT INTO subscriptions (
+      id,
+      user_id,
+      product_key,
+      status,
+      current_period_end,
+      checkout_mode,
+      amount_total,
+      currency,
+      stripe_checkout_session_id
+    )
+    VALUES (
+      '${subscriptionAId}',
+      '${userAId}',
+      'summer_pass_2026',
+      'active',
+      '2026-11-01T00:00:00.000Z',
+      'payment',
+      6900,
+      'usd',
+      'cs_test_user_a'
+    );
+
+    INSERT INTO stripe_webhook_events (id, event_type)
+    VALUES ('evt_test_checkout_completed', 'checkout.session.completed');
+
+    INSERT INTO funnel_events (user_id, watch_id, event_name, metadata)
+    VALUES
+      ('${userAId}', '${watchAId}', 'autofill_started', '{"source":"test"}'::jsonb),
+      ('${userBId}', '${watchBId}', 'booking_failed', '{"source":"test"}'::jsonb);
   `);
 }
 
@@ -257,6 +306,44 @@ maybeDescribe("RLS user isolation", () => {
 
     expect(watchCount).toBe("2");
     expect(alertCount).toBe("2");
+  });
+
+  it("keeps billing, Stripe, and funnel tables server-only", () => {
+    const privateTables = [
+      "subscriptions",
+      "stripe_webhook_events",
+      "funnel_events",
+    ];
+
+    for (const table of privateTables) {
+      const result = runSessionResult(
+        "authenticated",
+        `SELECT count(*) FROM ${table};`,
+        { userId: userAId },
+      );
+
+      expect(result.status).not.toBe(0);
+      expect(`${result.stdout}\n${result.stderr}`).toContain("permission denied");
+    }
+  });
+
+  it("allows the service role path to read private operational tables", () => {
+    const subscriptionCount = runScalarQuery(
+      "service_role",
+      "SELECT count(*) FROM subscriptions;",
+    );
+    const webhookCount = runScalarQuery(
+      "service_role",
+      "SELECT count(*) FROM stripe_webhook_events;",
+    );
+    const funnelCount = runScalarQuery(
+      "service_role",
+      "SELECT count(*) FROM funnel_events;",
+    );
+
+    expect(subscriptionCount).toBe("1");
+    expect(webhookCount).toBe("1");
+    expect(funnelCount).toBe("2");
   });
 
   it("honors the dev override gate header", () => {

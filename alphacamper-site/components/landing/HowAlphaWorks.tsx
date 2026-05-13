@@ -2,17 +2,17 @@ const steps = [
   {
     number: '01',
     title: 'Pick your dream park.',
-    body: 'Tell us where you want to go and when. It takes two seconds to set up, and we scan all the big parks in the US and Canada.',
+    body: 'Tell us where you want to go and when. We show whether that park is alert-ready now or still being verified.',
   },
   {
     number: '02',
-    title: 'We do the waiting for you.',
-    body: 'Life gets busy. While you work or watch the kids, our system constantly checks for cancellations 24/7 so you don\'t have to.',
+    title: 'We keep the watch organized.',
+    body: 'Your watch gives us the exact park, dates, and site details so alerts can start cleanly as each provider goes live.',
   },
   {
     number: '03',
     title: 'Book it in seconds.',
-    body: 'When a spot opens up, we alert you right away. Our smart browser extension even fills out the checkout forms for you, giving you the fastest way to book.',
+    body: 'When alerts are live, the browser extension helps fill the official booking form so you can move fast without retyping everything.',
   },
 ]
 

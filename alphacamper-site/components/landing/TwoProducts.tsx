@@ -9,7 +9,7 @@ export function TwoProducts() {
       <div className="container">
         <div className="pricing-v2-header">
           <h2>Simple pricing. No surprises.</h2>
-          <p>Start free. Upgrade when you want flexible dates and our lightning-fast checkout assistant.</p>
+          <p>Start free while early-access alerts and checkout are being connected.</p>
         </div>
 
         <div className="pricing-v2-grid">
@@ -41,11 +41,11 @@ export function TwoProducts() {
           <div className="pricing-v2-card pricing-v2-pro">
             <div className="pricing-v2-popular">POPULAR</div>
             <div className="pricing-v2-top">
-              <span className="pricing-v2-eyebrow pro">BOOK FAST</span>
-              <h3 className="pricing-v2-title">Flexible dates, unlimited watches, and the checkout assistant.</h3>
+              <span className="pricing-v2-eyebrow pro">EARLY ACCESS</span>
+              <h3 className="pricing-v2-title">More watches, flexible dates, and checkout assist when paid passes open.</h3>
               <div className="pricing-v2-price-wrap">
-                <span className="pricing-v2-price-main">$6<span className="v2-mo">/mo</span></span>
-                <span className="pricing-v2-promo-note">Best value: $29/year for early users · regularly $39/year</span>
+                <span className="pricing-v2-price-main">$29</span>
+                <span className="pricing-v2-promo-note">Planned summer pass for early users</span>
               </div>
             </div>
 
@@ -55,21 +55,21 @@ export function TwoProducts() {
               <li><span className="v2-check pro">✔</span> Flexible date windows</li>
               <li><span className="v2-check pro">✔</span> Up to 30-day search window</li>
               <li><span className="v2-check pro">✔</span> Required stay length</li>
-              <li><span className="v2-check pro">✔</span> Email alerts</li>
-              <li><span className="v2-check pro">✔</span> Alphacamper Browser Extension (Checkout Assist)</li>
+              <li><span className="v2-check pro">✔</span> Email alerts after live worker proof</li>
+              <li><span className="v2-check pro">✔</span> Alphacamper Browser Extension checkout assist</li>
             </ul>
 
             <UpgradeLink
               className="pricing-v2-button-primary"
               fallbackHref="/watch/new"
             >
-              {hasPaymentLink ? 'Unlock Pro' : 'Start free for now'}
+              {hasPaymentLink ? 'Unlock Pro' : 'Start free watch'}
             </UpgradeLink>
           </div>
         </div>
 
         <div className="pricing-v2-footer">
-          Your first watch is free forever. Cancel Pro anytime.
+          Your first watch is free. Paid passes open after checkout is connected.
         </div>
       </div>
     </section>

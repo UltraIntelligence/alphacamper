@@ -52,12 +52,12 @@ describe('upgrade links', () => {
     )
   })
 
-  it('dashboard UpgradeCTA routes through /checkout with the summer product', async () => {
+  it('dashboard UpgradeCTA sends customers to free watch setup while checkout is not configured', async () => {
     const { UpgradeCTA } = await import('@/components/dashboard/UpgradeCTA')
 
     render(<UpgradeCTA />)
 
-    const cta = screen.getByRole('link', { name: /Get Summer Pass/i })
-    expect(cta.getAttribute('href')).toBe('/checkout?product=summer')
+    const cta = screen.getByRole('link', { name: /Set up free watch/i })
+    expect(cta.getAttribute('href')).toBe('/watch/new')
   })
 })

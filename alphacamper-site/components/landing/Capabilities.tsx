@@ -1,8 +1,8 @@
 const caps = [
-  { value: 'Lightning Fast', label: 'We spot openings in seconds' },
-  { value: 'Direct Links', label: 'Goes straight to official booking pages' },
-  { value: 'Auto-Fill Magic', label: 'Our extension types for you at checkout' },
-  { value: 'Always Awake', label: 'Checking parks 24/7, never sleeps' },
+  { value: 'Coverage Map', label: 'Search Canadian and US park systems' },
+  { value: 'Direct Links', label: 'Go to official booking pages' },
+  { value: 'Checkout Assist', label: 'Extension helps fill forms in your browser' },
+  { value: 'Honest Labels', label: 'See what is alert-ready or still verifying' },
 ]
 
 export function Capabilities() {
@@ -12,7 +12,7 @@ export function Capabilities() {
         <div className="cap-hero-wrap">
           <div className="cap-big-number">24/7</div>
           <p className="cap-hero-description">
-            We are always watching out for you. The second another camper cancels their trip, you'll be the first to know—giving you the best chance to grab it.
+            Start with the park you actually want. Alphacamper keeps the coverage status clear, captures demand for missing parks, and prepares you to move fast when alerts are live.
           </p>
         </div>
         

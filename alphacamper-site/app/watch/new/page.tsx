@@ -4,7 +4,7 @@ import type { CampgroundPlatform } from '@/lib/parks'
 export const metadata = {
   title: 'Create a Watch — Alphacamper',
   description:
-    "Tell us the park, dates, and site. We'll scan 24/7 and text you the second it opens.",
+    "Tell us the park, dates, and site. We'll show whether alerts are live or still being verified.",
 }
 
 export default async function WatchNewPage({
