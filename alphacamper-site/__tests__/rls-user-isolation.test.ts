@@ -24,6 +24,46 @@ const watchBId = "10000000-0000-0000-0000-0000000000bb";
 const alertAId = "20000000-0000-0000-0000-0000000000aa";
 const alertBId = "20000000-0000-0000-0000-0000000000bb";
 const subscriptionAId = "30000000-0000-0000-0000-0000000000aa";
+const privateTableChecks = [
+  {
+    table: "subscriptions",
+    selectSql: "SELECT count(*) FROM subscriptions;",
+    insertSql: `
+      INSERT INTO subscriptions (
+        id,
+        user_id,
+        product_key,
+        status,
+        checkout_mode,
+        stripe_checkout_session_id
+      )
+      VALUES (
+        '30000000-0000-0000-0000-0000000000cc',
+        '${userBId}',
+        'year_pass_2026',
+        'active',
+        'payment',
+        'cs_test_private_probe'
+      );
+    `,
+    updateSql: `UPDATE subscriptions SET updated_at = now() WHERE id = '${subscriptionAId}';`,
+    deleteSql: "DELETE FROM subscriptions WHERE id = '30000000-0000-0000-0000-0000000000cc';",
+  },
+  {
+    table: "stripe_webhook_events",
+    selectSql: "SELECT count(*) FROM stripe_webhook_events;",
+    insertSql: "INSERT INTO stripe_webhook_events (id, event_type) VALUES ('evt_private_probe', 'checkout.session.completed');",
+    updateSql: "UPDATE stripe_webhook_events SET processed_at = now() WHERE id = 'evt_test_checkout_completed';",
+    deleteSql: "DELETE FROM stripe_webhook_events WHERE id = 'evt_private_probe';",
+  },
+  {
+    table: "funnel_events",
+    selectSql: "SELECT count(*) FROM funnel_events;",
+    insertSql: `INSERT INTO funnel_events (user_id, event_name, metadata) VALUES ('${userAId}', 'booking_submitted', '{"source":"private_probe"}'::jsonb);`,
+    updateSql: "UPDATE funnel_events SET metadata = '{\"source\":\"updated_probe\"}'::jsonb WHERE event_name = 'autofill_started';",
+    deleteSql: "DELETE FROM funnel_events WHERE metadata ->> 'source' = 'private_probe';",
+  },
+];
 
 function runDocker(args: string[], input?: string) {
   return execFileSync("docker", args, {
@@ -309,21 +349,22 @@ maybeDescribe("RLS user isolation", () => {
   });
 
   it("keeps billing, Stripe, and funnel tables server-only", () => {
-    const privateTables = [
-      "subscriptions",
-      "stripe_webhook_events",
-      "funnel_events",
-    ];
+    for (const check of privateTableChecks) {
+      for (const sql of [
+        check.selectSql,
+        check.insertSql,
+        check.updateSql,
+        check.deleteSql,
+      ]) {
+        const result = runSessionResult(
+          "authenticated",
+          sql,
+          { userId: userAId },
+        );
 
-    for (const table of privateTables) {
-      const result = runSessionResult(
-        "authenticated",
-        `SELECT count(*) FROM ${table};`,
-        { userId: userAId },
-      );
-
-      expect(result.status).not.toBe(0);
-      expect(`${result.stdout}\n${result.stderr}`).toContain("permission denied");
+        expect(result.status, `${check.table} should reject authenticated access`).not.toBe(0);
+        expect(`${result.stdout}\n${result.stderr}`).toContain("permission denied");
+      }
     }
   });
 
@@ -344,9 +385,25 @@ maybeDescribe("RLS user isolation", () => {
     expect(subscriptionCount).toBe("1");
     expect(webhookCount).toBe("1");
     expect(funnelCount).toBe("2");
+
+    for (const check of privateTableChecks) {
+      const result = runSessionResult(
+        "service_role",
+        `
+          ${check.insertSql}
+          ${check.updateSql}
+          ${check.deleteSql}
+        `,
+      );
+
+      expect(
+        result.status,
+        `${check.table} should allow service role writes\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`,
+      ).toBe(0);
+    }
   });
 
-  it("honors the dev override gate header", () => {
+  it("does not let client headers bypass user isolation", () => {
     const strictCount = runScalarQuery(
       "authenticated",
       `SELECT count(*) FROM watched_targets WHERE user_id = '${userBId}';`,
@@ -362,6 +419,6 @@ maybeDescribe("RLS user isolation", () => {
     );
 
     expect(strictCount).toBe("0");
-    expect(overrideCount).toBe("1");
+    expect(overrideCount).toBe("0");
   });
 });

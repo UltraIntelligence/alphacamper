@@ -30,10 +30,6 @@ function getSupabaseServiceRoleKey() {
 function getGlobalHeaders(authToken?: string) {
   const headers: Record<string, string> = {};
 
-  if (process.env.NEXT_PUBLIC_RLS_DEV_OVERRIDE === "true") {
-    headers["x-rls-dev-override"] = "true";
-  }
-
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
   }

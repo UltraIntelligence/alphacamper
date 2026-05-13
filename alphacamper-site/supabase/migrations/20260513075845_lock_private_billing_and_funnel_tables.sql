@@ -8,20 +8,7 @@ LANGUAGE sql
 STABLE
 SET search_path = ''
 AS $$
-  SELECT COALESCE(
-    lower(
-      COALESCE(
-        (
-          COALESCE(
-            NULLIF(current_setting('request.headers', true), ''),
-            '{}'
-          )::jsonb ->> 'x-rls-dev-override'
-        ),
-        'false'
-      )
-    ) = 'true',
-    false
-  );
+  SELECT false;
 $$;
 
 DO $$
